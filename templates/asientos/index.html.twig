@@ -1,0 +1,37 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Asientos index{% endblock %}
+
+{% block body %}
+    <h1>Asientos index</h1>
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Id</th>
+                <th>Nombre</th>
+                <th>Calse</th>
+                <th>actions</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for asiento in asientos %}
+            <tr>
+                <td>{{ asiento.id }}</td>
+                <td>{{ asiento.nombre }}</td>
+                <td>{{ asiento.calse }}</td>
+                <td>
+                    <a href="{{ path('app_asientos_show', {'id': asiento.id}) }}">show</a>
+                    <a href="{{ path('app_asientos_edit', {'id': asiento.id}) }}">edit</a>
+                </td>
+            </tr>
+        {% else %}
+            <tr>
+                <td colspan="4">no records found</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+    <a href="{{ path('app_asientos_new') }}">Create new</a>
+{% endblock %}

@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        {% block meta_tags %}
+            <meta http-equiv="X-UA-Compatible" content="IE=edge">
+            <meta charset="UTF-8">
+            <meta content='width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no' name='viewport'>
+        {% endblock %}
+
+        {% block stylesheets %}
+            {% for stylesheet in sonata_config.getOption('stylesheets', []) %}
+                <link rel="stylesheet" href="{{ asset(stylesheet) }}">
+            {% endfor %}
+        {% endblock %}
+
+        {% block javascripts %}
+            {% block sonata_javascript_config %}
+            {% endblock %}
+
+        {% block sonata_javascript_pool %}
+            {% for javascript in sonata_config.getOption('javascripts', []) %}
+            <script src="{{ asset(javascript) }}"></script>
+            {% endfor %}
+        {% endblock %}
+
+            {# TODO: Drop locale for moment calls when dropping support for `sonata-project/form-extensions` 1.x #}
+            {# localize moment #}
+            {% set localeForMoment = canonicalize_locale_for_moment() %}
+            {% if localeForMoment %}
+            <script src="{{ asset('bundles/sonataform/moment-locale/' ~ localeForMoment ~ '.js') }}"></script>
+            {% endif %}
+
+            {# localize select2 #}
+            {% if sonata_config.getOption('use_select2') %}
+            {% set localeForSelect2 = canonicalize_locale_for_select2() %}
+            {% if localeForSelect2 %}
+            <script src="{{ asset('bundles/sonataadmin/select2-locale/' ~ localeForSelect2 ~ '.js') }}"></script>
+            {% endif %}
+            {% endif %}
+        {% endblock %}
+    </head>
+    <body>
+        {% block body %}{% endblock %}
+    </body>
+</html>

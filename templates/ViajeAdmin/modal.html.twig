@@ -1,0 +1,52 @@
+{% include 'modal.html.twig' %}
+{% block sonata_admin %}
+    <div class="modal-body">
+        {{ form_start(form, {'attr': {'class': 'form-horizontal'}}) }}
+            <div class="row">
+                <div class="col-md-4">
+                    {{ form_row(form.monto) }}
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-4">
+                    {{ form_row(form.fecha) }}
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-4">
+                    {{ form_row(form.tipo) }}
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-4">
+                    {{ form_row(form.numeroComprobante) }}
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-4">
+                    {{ form_row(form.importeRecibido) }}
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-4">
+                    {{ form_row(form.pasajes) }}
+                </div>
+            </div>
+        {{ form_end(form) }}
+    </div>
+    <div class="modal-footer">
+        <button type="submit" class="btn btn-primary">Crear</button>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Inicializa Select2 (si lo usas)
+            $('select').select2({ theme: 'bootstrap-5' });
+
+            // Inicializa la colección de Sonata Admin (si es necesario)
+            if (typeof sonata !== 'undefined' && typeof sonata.admin !== 'undefined') {
+                sonata.admin.activateCollections();
+            }
+        });
+    </script>
+{% endblock %}

@@ -1,0 +1,238 @@
+{% extends '@SonataAdmin/standard_layout.html.twig' %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <link href="https://cdn.jsdelivr.net/gh/gitbrent/bootstrap4-toggle@3.6.1/css/bootstrap4-toggle.min.css" rel="stylesheet">
+    <style>
+        .asientos-row {
+            display: flex; /* Asegura que sea un contenedor flexbox */
+            flex-wrap: nowrap; /* Evita el ajuste de línea */
+        }
+
+        .col-sm-1 {
+            width: 4%;
+        }
+        .seat-button {
+            width: 25px;
+            height: 25px;
+            border: 1px solid #ccc;
+            margin: 5px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 14px;
+            cursor: pointer;
+            background-color: #eee; /* Color por defecto */
+        }
+
+        .seat-button-ocupado {
+            width: 25px;
+            height: 25px;
+            border: 1px solid #ccc;
+            margin: 5px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 14px;
+            cursor: pointer;
+            background-color: #0d6efd; /* Color por defecto */
+        }
+
+        .seat-button-disabled {
+            width: 25px;
+            height: 25px;
+            border: 1px solid #ccc;
+            margin: 5px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 14px;
+            cursor: pointer;
+            background-color: #ce8483; /* Color por defecto */
+        }
+
+        .seat-button.selected {
+            background-color: darkgreen; /* Color cuando está seleccionado */
+            color: white;
+        }
+
+        .pasillo-lateral {
+            width: 10px; /* Ajusta el ancho del pasillo lateral */
+            display: inline-block;
+        }
+
+        .pasillo-central {
+            width: 30px; /* Ajusta el ancho del pasillo central */
+            display: inline-block;
+        }
+    </style>
+{% endblock %}
+{% set css = {1:'seat-button-disabled', 0:'seat-button', 2:'seat-button-ocupado'} %}
+{% set e = {1:'disabled', 0:'', 2:'disabled'} %}
+{% set totalAsientos = 38 %}
+{% set asientosPorFila = 3 %}
+{% set filasPorSeccion = 10 %}
+{% block sonata_admin_content %}
+
+        <div class="col col-md-2 asientos-row">
+            <div class="box box-solid box-primary">
+                <div class="box-header  text-center">
+                    <div class="box-title">Planta Baja</div>
+                </div>
+                <div class="container">
+                    <div class="row flex asientos-row">
+                     {% for asientoNumero in asientos %}
+                        {% set fila = ((asientoNumero.asientoColectivo.asiento.numero - 1) / asientosPorFila)|round(0, 'ceil') %}
+                        {% set asientoEnFila = (asientoNumero.asientoColectivo.asiento.numero - 1) % asientosPorFila + 1 %}
+
+                        <div class="col">
+                            <button type="button"
+                                    class="{{ css[asientoNumero.estado] }}"
+                                    data-asiento-id="{{ asientoNumero.asientoColectivo.asiento.id }}"
+                                    data-pasaje-id="{{ asientoNumero.id }}"
+                                    data-costo="{{ asientoNumero.costo }}"
+                                    onclick="toggleAsiento(this)"
+                                    {{ e[asientoNumero.estado] }}>
+                                {{ asientoNumero.asientoColectivo.asiento.numero }}
+                            </button>
+                        </div>
+                        {# Espacio después de cada fila de asientos #}
+                        {% if asientoEnFila == asientosPorFila %}
+                            </div>
+                            {% if asientoNumero.asientoColectivo.asiento.numero == 12 %}
+                            {% set asientosPorFila = 4 %}
+                            </div>
+                            </div>
+                            </div>
+                            <div class="col col-md-2 asientos-row">
+                                <div class="box box-solid box-primary">
+                                    <div class="box-header  text-center">
+                                        <div class="box-title">Planta Alta</div>
+                                    </div>
+                                    <div class="container">
+                                        <div class="row flex asientos-row">
+                            {% else %}
+                                <div class="row flex asientos-row">
+                            {% endif%}
+                        {% endif %}
+
+                        {% if asientoEnFila == 2 %}
+                            <div class="col-md-1"></div>
+                        {% endif %}
+
+                        {# Pasillo cada 'filasPorSeccion' filas #}
+                        {% if asientoNumero.asientoColectivo.asiento.numero % (asientosPorFila * filasPorSeccion) == 0 %}
+                            <div class="pasillo"></div><br>
+                        {% endif %}
+                    {% endfor %}
+                    </div>
+                </div>
+        </div>
+        </div>
+
+                <div class="col col-md-2">
+                    <div class="box box-solid box-primary">
+                        <div class="box-header  text-center">
+                            <div class="box-title">Asientos seleccionados:</div>
+                        </div>
+                        <div id="selectedAsientos">
+                            Ningún asiento seleccionado.
+                        </div>
+                    </div>
+                </div>
+
+    <div class="modal fade" id="modalpago" tabindex="-1" role="dialog" aria-labelledby="modal" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="createModalLabel"><i class="ti-marker-alt m-r-10"></i></h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body" id="pago"></div>
+            </div>
+        </div>
+    </div>
+    {{ parent() }}
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script src="https://cdn.jsdelivr.net/gh/gitbrent/bootstrap4-toggle@3.6.1/js/bootstrap4-toggle.min.js"></script>
+
+    <script type="text/javascript">
+        let selectedAsientos = []; // Array para guardar los IDs de los asientos seleccionados
+
+        function toggleAsiento(button) {
+            const asientoId = button.dataset.asientoId;
+            const pasajeId = button.dataset.pasajeId;
+            const asientoCosto = button.dataset.costo;
+
+            if (button.classList.contains('ocupado')) {
+                return; // No hacer nada si el asiento está ocupado
+            }
+
+            button.classList.toggle('selected');
+
+            const isSelected = button.classList.contains('selected');
+
+            if (isSelected) {
+                selectedAsientos.push({ id: asientoId, costo: asientoCosto, pid: pasajeId }); // Agrega el ID al array
+            } else {
+                selectedAsientos = selectedAsientos.filter(item => item.id !== asientoId); // Filtra por ID
+            }
+            updateSelectedAsientosDiv();
+        }
+
+
+        function updateSelectedAsientosDiv() {
+            let total = 0;
+            if (selectedAsientos.length === 0) {
+                $('#selectedAsientos').html('Ningún asiento seleccionado.');
+            } else {
+                let totalCosto = 0;
+                selectedAsientos.forEach(asiento => {
+                    totalCosto += parseFloat(asiento.costo); // Convierte a número antes de sumar
+                });
+
+                // Construye la tabla HTML
+                let tableHTML = '<table class="table table-bordered">';
+                tableHTML += '<thead><tr><th>Asiento</th><th>Costo</th></tr></thead>';
+                tableHTML += '<tbody>';
+
+                selectedAsientos.forEach(asiento => {
+                    tableHTML += `<tr><td>${asiento.id}</td><td>${asiento.costo}</td></tr>`;
+                });
+
+                // Agrega la fila del total
+                tableHTML += `<tr><td><b>Total</b></td><td><b>$${totalCosto.toFixed(2)}</b></td></tr>`; // Formatea a 2 decimales
+
+                tableHTML += `<tr><td colspan="2"><button id="enviarAsientos" data-toggle="modal" data-target="#modalpago"  class="btn btn-primary open-modal-form">Pagar</button></td></tr>`;
+                tableHTML += '</tbody></table>';
+
+
+                $('#selectedAsientos').html(tableHTML);
+
+                $('#enviarAsientos').click(function() {
+                    // Realiza la petición AJAX
+                    $.ajax({
+                        url: '{{ path('admin_app_pago_asientos') }}',
+                        method: 'POST',
+                        contentType: "application/json",
+                        dataType: "html",
+                        data: JSON.stringify(selectedAsientos),
+                        success: function (data) {
+                            $('#pago').html(data);
+                            console.log(data);
+                        },
+                        error: function(xhr, status, error) {
+                            console.error('Error al enviar los asientos:', error);
+                            alert('Error al enviar los asientos.  Consulta la consola para más detalles.');
+                        }
+                    });
+                });
+            }
+        }
+    </script>
+{% endblock %}
