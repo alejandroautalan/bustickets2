@@ -24,9 +24,12 @@ class Pasaje
     #[ORM\JoinColumn(nullable: false)]
     private ?Viaje $viaje = null;
 
-    #[ORM\ManyToOne(inversedBy: 'pasajes')]
-    #[ORM\JoinColumn(nullable: false)]
-    private ?AsientoColectivo $asientoColectivo = null;
+    //#[ORM\ManyToOne(inversedBy: 'pasajes')]
+    //#[ORM\JoinColumn(nullable: false)]
+    //private ?AsientoColectivo $asientoColectivo = null;
+    
+    #[ORM\ManyToOne()]
+    private ?Asiento $asiento = null;
 
     #[ORM\ManyToOne(inversedBy: 'pasajes')]
     #[ORM\JoinColumn(nullable: false)]
@@ -89,17 +92,29 @@ class Pasaje
         return $this;
     }
 
-    public function getAsientoColectivo(): ?AsientoColectivo
+    public function getAsiento(): ?Asiento
     {
-        return $this->asientoColectivo;
+        return $this->asiento;
     }
 
-    public function setAsientoColectivo(?AsientoColectivo $asientoColectivo): static
+    public function setAsiento(?Asiento $asiento): static
     {
-        $this->asientoColectivo = $asientoColectivo;
+        $this->asiento = $asiento;
 
         return $this;
     }
+    
+//    public function getAsientoColectivo(): ?AsientoColectivo
+//    {
+//        return $this->asientoColectivo;
+//    }
+//
+//    public function setAsientoColectivo(?AsientoColectivo $asientoColectivo): static
+//    {
+//        $this->asientoColectivo = $asientoColectivo;
+//
+//        return $this;
+//    }
 
     public function getPago(): ?Pago
     {
