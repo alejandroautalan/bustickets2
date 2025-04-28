@@ -37,9 +37,16 @@ class Reserva
     #[ORM\ManyToOne]
     private ?Parada $destino = null;
 
+    /**
+     * @var Collection<int, Pago>
+     */
+    #[ORM\OneToMany(targetEntity: Pago::class, mappedBy: 'reserva')]
+    private Collection $pagos;
+
     public function __construct()
     {
         $this->boletos = new ArrayCollection();
+        $this->pagos = new ArrayCollection();
     }
 
     public function __toString()
@@ -130,6 +137,36 @@ class Reserva
     public function setDestino(?Parada $destino): static
     {
         $this->destino = $destino;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Pago>
+     */
+    public function getPagos(): Collection
+    {
+        return $this->pagos;
+    }
+
+    public function addPago(Pago $pago): static
+    {
+        if (!$this->pagos->contains($pago)) {
+            $this->pagos->add($pago);
+            $pago->setReserva($this);
+        }
+
+        return $this;
+    }
+
+    public function removePago(Pago $pago): static
+    {
+        if ($this->pagos->removeElement($pago)) {
+            // set the owning side to null (unless already changed)
+            if ($pago->getReserva() === $this) {
+                $pago->setReserva(null);
+            }
+        }
 
         return $this;
     }

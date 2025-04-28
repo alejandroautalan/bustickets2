@@ -45,6 +45,9 @@ class Pago
     #[ORM\Column(type: Types::DECIMAL, precision: 10, scale: 0)]
     private ?string $importe_recibido = null;
 
+    #[ORM\ManyToOne(inversedBy: 'pagos')]
+    private ?Reserva $reserva = null;
+
     public function __construct()
     {
         $this->pasajes = new ArrayCollection();
@@ -171,6 +174,18 @@ class Pago
                 $pasaje->setPago(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getReserva(): ?Reserva
+    {
+        return $this->reserva;
+    }
+
+    public function setReserva(?Reserva $reserva): static
+    {
+        $this->reserva = $reserva;
 
         return $this;
     }
