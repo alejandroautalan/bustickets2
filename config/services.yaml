@@ -24,10 +24,12 @@ services:
     # add more service definitions when explicit configuration is needed
     # please note that last definitions always *replace* previous ones
 
-    admin.colectivo:
-        class: App\Admin\ColectivoAdmin
-        tags:
-            - { name: sonata.admin, model_class: App\Entity\Colectivo, controller: App\Controller\ColectivoAdminController, manager_type: orm, group: admin, label: Colectivo }
+    # admin.colectivo:
+    #     class: App\Admin\ColectivoAdmin
+    #     tags:
+    #         - { name: sonata.admin, model_class: App\Entity\Colectivo, controller: App\Controller\ColectivoAdminController, manager_type: orm, group: admin, label: Colectivo }
+    #     calls:
+    #       - [addChild, ['@admin.asiento', 'colectivo']]
 
     admin.modelo:
         class: App\Admin\ModeloAdmin
@@ -39,27 +41,27 @@ services:
         tags:
             - { name: sonata.admin, model_class: App\Entity\Marca, controller: App\Controller\MarcaAdminController, manager_type: orm, group: admin, label: Marca }
 
-    admin.asiento_colectivo:
-        class: App\Admin\AsientoColectivoAdmin
-        tags:
-            - { name: sonata.admin, model_class: App\Entity\AsientoColectivo, controller: App\Controller\AsientoColectivoAdminController, manager_type: orm, group: admin, label: AsientoColectivo }
+    # admin.asiento_colectivo:
+    #     class: App\Admin\AsientoColectivoAdmin
+    #     tags:
+    #         - { name: sonata.admin, model_class: App\Entity\AsientoColectivo, controller: App\Controller\AsientoColectivoAdminController, manager_type: orm, group: admin, label: AsientoColectivo }
+    #
+    # admin.asiento:
+    #     class: App\Admin\AsientoAdmin
+    #     tags:
+    #         - { name: sonata.admin, model_class: App\Entity\Asiento, controller: App\Controller\AsientoAdminController, manager_type: orm, group: admin, label: Asiento }
 
-    admin.asiento:
-        class: App\Admin\AsientoAdmin
-        tags:
-            - { name: sonata.admin, model_class: App\Entity\Asiento, controller: App\Controller\AsientoAdminController, manager_type: orm, group: admin, label: Asiento }
+    # admin.pasaje:
+    #     class: App\Admin\PasajeAdmin
+    #     tags:
+    #         - { name: sonata.admin, model_class: App\Entity\Pasaje, controller: App\Controller\PasajeAdminController, manager_type: orm, group: admin, label: Pasaje }
 
-    admin.pasaje:
-        class: App\Admin\PasajeAdmin
-        tags:
-            - { name: sonata.admin, model_class: App\Entity\Pasaje, controller: App\Controller\PasajeAdminController, manager_type: orm, group: admin, label: Pasaje }
-
-    admin.viaje:
-        class: App\Admin\ViajeAdmin
-        tags:
-            - { name: sonata.admin, model_class: App\Entity\Viaje, controller: App\Controller\ViajeAdminController, manager_type: orm, group: admin, label: Viaje }
-        calls:
-            - [ addChild, [ "@admin.pasaje" ] ]
+    # admin.viaje:
+    #     class: App\Admin\ViajeAdmin
+    #     tags:
+    #         - { name: sonata.admin, model_class: App\Entity\Viaje, controller: App\Controller\ViajeAdminController, manager_type: orm, group: admin, label: Viaje }
+    #     calls:
+    #         - [ addChild, [ "@admin.pasaje", 'viaje' ] ]
 
     admin.pago:
         class: App\Admin\PagoAdmin
