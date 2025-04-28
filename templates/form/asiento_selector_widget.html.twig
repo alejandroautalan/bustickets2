@@ -1,0 +1,66 @@
+{% block asiento_selector_widget %}
+    {% set attr = attr|merge({'class': attr.class|default('') ~ ' form-control'}) %}
+    {% set loaderid = [form.vars.id, '_loader'] | join('') %}
+    {{ block('hidden_widget') }}
+    <img src='{{ asset('bundles/applicationtools/images/ajax-loader.gif' ) }}' id='{{ loaderid }}' style='display: none;'>
+    <script type="text/javascript">
+        jQuery(function(){
+            ;
+        });
+    </script>
+
+{% set transporte=form.vars.transporte %}
+{% set asientos_libres=form.vars.asientos_libres %}
+{% set rows=transporte.grillaRows - 1 %}
+{% set cols=transporte.grillaCols - 1 %}
+{% set plantas=transporte.plantas - 1 %}
+
+<div class="row">
+{% for planta in 0 .. plantas %}
+<div class="col-md-2">
+    <table class="table table-bordered">
+    <theader>
+        <th colspan="{{ cols + 1 }}" style="text-align: center;">
+            Frontal
+        </th>
+        {% if plantas > 0 %}
+        <th colspan="{{ cols + 1 }}" style="text-align: center;">
+        {{ transporte.plantaLabel(planta) }}
+        </th>
+        {% endif %}
+    </theader>
+    <tbody style="text-align: center;">
+    {% for row in 0 .. rows %}
+    <tr>
+        {% for col in 0 .. cols %}
+        <td>
+        {% set asiento=transporte.getAsientoEnGrilla(planta, row, col) %}
+        {% if asiento %}
+            {% block celda_asiento %}
+                {% if asiento.id in asientos_libres %}
+                    {% set btn_class='btn btn-success btn-lg' %}
+                    {% if asiento.id in asientos_reserva %}
+                        {% set btn_class='btn btn-info btn-lg' %}
+                    {% endif %}
+                    <button class="{{ btn_class }}" type="submit" name="toggle_asiento" value="{{ asiento.id }}">{{ asiento.numero }}</button>
+                {% else %}
+                    {{ asiento.numero }}
+                {% endif %}
+            {% endblock %}
+        {% else %}
+            {% block celda_vacia %}
+                &nbsp;
+            {% endblock %}
+        {% endif %}
+        </td>
+        {% endfor %}
+    </tr>
+    {% endfor %}
+    </tbody>
+    </table>
+</div>
+{% endfor %}
+</div>
+
+{% endblock %}
+{# kate: tab-width 2 #}

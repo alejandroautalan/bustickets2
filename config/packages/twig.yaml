@@ -1,6 +1,11 @@
 twig:
     file_name_pattern: '*.twig'
-    form_themes: ['bootstrap_5_layout.html.twig']
+    form_themes: [
+        'bootstrap_5_layout.html.twig',
+        'form/dependant_entity_widget.html.twig',
+        'form/asiento_selector_widget.html.twig'
+        ]
+
 
 when@test:
     twig:

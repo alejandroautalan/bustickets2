@@ -1,0 +1,11 @@
+{% extends '@SonataAdmin/CRUD/base_edit.html.twig' %}
+
+{% block sonata_form_actions %}
+  {% if object.showFinalizeBtn %}
+    <button type="submit" class="btn btn-warning" name="btn_finalize">
+        <i class="fa fa-save"></i> Finalizar
+    </button>
+  {% endif %}
+
+  {{ parent() }}
+{% endblock %}
