@@ -16,6 +16,10 @@ return [
         'path' => './assets/app.js',
         'entrypoint' => true,
     ],
+    'site' => [
+        'path' => './assets/site.js',
+        'entrypoint' => true,
+    ],
     '@hotwired/stimulus' => [
         'version' => '3.2.2',
     ],
@@ -24,5 +28,12 @@ return [
     ],
     '@hotwired/turbo' => [
         'version' => '7.3.0',
+    ],
+    'purecss' => [
+        'version' => '3.0.0',
+    ],
+    'purecss/build/pure-min.min.css' => [
+        'version' => '3.0.0',
+        'type' => 'css',
     ],
 ];
