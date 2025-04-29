@@ -9,3 +9,5 @@ sonata_block:
 sonata_admin:
   title: 'BusTickets'
   title_logo: images/apple-touch-icon.png
+
+  show_mosaic_button:   false
