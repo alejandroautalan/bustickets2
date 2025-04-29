@@ -30,7 +30,7 @@ CREATE TABLE `boleto` (
   `viaje_fecha` date DEFAULT NULL,
   `viaje_hora` time DEFAULT NULL,
   `servicio_id` int(10) unsigned DEFAULT NULL,
-  `precio` float DEFAULT NULL,
+  `costo` int(11) DEFAULT NULL,
   `pasajero_id` int(10) unsigned DEFAULT NULL,
   `reserva_id` int(10) unsigned DEFAULT NULL,
   `asiento_id` int(10) unsigned DEFAULT NULL,
@@ -48,7 +48,7 @@ CREATE TABLE `boleto` (
   CONSTRAINT `boleto_pasajero_FK` FOREIGN KEY (`pasajero_id`) REFERENCES `pasajero` (`id`),
   CONSTRAINT `boleto_reserva_FK` FOREIGN KEY (`reserva_id`) REFERENCES `reserva` (`id`),
   CONSTRAINT `boleto_servicio_FK` FOREIGN KEY (`servicio_id`) REFERENCES `servicio` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=12 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -60,7 +60,8 @@ LOCK TABLES `boleto` WRITE;
 set autocommit=0;
 INSERT INTO `boleto` VALUES
 (5,1,2,NULL,NULL,1,300,1,1,4,1),
-(8,1,2,NULL,NULL,1,300,2,3,3,1);
+(8,1,2,NULL,NULL,1,300,2,3,3,1),
+(11,1,2,NULL,NULL,1,500000,3,4,6,1);
 /*!40000 ALTER TABLE `boleto` ENABLE KEYS */;
 UNLOCK TABLES;
 commit;
@@ -140,7 +141,7 @@ LOCK TABLES `fos_user_user` WRITE;
 /*!40000 ALTER TABLE `fos_user_user` DISABLE KEYS */;
 set autocommit=0;
 INSERT INTO `fos_user_user` VALUES
-(23,'admin','admin','admin@admin.com','admin@admin.com',1,NULL,'$2y$13$emjYOen20Lq5K/GGO05Y0efWwIePe//K3GuN08MzlZ/OqjoQPwg.y','2025-04-28 00:41:39',NULL,NULL,'a:1:{i:0;s:16:\"ROLE_SUPER_ADMIN\";}','2019-10-01 15:43:56','2025-04-28 00:41:39'),
+(23,'admin','admin','admin@admin.com','admin@admin.com',1,NULL,'$2y$13$emjYOen20Lq5K/GGO05Y0efWwIePe//K3GuN08MzlZ/OqjoQPwg.y','2025-04-29 04:31:56',NULL,NULL,'a:1:{i:0;s:16:\"ROLE_SUPER_ADMIN\";}','2019-10-01 15:43:56','2025-04-29 04:31:56'),
 (24,'root','root','root@admin.com','root@admin.com',1,NULL,'$2y$13$bi.TFLHyaNiepV9Rb9dfHu4L03Pd5wLuJkE1dh1Wxz8cTUN9QaknS','2025-03-26 10:04:01',NULL,NULL,'a:1:{i:0;s:16:\"ROLE_SUPER_ADMIN\";}','2024-12-26 12:59:20','2025-03-26 10:04:01');
 /*!40000 ALTER TABLE `fos_user_user` ENABLE KEYS */;
 UNLOCK TABLES;
@@ -170,7 +171,7 @@ LOCK TABLES `marca` WRITE;
 set autocommit=0;
 INSERT INTO `marca` VALUES
 (2,'Ford',NULL),
-(3,'Fiat',NULL);
+(3,'Fiat','bbb');
 /*!40000 ALTER TABLE `marca` ENABLE KEYS */;
 UNLOCK TABLES;
 commit;
@@ -218,15 +219,18 @@ DROP TABLE IF EXISTS `pago`;
 /*!40101 SET character_set_client = utf8mb4 */;
 CREATE TABLE `pago` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
-  `monto` decimal(10,0) NOT NULL,
+  `monto` int(11) NOT NULL,
   `fecha` date NOT NULL,
   `tipo` int(11) NOT NULL,
   `observacion` longtext DEFAULT NULL,
   `usuario` int(11) DEFAULT NULL,
   `numero_comprobante` varchar(255) DEFAULT NULL,
-  `importe_recibido` decimal(10,0) DEFAULT NULL,
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+  `importe_recibido` int(11) DEFAULT NULL,
+  `reserva_id` int(10) unsigned DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `pago_reserva_FK` (`reserva_id`),
+  CONSTRAINT `pago_reserva_FK` FOREIGN KEY (`reserva_id`) REFERENCES `reserva` (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -236,6 +240,8 @@ CREATE TABLE `pago` (
 LOCK TABLES `pago` WRITE;
 /*!40000 ALTER TABLE `pago` DISABLE KEYS */;
 set autocommit=0;
+INSERT INTO `pago` VALUES
+(1,500000,'2025-04-29',1,NULL,NULL,NULL,500000,4);
 /*!40000 ALTER TABLE `pago` ENABLE KEYS */;
 UNLOCK TABLES;
 commit;
@@ -296,7 +302,7 @@ CREATE TABLE `pasajero` (
   `email` varchar(128) DEFAULT NULL,
   `telefono` varchar(32) DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -308,7 +314,8 @@ LOCK TABLES `pasajero` WRITE;
 set autocommit=0;
 INSERT INTO `pasajero` VALUES
 (1,'Pepe','Sanchez',22333444,NULL,NULL,NULL,NULL),
-(2,'Tomas','Anderson',77666555,NULL,NULL,NULL,NULL);
+(2,'Tomas','Anderson',77666555,NULL,NULL,NULL,NULL),
+(3,'Tomas Alba','Edison',23554888,NULL,NULL,NULL,NULL);
 /*!40000 ALTER TABLE `pasajero` ENABLE KEYS */;
 UNLOCK TABLES;
 commit;
@@ -355,7 +362,7 @@ CREATE TABLE `reserva` (
   `destino_id` int(10) unsigned DEFAULT NULL,
   `servicio_id` int(10) unsigned DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -367,7 +374,8 @@ LOCK TABLES `reserva` WRITE;
 set autocommit=0;
 INSERT INTO `reserva` VALUES
 (1,2,1,2,1),
-(3,2,1,2,1);
+(3,2,1,2,1),
+(4,2,1,2,1);
 /*!40000 ALTER TABLE `reserva` ENABLE KEYS */;
 UNLOCK TABLES;
 commit;
@@ -651,4 +659,4 @@ commit;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*M!100616 SET NOTE_VERBOSITY=@OLD_NOTE_VERBOSITY */;
 
--- Dump completed on 2025-04-28  2:53:09
+-- Dump completed on 2025-04-29  3:35:30
