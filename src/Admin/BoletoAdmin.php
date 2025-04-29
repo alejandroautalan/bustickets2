@@ -10,6 +10,7 @@ use Sonata\AdminBundle\Datagrid\ListMapper;
 use Sonata\AdminBundle\Form\FormMapper;
 use Sonata\AdminBundle\Show\ShowMapper;
 use Sonata\AdminBundle\Form\Type\ModelListType;
+use Symfony\Component\Form\Extension\Core\Type\MoneyType;
 
 
 final class BoletoAdmin extends BaseAdmin
@@ -20,7 +21,7 @@ final class BoletoAdmin extends BaseAdmin
             ->add('id')
             ->add('viaje_fecha')
             ->add('viaje_hora')
-            ->add('precio')
+            ->add('costo')
         ;
     }
 
@@ -31,7 +32,7 @@ final class BoletoAdmin extends BaseAdmin
             ->add('viaje_fecha')
             ->add('viaje_hora')
             ->add('asiento.numero')
-            ->add('precio')
+            ->add('costo')
             ->add(ListMapper::NAME_ACTIONS, null, [
                 'actions' => [
                     'show' => [],
@@ -50,7 +51,10 @@ final class BoletoAdmin extends BaseAdmin
             #->add('viaje_hora')
             ->add('asiento', null, ['disabled' => true])
             ->add('pasajero', ModelListType::class)
-            ->add('precio')
+            ->add('costo', MoneyType::class, [
+                'divisor' => 100,
+                'currency' => 'ARS',
+            ])
         ;
     }
 
@@ -61,7 +65,7 @@ final class BoletoAdmin extends BaseAdmin
             ->add('viaje_fecha')
             ->add('viaje_hora')
             ->add('asiento.numero')
-            ->add('precio')
+            ->add('costo')
         ;
     }
 }

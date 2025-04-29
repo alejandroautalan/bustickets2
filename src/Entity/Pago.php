@@ -2,8 +2,6 @@
 
 namespace App\Entity;
 
-use App\Admin\PasajeAdmin;
-use App\Controller\PasajeAdminController;
 use App\Repository\PagoRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -13,13 +11,23 @@ use Doctrine\ORM\Mapping as ORM;
 #[ORM\Entity(repositoryClass: PagoRepository::class)]
 class Pago
 {
+    public const PAYMENT_TYPE_UNSPECIFIED = 0;
+    public const PAYMENT_TYPE_CASH = 1;
+    public const PAYMENT_TYPE_TRANSFER = 2;
+
+    public static $tipo_pagos = [
+        self::PAYMENT_TYPE_UNSPECIFIED => 'No especificado',
+        self::PAYMENT_TYPE_CASH => 'Efectivo',
+        self::PAYMENT_TYPE_TRANSFER => 'Transferencia',
+    ];
+
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
     private ?int $id = null;
 
-    #[ORM\Column(type: Types::DECIMAL, precision: 10, scale: 0)]
-    private ?string $monto = null;
+    #[ORM\Column]
+    private ?int $monto = null;
 
     #[ORM\Column(type: Types::DATE_MUTABLE)]
     private ?\DateTimeInterface $fecha = null;
@@ -33,24 +41,17 @@ class Pago
     #[ORM\Column(nullable: true)]
     private ?int $usuario = null;
 
-    /**
-     * @var Collection<int, Pasaje>
-     */
-    #[ORM\OneToMany(targetEntity: Pasaje::class, mappedBy: 'pago', orphanRemoval: true, cascade: ['persist'])]
-    private Collection $pasajes;
-
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $numero_comprobante = null;
 
-    #[ORM\Column(type: Types::DECIMAL, precision: 10, scale: 0)]
-    private ?string $importe_recibido = null;
+    #[ORM\Column]
+    private ?int $importe_recibido = null;
 
     #[ORM\ManyToOne(inversedBy: 'pagos')]
     private ?Reserva $reserva = null;
 
     public function __construct()
     {
-        $this->pasajes = new ArrayCollection();
         $this->fecha = new \DateTime();
     }
 
@@ -59,17 +60,21 @@ class Pago
         return (string)$this->id;
     }
 
+    public static function getTipoPagoChoices() {
+        return array_flip(self::$tipo_pagos);
+    }
+
     public function getId(): ?int
     {
         return $this->id;
     }
 
-    public function getMonto(): ?string
+    public function getMonto(): ?int
     {
         return $this->monto;
     }
 
-    public function setMonto(string $monto): static
+    public function setMonto(int $monto): static
     {
         $this->monto = $monto;
 
@@ -136,44 +141,14 @@ class Pago
         return $this;
     }
 
-    public function getImporteRecibido(): ?string
+    public function getImporteRecibido(): ?int
     {
         return $this->importe_recibido;
     }
 
-    public function setImporteRecibido(string $importe_recibido): static
+    public function setImporteRecibido(int $importe_recibido): static
     {
         $this->importe_recibido = $importe_recibido;
-
-        return $this;
-    }
-
-    /**
-     * @return Collection<int, Pasaje>
-     */
-    public function getPasajes(): Collection
-    {
-        return $this->pasajes;
-    }
-
-    public function addPasaje(Pasaje $pasaje): static
-    {
-        if (!$this->pasajes->contains($pasaje)) {
-            $this->pasajes->add($pasaje);
-            $pasaje->setPago($this);
-        }
-
-        return $this;
-    }
-
-    public function removePasaje(Pasaje $pasaje): static
-    {
-        if ($this->pasajes->removeElement($pasaje)) {
-            // set the owning side to null (unless already changed)
-            if ($pasaje->getPago() === $this) {
-                $pasaje->setPago(null);
-            }
-        }
 
         return $this;
     }
@@ -189,6 +164,4 @@ class Pago
 
         return $this;
     }
-    
-   
 }

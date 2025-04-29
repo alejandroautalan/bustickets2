@@ -17,6 +17,7 @@ use App\Form\Type\AsientoSelectorType;
 use App\Entity\Reserva;
 use App\Entity\Servicio;
 use App\Entity\Boleto;
+use App\Entity\Pago;
 use App\Entity\TransporteAsiento;
 
 
@@ -70,9 +71,12 @@ final class ReservaAdmin extends BaseAdmin
         $asientos_libres = $reserva_repo->get_asientos_libres($servicio->getId());
         $asientos_reserva = $reserva_repo->get_asientos_reserva($reserva->getId());
 
+        $estado = $reserva->getEstado();
         $form
         #->add('id')
         #->add('estado')
+        ->ifTrue($estado == Reserva::STATE_DRAFT)
+        ->with('Reserva - Selección Asientos')
         ->add('origen', null, ['disabled' => true,])
         ->add('destino', null, ['disabled' => true,])
         ->add('servicio', null, ['disabled' => true,])
@@ -96,6 +100,20 @@ final class ReservaAdmin extends BaseAdmin
              #'inline' => 'table',
              'label' => false,
             ])
+       ->end()
+       ->ifEnd()
+       ->ifTrue($estado == Reserva::STATE_PENDING_PAYMENT)
+       ->with('Reserva - Pago')
+       ->add('pagos', CollectionType::class, [
+           'label' => 'Pago',
+           'btn_add' => false,
+           'type_options' => [
+               'label' => false,
+               'btn_add' => false,
+               'delete' => false,],
+        ])
+       ->ifEnd()
+
         ;
     }
 
@@ -114,12 +132,29 @@ final class ReservaAdmin extends BaseAdmin
         if(null !== $finalize) {
             $this->finalizeReserva($object);
         }
+
+        $reserva = $object;
+        $payment = $request->get('btn_payment', null);
+        if(null !== $payment) {
+            $entityManager = $this->getEntityManager(Reserva::class);
+            $reserva->setEstado(Reserva::STATE_PENDING_PAYMENT);
+            $entityManager->persist($reserva);
+            $entityManager->flush();
+        }
+
+        $payment = $request->get('btn_boletos', null);
+        if(null !== $payment) {
+            $entityManager = $this->getEntityManager(Reserva::class);
+            $reserva->setEstado(Reserva::STATE_DRAFT);
+            $entityManager->persist($reserva);
+            $entityManager->flush();
+        }
     }
 
     protected function finalizeReserva($object)
     {
         $entityManager = $this->getEntityManager(Reserva::class);
-        $object->setEstado(Reserva::STATE_PAID_FINISHED);
+        $object->setEstado(Reserva::STATE_COMPLETED);
         $entityManager->persist($object);
         foreach($object->getBoletos() as $b) {
             $b->setEstado(Boleto::STATE_RESERVED);
@@ -128,17 +163,48 @@ final class ReservaAdmin extends BaseAdmin
         $entityManager->flush();
     }
 
-    protected function preUpdate(object $object): void
+    protected function preUpdate(object $reserva): void
     {
         $request = $this->getRequest();
         $toggle_asiento = $request->get('toggle_asiento', null);
         if(null !== $toggle_asiento) {
-            $this->addOrRemoveAsiento($object, $toggle_asiento);
+            $this->addOrRemoveAsiento($reserva, $toggle_asiento);
+            $this->addOrRemovePago($reserva);
+        }
+
+        $payment_clicked = $request->get('btn_payment', null);
+        if(null !== $payment_clicked) {
+            $reserva->recalcularPago();
+        }
+    }
+
+    protected function addOrRemovePago(Reserva $reserva): void
+    {
+        // Esto se ejecuta ante de guardar el formulario
+
+        $has_boletos = $reserva->getBoletos()->count() > 0;
+        $has_pagos = $reserva->getPagos()->count() > 0;
+        if($has_boletos && !$has_pagos) {
+            $entityManager = $this->getEntityManager(Pago::class);
+            $pago = new Pago();
+            $pago->setTipo(Pago::PAYMENT_TYPE_UNSPECIFIED);
+            $total = $reserva->calcularMontoTotal();
+            $pago->setMonto($total);
+            $reserva->addPago($pago);
+            $entityManager->persist($pago);
+        }
+        if($has_pagos && !$has_boletos) {
+            $entityManager = $this->getEntityManager(Pago::class);
+            foreach($reserva->getPagos() as $pago) {
+                $reserva->removePago($pago);
+                $entityManager->remove($pago);
+            }
         }
     }
 
     protected function addOrRemoveAsiento($object, $asiento_id)
     {
+        // Esto se ejecuta ante de guardar el formulario
         $asientoRepo = $this->getEntityRepository(TransporteAsiento::class);
 
         $reserva = $object;

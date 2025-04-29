@@ -38,9 +38,6 @@ class Boleto
     #[ORM\ManyToOne]
     private ?Pasajero $pasajero = null;
 
-    #[ORM\Column]
-    private ?float $precio = null;
-
     #[ORM\ManyToOne(inversedBy: 'boletos')]
     private ?Reserva $reserva = null;
 
@@ -50,6 +47,9 @@ class Boleto
 
     #[ORM\Column(nullable: true)]
     private ?int $estado = null;
+
+    #[ORM\Column(nullable: true)]
+    private ?int $costo = null;
 
     public function __toString()
     {
@@ -133,18 +133,6 @@ class Boleto
         return $this;
     }
 
-    public function getPrecio(): ?float
-    {
-        return $this->precio;
-    }
-
-    public function setPrecio(float $precio): static
-    {
-        $this->precio = $precio;
-
-        return $this;
-    }
-
     public function getReserva(): ?Reserva
     {
         return $this->reserva;
@@ -177,6 +165,18 @@ class Boleto
     public function setEstado(?int $estado): static
     {
         $this->estado = $estado;
+
+        return $this;
+    }
+
+    public function getCosto(): ?int
+    {
+        return $this->costo;
+    }
+
+    public function setCosto(?int $costo): static
+    {
+        $this->costo = $costo;
 
         return $this;
     }

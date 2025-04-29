@@ -1,0 +1,17 @@
+App\Entity\Marca:
+    properties:
+        descripcion:
+            - NotBlank: ~
+
+App\Entity\Boleto:
+#    constraints:
+#        - App\Validator\ConfirmedPaymentReceipt: ~
+    properties:
+        costo:
+            - GreaterThan: 500
+
+App\Entity\Reserva:
+    constraints:
+        - Sonata\Form\Validator\Constraints\InlineConstraint:
+            service: app.inlinevalidator.reserva
+            method: validate

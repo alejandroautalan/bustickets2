@@ -11,8 +11,8 @@ use Doctrine\ORM\Mapping as ORM;
 class Reserva
 {
     const STATE_DRAFT = 0;
-    const STATE_PAID_PENDING = 1;
-    const STATE_PAID_FINISHED = 2;
+    const STATE_PENDING_PAYMENT = 1;
+    const STATE_COMPLETED = 2;
 
     #[ORM\Id]
     #[ORM\GeneratedValue]
@@ -54,8 +54,34 @@ class Reserva
         return 'Reserva:'.$this->getId();
     }
 
-    public function showFinalizeBtn() {
+    public function showBoletosBtn() {
+        return $this->estado == self::STATE_PENDING_PAYMENT;
+    }
+
+    public function showPaymentBtn() {
         return $this->estado == self::STATE_DRAFT;
+    }
+
+    public function showFinalizeBtn() {
+        return $this->estado == self::STATE_PENDING_PAYMENT;
+    }
+
+    public function recalcularPago() {
+        $has_pago = $this->pagos->count() == 1;
+        if($has_pago) {
+            $total = $this->calcularMontoTotal();
+            $pago = $this->pagos[0];
+            $pago->setMonto($total);
+        }
+    }
+
+    public function calcularMontoTotal()
+    {
+        $total = 0;
+        foreach($this->boletos as $boleto) {
+            $total = $total + $boleto->getCosto();
+        }
+        return $total;
     }
 
     public function getId(): ?int

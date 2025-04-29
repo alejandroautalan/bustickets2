@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Admin;
 
-use App\Entity\Pasaje;
 use Sonata\AdminBundle\Admin\AbstractAdmin;
 use Sonata\AdminBundle\Datagrid\DatagridMapper;
 use Sonata\AdminBundle\Datagrid\ListMapper;
@@ -16,18 +15,21 @@ use Sonata\Form\Type\CollectionType;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\HiddenType;
+use Symfony\Component\Form\Extension\Core\Type\MoneyType;
+
+use App\Entity\Pago;
 
 
 final class PagoAdmin extends AbstractAdmin
 {
-    public function configureRoutes(RouteCollectionInterface $collection): void
-    {
-        $collection->add('asientos', 'asientos');
-        $collection->add('procesar', 'procesar');
-        $collection->add('ocuparAsiento', 'ocuparAsiento');
-        $collection->add('setPasaje', 'setPasaje');
-
-    }
+    // public function configureRoutes(RouteCollectionInterface $collection): void
+    // {
+    //     $collection->add('asientos', 'asientos');
+    //     $collection->add('procesar', 'procesar');
+    //     $collection->add('ocuparAsiento', 'ocuparAsiento');
+    //     $collection->add('setPasaje', 'setPasaje');
+    //
+    // }
 
     protected function configureDatagridFilters(DatagridMapper $filter): void
     {
@@ -63,27 +65,20 @@ final class PagoAdmin extends AbstractAdmin
     {
         $form
             #->add('id')
-            ->add('monto')
-            ->add('fecha',DatePickerType::class, Array('label'=>'Fecha', 'format'=>'d/M/y'))
-            ->add('tipo', ChoiceType::class,
-            ['choices' => [
-                'Transferencia' => 1,
-                'Efectivo' => 2,
-            ], 'label' => 'Tipo'])
+            ->add('tipo', ChoiceType::class, [
+                'choices' => Pago::getTipoPagoChoices(),
+                  'label' => 'Tipo'])
             ->add('numeroComprobante')
-            ->add('importeRecibido')
-            ->add('pasajes', CollectionType::class, ['by_reference' => false,
-                        'label' => 'Pasaje',
-                        #'disabled' => $disabled,
-                        'required'   => true,
-                    ],
-                        [
-                        'edit' => 'inline',
-                        'inline' => 'table',
-                        'sortable' => 'position',
-                ])
-            #->add('observacion')
-            #->add('usuario')
+            ->add('monto', MoneyType::class, [
+                'divisor' => 100,
+                'disabled' => true,
+                'currency' => 'ARS',
+            ])
+            #->add('fecha', DatePickerType::class, Array('label'=>'Fecha', 'format'=>'d/M/y'))
+            ->add('importeRecibido', MoneyType::class, [
+                'divisor' => 100,
+                'currency' => 'ARS',
+            ])
         ;
     }
 
