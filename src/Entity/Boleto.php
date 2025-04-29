@@ -11,6 +11,13 @@ class Boleto
 {
     public const STATE_DRAFT = 0;
     public const STATE_RESERVED = 1;
+    public const STATE_CANCELED = 2;
+
+    public static $estados = [
+        self::STATE_DRAFT => 'Nuevo',
+        self::STATE_RESERVED => 'Reservado',
+        self::STATE_CANCELED => 'Cancelado',
+    ];
 
     #[ORM\Id]
     #[ORM\GeneratedValue]
@@ -54,6 +61,10 @@ class Boleto
     public function __toString()
     {
         return 'B'.$this->id;
+    }
+
+    public static function getEstadoChoices() {
+        return array_flip(self::$estados);
     }
 
     public function getId(): ?int

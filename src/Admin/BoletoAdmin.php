@@ -10,7 +10,13 @@ use Sonata\AdminBundle\Datagrid\ListMapper;
 use Sonata\AdminBundle\Form\FormMapper;
 use Sonata\AdminBundle\Show\ShowMapper;
 use Sonata\AdminBundle\Form\Type\ModelListType;
+use Sonata\AdminBundle\FieldDescription\FieldDescriptionInterface;
+
+use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\MoneyType;
+use Symfony\Component\Form\Extension\Core\DataTransformer\MoneyToLocalizedStringTransformer;
+
+use App\Entity\Boleto;
 
 
 final class BoletoAdmin extends BaseAdmin
@@ -27,12 +33,29 @@ final class BoletoAdmin extends BaseAdmin
 
     protected function configureListFields(ListMapper $list): void
     {
+        $number_transformer = new MoneyToLocalizedStringTransformer(
+            2, true, \NumberFormatter::ROUND_HALFUP, 100, 'es_AR');
+
         $list
-            ->add('id')
-            ->add('viaje_fecha')
-            ->add('viaje_hora')
-            ->add('asiento.numero')
-            ->add('costo')
+            ->add('id', null, [
+                'header_style' => 'width: 5%; text-align: left',
+                'row_align' => 'left'])
+            ->add('viaje_fecha', null, [
+                'header_style' => 'width: 10%; text-align: center',
+                'row_align' => 'center'])
+            ->add('viaje_hora', null, [
+                'header_style' => 'width: 10%; text-align: center',
+                'row_align' => 'center'])
+            ->add('asiento.numero', null, [
+                'header_style' => 'width: 10%; text-align: center',
+                'row_align' => 'center'])
+            ->add('costo', FieldDescriptionInterface::TYPE_CURRENCY, [
+                'currency' => 'ARS',
+                'accessor' => function($subject) use($number_transformer) {
+                    return $number_transformer->transform($subject->getCosto());
+                },
+                'header_style' => 'width: 10%; text-align: center',
+                'row_align' => 'right'])
             ->add(ListMapper::NAME_ACTIONS, null, [
                 'actions' => [
                     'show' => [],
@@ -54,6 +77,11 @@ final class BoletoAdmin extends BaseAdmin
             ->add('costo', MoneyType::class, [
                 'divisor' => 100,
                 'currency' => 'ARS',
+                'disabled' => true,
+            ])
+            ->add('estado', ChoiceType::class, [
+                'choices' => Boleto::getEstadoChoices(),
+                'disabled' => true,
             ])
         ;
     }
