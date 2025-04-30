@@ -62,9 +62,9 @@ final class PagoAdminController extends CRUDController
                 'required'   => true,
             ],
                 [
-                    'edit' => 'inline',
-                    'inline' => 'table',
-                    'sortable' => 'position',
+                    'inline'       => 'standard',
+                    'edit'         => 'standard',
+                    'sortable'     => 'position'
                 ])
             ->setAction($this->generateUrl('admin_app_pago_procesar'))
             ->getForm();
