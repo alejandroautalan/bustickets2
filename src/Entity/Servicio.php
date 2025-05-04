@@ -39,6 +39,11 @@ class Servicio
     #[ORM\Column]
     private ?int $estado = null;
 
+    #[ORM\Column(nullable: true)]
+    private ?int $costo = null;
+
+
+
 
     public static $estado_choices = [
         'Draft' => 1,
@@ -178,6 +183,18 @@ class Servicio
                 $boleto->setServicio(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getCosto(): ?int
+    {
+        return $this->costo;
+    }
+
+    public function setCosto(?int $costo): static
+    {
+        $this->costo = $costo;
 
         return $this;
     }

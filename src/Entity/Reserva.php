@@ -43,6 +43,9 @@ class Reserva
     #[ORM\OneToMany(targetEntity: Pago::class, mappedBy: 'reserva')]
     private Collection $pagos;
 
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $urlpago = null;
+
     public function __construct()
     {
         $this->boletos = new ArrayCollection();
@@ -72,6 +75,7 @@ class Reserva
             $total = $this->calcularMontoTotal();
             $pago = $this->pagos[0];
             $pago->setMonto($total);
+            $pago->setImporteRecibido($total*0.1);
         }
     }
 
@@ -113,6 +117,7 @@ class Reserva
     {
         if (!$this->boletos->contains($boleto)) {
             $this->boletos->add($boleto);
+            $boleto->setCosto($this->getServicio()->getCosto());
             $boleto->setReserva($this);
         }
 
@@ -193,6 +198,18 @@ class Reserva
                 $pago->setReserva(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getUrlpago(): ?string
+    {
+        return $this->urlpago;
+    }
+
+    public function setUrlpago(?string $urlpago): static
+    {
+        $this->urlpago = $urlpago;
 
         return $this;
     }

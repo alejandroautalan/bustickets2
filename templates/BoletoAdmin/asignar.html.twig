@@ -1,0 +1,3 @@
+<a href="{{ path('admin_app_boleto_asignarasiento', {'id': object.id}) }}" class="btn btn-sm btn-info view_link" title="{{ 'Asignar asiento'|trans({}, 'SonataAdminBundle') }}" onclick="return confirm('Esta seguro de ocupar el asiento {{ object.asiento.numero }}, con la pasajero: {{ object.pasajero }}?')">
+    Asignar
+</a>

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Admin;
 
+use MercadoPago\Client\Preference\PreferenceClient;
 use Sonata\AdminBundle\Admin\AbstractAdmin;
 use Sonata\AdminBundle\Datagrid\DatagridMapper;
 use Sonata\AdminBundle\Datagrid\ListMapper;
@@ -19,6 +20,7 @@ use App\Entity\Servicio;
 use App\Entity\Boleto;
 use App\Entity\Pago;
 use App\Entity\TransporteAsiento;
+use MercadoPago\MercadoPagoConfig;
 
 
 final class ReservaAdmin extends BaseAdmin
@@ -40,7 +42,7 @@ final class ReservaAdmin extends BaseAdmin
                 'actions' => [
                     'show' => [],
                     'edit' => [],
-                    'delete' => [],
+                    'delete' => []
                 ],
             ]);
     }
@@ -136,7 +138,28 @@ final class ReservaAdmin extends BaseAdmin
         $reserva = $object;
         $payment = $request->get('btn_payment', null);
         if(null !== $payment) {
+            ##mercado pago###
+            $pago = $reserva->getPagos()->last();
+            MercadoPagoConfig::setAccessToken("APP_USR-7745628252612000-050318-f7578701336f67a894934818b76bc06f-2418800269");
+            $client = new PreferenceClient();
+            $preference = $client->create([
+                "items"=> array(
+                    array(
+                        "title" => "Bustickets",
+                        "quantity" => 1,
+                        "unit_price" => ($pago->getImporteRecibido()/100)
+                    )
+                )
+            ]);
+            $preference->back_urls = array(
+                "success" => "https://localhost:8000/admin/app/pago/success?id=".$pago->getId(),
+                "failure" => "https://localhost:8000/admin/app/pago/failure?id=".$pago->getId(),
+                "pending" => "https://localhost:8000/admin/app/pago/pending?id=".$pago->getId(),
+            );
+            $preference->auto_return = "https://localhost:8000/admin/app/pago/success?id=".$pago->getId();
+
             $entityManager = $this->getEntityManager(Reserva::class);
+            $reserva->setUrlpago($preference->init_point);#init_point
             $reserva->setEstado(Reserva::STATE_PENDING_PAYMENT);
             $entityManager->persist($reserva);
             $entityManager->flush();
@@ -181,7 +204,6 @@ final class ReservaAdmin extends BaseAdmin
     protected function addOrRemovePago(Reserva $reserva): void
     {
         // Esto se ejecuta ante de guardar el formulario
-
         $has_boletos = $reserva->getBoletos()->count() > 0;
         $has_pagos = $reserva->getPagos()->count() > 0;
         if($has_boletos && !$has_pagos) {
@@ -189,9 +211,12 @@ final class ReservaAdmin extends BaseAdmin
             $pago = new Pago();
             $pago->setTipo(Pago::PAYMENT_TYPE_UNSPECIFIED);
             $total = $reserva->calcularMontoTotal();
+            $porcentaje = $total*0.1;
             $pago->setMonto($total);
+            $pago->setImporteRecibido($porcentaje);
             $reserva->addPago($pago);
             $entityManager->persist($pago);
+
         }
         if($has_pagos && !$has_boletos) {
             $entityManager = $this->getEntityManager(Pago::class);

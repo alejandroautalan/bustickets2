@@ -28,6 +28,9 @@ class Pasajero
     #[ORM\Column(nullable: true)]
     private ?int $edad = null;
 
+    #[ORM\Column(length: 10)]
+    private ?string $sexo = null;
+
     #[ORM\Column(type: Types::DATE_MUTABLE, nullable: true)]
     private ?\DateTimeInterface $fecha_nacimiento = null;
 
@@ -141,4 +144,17 @@ class Pasajero
 
         return $this;
     }
+
+    public function getSexo(): ?string
+    {
+        return $this->sexo;
+    }
+
+    public function setSexo(string $sexo): static
+    {
+        $this->sexo = $sexo;
+
+        return $this;
+    }
+
 }

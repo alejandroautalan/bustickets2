@@ -14,9 +14,7 @@
   {% endif %}
 
   {% if object.showFinalizeBtn %}
-    <button type="submit" class="btn btn-warning" name="btn_finalize">
-        <i class="fa fa-save"></i> Confirmar Reserva
-    </button>
+    <a href="{{ object.urlpago }}" name="btn_finalize" class="btn btn-warning" role="button" aria-pressed="true"><i class="fa fa-save"></i>Confirmar Reserva</a>
   {% endif %}
 
   {# Por ahora ocultar botones de admin

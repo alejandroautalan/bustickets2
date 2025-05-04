@@ -1,0 +1,23 @@
+{% extends '@SonataAdmin/standard_layout.html.twig' %}
+{% block sonata_admin_content %}
+{{ form_start(form, {'attr': {'class': 'form-horizontal'}}) }}
+            <div class="row">
+                <div class="col-md-4">
+                    {{ form_row(form.origen) }}
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-4">
+                    {{ form_row(form.destino) }}
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-4">
+                    {{ form_row(form.servicio) }}
+                </div>
+            </div>
+            <div class="row">
+                    {{ form_row(form.asientos) }}
+            </div>
+        {{ form_end(form) }}
+{% endblock%}

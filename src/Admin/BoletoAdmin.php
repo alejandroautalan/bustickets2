@@ -11,20 +11,36 @@ use Sonata\AdminBundle\Form\FormMapper;
 use Sonata\AdminBundle\Show\ShowMapper;
 use Sonata\AdminBundle\Form\Type\ModelListType;
 use Sonata\AdminBundle\FieldDescription\FieldDescriptionInterface;
-
+use Sonata\AdminBundle\Route\RouteCollectionInterface;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\MoneyType;
 use Symfony\Component\Form\Extension\Core\DataTransformer\MoneyToLocalizedStringTransformer;
-
 use App\Entity\Boleto;
 
 
 final class BoletoAdmin extends BaseAdmin
 {
+
+    public function configureRoutes(RouteCollectionInterface $collection): void
+    {
+        $collection->add('asignarasiento', 'asignarasiento');
+    }
+
+    /**
+     * @param array $actions
+     * @return array
+     */
+    protected function configureBatchActions(array $actions): array
+    {
+        unset($actions['delete']);
+        return $actions;
+    }
+
     protected function configureDatagridFilters(DatagridMapper $filter): void
     {
         $filter
             ->add('id')
+            ->add('pasajero.dni', null, ['show_filter' => true])
             ->add('viaje_fecha')
             ->add('viaje_hora')
             ->add('costo')
@@ -37,30 +53,34 @@ final class BoletoAdmin extends BaseAdmin
             2, true, \NumberFormatter::ROUND_HALFUP, 100, 'es_AR');
 
         $list
-            ->add('id', null, [
-                'header_style' => 'width: 5%; text-align: left',
-                'row_align' => 'left'])
-            ->add('viaje_fecha', null, [
-                'header_style' => 'width: 10%; text-align: center',
-                'row_align' => 'center'])
-            ->add('viaje_hora', null, [
-                'header_style' => 'width: 10%; text-align: center',
-                'row_align' => 'center'])
+            #->add('id', null, [
+            #    'header_style' => 'width: 5%; text-align: left',
+            #    'row_align' => 'left'])
+            #->add('viaje_fecha', null, [
+            #    'header_style' => 'width: 10%; text-align: center',
+            #    'row_align' => 'center'])
+            #->add('viaje_hora', null, [
+            #    'header_style' => 'width: 10%; text-align: center',
+            #    'row_align' => 'center'])
+            
+            #->add('costo', FieldDescriptionInterface::TYPE_CURRENCY, [
+            #    'currency' => 'ARS',
+            #    'accessor' => function($subject) use($number_transformer) {
+            #        return $number_transformer->transform($subject->getCosto());
+            #    },
+            #    'header_style' => 'width: 10%; text-align: center',
+            #    'row_align' => 'right'])
+            ->add('estado', null, ['template' => 'BoletoAdmin/estado.html.twig', 'header_style' => 'width: 10%; text-align: center', 'row_align' => 'center'])
             ->add('asiento.numero', null, [
-                'header_style' => 'width: 10%; text-align: center',
-                'row_align' => 'center'])
-            ->add('costo', FieldDescriptionInterface::TYPE_CURRENCY, [
-                'currency' => 'ARS',
-                'accessor' => function($subject) use($number_transformer) {
-                    return $number_transformer->transform($subject->getCosto());
-                },
-                'header_style' => 'width: 10%; text-align: center',
-                'row_align' => 'right'])
+                'header_style' => 'width: 3%; text-align: center',
+                'row_align' => 'center', 'label' => 'Asiento    ']) 
+            ->add('pasajero', null, ['header_style' => 'width: 10%; text-align: center', 'row_align' => 'right'])  
             ->add(ListMapper::NAME_ACTIONS, null, [
                 'actions' => [
-                    'show' => [],
-                    'edit' => [],
-                    'delete' => [],
+                    #'show' => [],
+                    #'edit' => [],
+                    #'delete' => [],
+                    'asignar' => ['template' => 'BoletoAdmin/asignar.html.twig'],
                 ],
             ]);
     }

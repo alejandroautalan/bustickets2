@@ -5,8 +5,11 @@
 # https://symfony.com/doc/current/best_practices.html#use-parameters-for-application-configuration
 parameters:
     locale: 'es'
+    sonata.admin.security.mask.builder.class: Sonata\AdminBundle\Security\Acl\Permission\MaskBuilder
 
 services:
+    security.acl.permission.map:
+        class: Sonata\AdminBundle\Security\Acl\Permission\AdminPermissionMap
     # default configuration for services in *this* file
     _defaults:
         autowire: true      # Automatically injects dependencies in your services.
@@ -125,6 +128,8 @@ services:
         class: App\Admin\ServicioAdmin
         tags:
             - { name: sonata.admin, model_class: App\Entity\Servicio, controller: App\Controller\ServicioAdminController, manager_type: orm, group: admin, label: Servicio }
+        calls:
+            - [ addChild, ["@admin.boleto", 'servicio']]
 
     admin.transporte:
         class: App\Admin\TransporteAdmin
@@ -147,7 +152,8 @@ services:
     admin.boleto:
         class: App\Admin\BoletoAdmin
         tags:
-            - { name: sonata.admin, model_class: App\Entity\Boleto, controller: ~, manager_type: orm, group: admin, label: Boleto }
+            - { name: sonata.admin, model_class: App\Entity\Boleto, controller: App\Controller\BoletoAdminController, manager_type: orm, group: admin, label: Boleto }
+        
 
     admin.reserva:
         class: App\Admin\ReservaAdmin

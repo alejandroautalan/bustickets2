@@ -35,6 +35,25 @@ class ReservaRepository extends ServiceEntityRepository
         return $rs;
     }
 
+    public function get_asientos_reservados($servicio_id) {
+        $entityManager = $this->getEntityManager();
+
+        $query = $entityManager->createQuery(
+            'SELECT ta.id
+            FROM App\Entity\Servicio s
+            JOIN s.transporte t
+            JOIN t.asientos ta
+            LEFT JOIN App\Entity\Boleto b WITH b.asiento = ta.id
+            WHERE s = :servicio_id
+            AND  (b.asiento is not NULL and b.estado = 1)'
+        )->setParameter('servicio_id', $servicio_id);
+        $rs = [];
+        foreach($query->getResult() as $row) {
+            $rs[] = $row['id'];
+        }
+        return $rs;
+    }
+
     public function get_asientos_reserva($reserva_id) {
         $entityManager = $this->getEntityManager();
 

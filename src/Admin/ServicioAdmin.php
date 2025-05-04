@@ -13,8 +13,10 @@ use Sonata\AdminBundle\Datagrid\ListMapper;
 use Sonata\AdminBundle\Form\FormMapper;
 use Sonata\AdminBundle\Show\ShowMapper;
 use Sonata\AdminBundle\Route\RouteCollectionInterface;
-
+use Symfony\Component\Form\Extension\Core\Type\MoneyType;
 use App\Entity\Servicio;
+use Sonata\AdminBundle\Admin\AdminInterface;
+use Knp\Menu\ItemInterface as MenuItemInterface;
 
 
 final class ServicioAdmin extends AbstractAdmin
@@ -23,7 +25,9 @@ final class ServicioAdmin extends AbstractAdmin
     public function configureRoutes(RouteCollectionInterface $collection): void
     {
         $collection->add('reserva', 'reserva');
-
+        $collection->add('asientos', 'asientos');
+        $collection->add('archivo', 'archivo');
+        $collection->add('ocuparAsiento', 'ocuparAsiento');
     }
 
     protected function configureDatagridFilters(DatagridMapper $filter): void
@@ -51,6 +55,9 @@ final class ServicioAdmin extends AbstractAdmin
             'edit' => [],
             'delete' => [],
             'reserva' => ['template' => 'ServicioAdmin/reserva_list_btn.html.twig'],
+            #'asientos' => ['template' => 'ServicioAdmin/asientos_ocupacion.html.twig'],
+            'archivo' => ['template' => 'ServicioAdmin/archivo.html.twig'],
+            'boletos'  => ['template' => 'ServicioAdmin/boletos.html.twig'],
         ];
 
         $list
@@ -83,6 +90,10 @@ final class ServicioAdmin extends AbstractAdmin
             ->add('estado', ChoiceType::class, [
                 'choices' => Servicio::$estado_choices
             ])
+            ->add('costo', MoneyType::class, [
+                'divisor' => 100,
+                'currency' => 'ARS',
+            ])
         ;
     }
 
@@ -95,5 +106,19 @@ final class ServicioAdmin extends AbstractAdmin
             ->add('llegada')
             ->add('estado')
         ;
+    }
+
+    protected function configureTabMenu(MenuItemInterface $menu, string $action, ?AdminInterface $childAdmin = null): void
+    {
+        if (!$childAdmin && !in_array($action, ['edit', 'show'])) {
+            return;
+        }
+
+        $admin = $this->isChild() ? $this->getParent() : $this;
+        $id = $admin->getRequest()->get('id');
+
+        if ($this->isGranted('LIST')) {
+            $menu->addChild('Boletos', $admin->generateMenuUrl('admin.boleto.list', ['id' => $id]));
+        }
     }
 }

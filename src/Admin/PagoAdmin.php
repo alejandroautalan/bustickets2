@@ -77,7 +77,9 @@ final class PagoAdmin extends AbstractAdmin
             #->add('fecha', DatePickerType::class, Array('label'=>'Fecha', 'format'=>'d/M/y'))
             ->add('importeRecibido', MoneyType::class, [
                 'divisor' => 100,
+                'disabled' => true,
                 'currency' => 'ARS',
+                'label' => 'Importe a Pagar (un 10%)'
             ])
         ;
     }

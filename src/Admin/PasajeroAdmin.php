@@ -9,30 +9,31 @@ use Sonata\AdminBundle\Datagrid\DatagridMapper;
 use Sonata\AdminBundle\Datagrid\ListMapper;
 use Sonata\AdminBundle\Form\FormMapper;
 use Sonata\AdminBundle\Show\ShowMapper;
+use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 
 final class PasajeroAdmin extends AbstractAdmin
 {
     protected function configureDatagridFilters(DatagridMapper $filter): void
     {
         $filter
-            ->add('id')
+            #->add('id')
             ->add('nombre')
             ->add('apellido')
-            ->add('dni')
-            ->add('edad')
-            ->add('fecha_nacimiento')
+            ->add('dni', null, ['show_filter' => true])
+            #->add('edad')
+            #->add('fecha_nacimiento')
         ;
     }
 
     protected function configureListFields(ListMapper $list): void
     {
         $list
-            ->add('id')
+            #->add('id')
             ->add('nombre')
             ->add('apellido')
             ->add('dni')
-            ->add('edad')
-            ->add('fecha_nacimiento')
+            #->add('edad')
+            #->add('fecha_nacimiento')
             ->add(ListMapper::NAME_ACTIONS, null, [
                 'actions' => [
                     'show' => [],
@@ -49,7 +50,14 @@ final class PasajeroAdmin extends AbstractAdmin
             ->add('nombre')
             ->add('apellido')
             ->add('dni')
-            #->add('edad')
+            ->add('sexo', ChoiceType::class, [
+                'choices' => [
+                    'Masculino' => 'M',
+                    'Femenino' => 'F',
+                ],
+                'expanded' => false, // Opcional: Para mostrar los radios
+                'multiple' => false, // Opcional: Para permitir múltiples selecciones
+            ]);
             #->add('fecha_nacimiento')
         ;
     }
