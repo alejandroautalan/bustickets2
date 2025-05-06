@@ -145,7 +145,7 @@ final class ReservaAdmin extends BaseAdmin
             $preference = $client->create([
                 "items"=> array(
                     array(
-                        "title" => "Bustickets",
+                        "title" => "El Santigueño Bus",
                         "quantity" => 1,
                         "unit_price" => ($pago->getImporteRecibido()/100)
                     )
@@ -157,7 +157,7 @@ final class ReservaAdmin extends BaseAdmin
                 "pending" => "https://localhost:8000/admin/app/pago/pending?id=".$pago->getId(),
             );
             $preference->auto_return = "https://localhost:8000/admin/app/pago/success?id=".$pago->getId();
-
+            echo var_dump($preference);exit;
             $entityManager = $this->getEntityManager(Reserva::class);
             $reserva->setUrlpago($preference->init_point);#init_point
             $reserva->setEstado(Reserva::STATE_PENDING_PAYMENT);
@@ -213,7 +213,7 @@ final class ReservaAdmin extends BaseAdmin
             $total = $reserva->calcularMontoTotal();
             $porcentaje = $total*0.1;
             $pago->setMonto($total);
-            $pago->setImporteRecibido($porcentaje);
+            $pago->setImporteRecibido((int)$porcentaje);
             $reserva->addPago($pago);
             $entityManager->persist($pago);
 
