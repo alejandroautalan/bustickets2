@@ -1,0 +1,21 @@
+
+{% extends 'sitebase.html.twig' %}
+
+{% block body %}
+<div class="splash-container">
+    <div class="splash">
+        <h1 class="splash-head">Bus Tickets</h1>
+        <p class="splash-subhead">
+            Administración de pasajes
+        </p>
+        <p>
+            <a href="{{ path("sonata_admin_dashboard") }}" class="pure-button pure-button-primary">Acceder</a>
+        </p>
+    </div>
+</div>
+<div class="content-wrapper">
+    <div class="footer l-box is-center">
+        @alexbot
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,37 @@
+ {% set rows=transporte.grillaRows - 1 %}
+ {% set cols=transporte.grillaCols - 1 %}
+ {% set plantas=transporte.plantas - 1 %}
+
+ <div class="row">
+    {% for planta in 0 .. plantas %}
+    <div class="col-md-2">
+        <table class="table table-bordered">
+        <theader>
+          <th colspan="{{ cols + 1 }}" style="text-align: center;">
+          {{ transporte.plantaLabel(planta) }}
+          </th>
+        </theader>
+        <tbody style="text-align: center;">
+        {% for row in 0 .. rows %}
+        <tr>
+            {% for col in 0 .. cols %}
+            <td>
+            {% set asiento=transporte.getAsientoEnGrilla(planta, row, col) %}
+            {% if asiento %}
+                {% block celda_asiento %}
+                    {{ asiento.numero }}
+                {% endblock %}
+            {% else %}
+                {% block celda_vacia %}
+                   &nbsp;
+                {% endblock %}
+            {% endif %}
+            </td>
+            {% endfor %}
+        </tr>
+        {% endfor %}
+        </tbody>
+        </table>
+    </div>
+    {% endfor %}
+</div>

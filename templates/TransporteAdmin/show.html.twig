@@ -1,0 +1,21 @@
+{% extends '@SonataAdmin/CRUD/base_show.html.twig' %}
+
+{% block show %}
+{{ parent() }}
+
+<div class="sonata-ba-view">
+  <div class="row">
+    <div class="col-md-12">
+      <div class="box box-primary">
+        <div class="box-header">
+            <h4 class="box-title">Distribución Asientos</h4>
+        </div>
+        <div class="box-body">
+            {% set transporte = object %}
+            {{ include('TransporteAdmin/_asiento_layout.html.twig') }}
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

@@ -20,9 +20,9 @@ final class PasajeAdmin extends AbstractAdmin
     protected function configureDatagridFilters(DatagridMapper $filter): void
     {
         $filter
-            ->add('id')
+            #->add('id')
             ->add('estado')
-            ->add('viaje')
+            #->add('viaje')
         ;
     }
 
@@ -31,8 +31,8 @@ final class PasajeAdmin extends AbstractAdmin
         $list
             ->add('id')
             ->add('costo')
-            ->add('viaje')
-            ->add('asientoColectivo')
+            #->add('viaje')
+            ->add('asiento.numero')
             ->add('pasajero')
             ->add('estado')
             ->add(ListMapper::NAME_ACTIONS, null, [
@@ -51,8 +51,11 @@ final class PasajeAdmin extends AbstractAdmin
             #->add('estado')
             #->add('costo',null, ['disabled'=>true])
             #->add('viaje',null, ['disabled'=>true])
-            ->add('asientoColectivo', null, ['label' => 'Numero de Asiento'])
-            ->add('pasajero',ModelListType::class)
+            #->add('asientoColectivo', null, ['label' => 'Numero de Asiento'])
+            ->add('asiento', null, [
+                'label' => 'N° Asiento',
+                'disabled'  => true,])
+            ->add('pasajero', ModelListType::class)
         ;
     }
 

@@ -20,12 +20,15 @@ class Asiento
 
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $clase = null;
+    
+    #[ORM\ManyToOne(inversedBy: 'asientos')]
+    private ?Colectivo $colectivo = null;
 
     /**
      * @var Collection<int, AsientoColectivo>
      */
-    #[ORM\OneToMany(targetEntity: AsientoColectivo::class, mappedBy: 'asiento')]
-    private Collection $asientoColectivos;
+    //#[ORM\OneToMany(targetEntity: AsientoColectivo::class, mappedBy: 'asiento')]
+    //private Collection $asientoColectivos;
 
     public function __construct()
     {
@@ -62,6 +65,18 @@ class Asiento
     public function setClase(?string $clase): static
     {
         $this->clase = $clase;
+
+        return $this;
+    }
+    
+    public function getColectivo(): ?Colectivo
+    {
+        return $this->colectivo;
+    }
+
+    public function setColectivo(?Colectivo $colectivo): static
+    {
+        $this->colectivo = $colectivo;
 
         return $this;
     }

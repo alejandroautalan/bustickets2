@@ -1,0 +1,53 @@
+{% block dependant_entity_widget %}
+    {% set attr = attr|merge({'class': attr.class|default('') ~ ' form-control'}) %}
+    {{ block('choice_widget') }}
+    {% set loaderid = [form.vars.id, '_loader'] | join('') %}
+    {% if form.parent.offsetExists(parent_form_field) %}
+      {% set parent_field_html_id = form.parent.offsetGet(parent_form_field).vars.id %}
+    {% else %}
+      {# support for admin filters: #}
+      {% if form.parent.parent.offsetExists(parent_form_field) %}
+        {% set parent_field_html_id = form.parent.parent.offsetGet(parent_form_field).offsetGet('value').vars.id %}
+      {% else %}
+        Filtros dependientes: Se encontro un estado inesperado en formato de plantilla.
+      {% endif %}
+    {% endif %}
+    <img src='{{ asset('bundles/applicationtools/images/ajax-loader.gif' ) }}' id='{{ loaderid }}' style='display: none;'>
+    <script type="text/javascript">
+        jQuery(function(){
+
+            jQuery("select#{{ parent_field_html_id }}").change( function() {
+                var selected_index = {{ value ? value : 0 }};
+                jQuery("#{{ loaderid }}").show();
+                jQuery.ajax({
+                    type: "POST",
+                    data: {
+                        parent_id: jQuery(this).val(),
+                        config_name: "{{ config_name }}",
+                        placeholder: "{{ placeholder }}",
+                        origvalue: "{{ value }}"
+                    },
+                    url:"{{ path('app_dependant_entity_options') }}",
+                    success: function(msg){
+                        if (msg != ''){
+                            jQuery("select#{{ form.vars.id }}").html(msg).show();
+                            jQuery.each(jQuery("select#{{ form.vars.id }} option"), function (index, option){
+                                if (jQuery(option).val() == selected_index)
+                                    jQuery(option).prop('selected', true);
+                            })
+                            jQuery("select#{{ form.vars.id }}").trigger('change');
+                            jQuery("#{{ loaderid }}").hide();
+                        } else {
+                            jQuery("select#{{ form.vars.id }}").html('<em>{{ no_result_msg|trans() }}</em>');
+                            jQuery("#{{ loaderid }}").hide();
+                        }
+                    },
+                    error: function(xhr, ajaxOptions, thrownError){
+                    jQuery('html').html(xhr.responseText);
+                    }
+                });
+            });
+        });
+    </script>
+{% endblock %}
+{# kate: tab-width 2 #}

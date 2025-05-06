@@ -30,8 +30,14 @@ class Colectivo
     /**
      * @var Collection<int, AsientoColectivo>
      */
-    #[ORM\OneToMany(targetEntity: AsientoColectivo::class, mappedBy: 'colectivo')]
-    private Collection $asientoColectivos;
+    //#[ORM\OneToMany(targetEntity: AsientoColectivo::class, mappedBy: 'colectivo')]
+    //private Collection $asientoColectivos;
+    
+    /**
+     * @var Collection<int, Asiento>
+     */
+    #[ORM\OneToMany(targetEntity: Asiento::class, mappedBy: 'colectivo')]
+    private Collection $asientos;
 
     /**
      * @var Collection<int, Viaje>
@@ -134,7 +140,7 @@ class Colectivo
 
         return $this;
     }
-
+    
     /**
      * @return Collection<int, Viaje>
      */
@@ -159,6 +165,36 @@ class Colectivo
             // set the owning side to null (unless already changed)
             if ($viaje->getColectivo() === $this) {
                 $viaje->setColectivo(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Viaje>
+     */
+    public function getAsientos(): Collection
+    {
+        return $this->asientos;
+    }
+
+    public function addAsiento(Asiento $asiento): static
+    {
+        if (!$this->asientos->contains($asiento)) {
+            $this->asientos->add($asiento);
+            $asiento->setColectivo($this);
+        }
+
+        return $this;
+    }
+
+    public function removeAsiento(Asiento $asiento): static
+    {
+        if ($this->viajes->removeElement($asiento)) {
+            // set the owning side to null (unless already changed)
+            if ($asiento->getColectivo() === $this) {
+                $asiento->setColectivo(null);
             }
         }
 

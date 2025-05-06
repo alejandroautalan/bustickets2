@@ -9,6 +9,8 @@ use Sonata\AdminBundle\Datagrid\DatagridMapper;
 use Sonata\AdminBundle\Datagrid\ListMapper;
 use Sonata\AdminBundle\Form\FormMapper;
 use Sonata\AdminBundle\Show\ShowMapper;
+use Sonata\AdminBundle\Route\RouteCollectionInterface;
+
 
 final class AsientoAdmin extends AbstractAdmin
 {
@@ -52,5 +54,16 @@ final class AsientoAdmin extends AbstractAdmin
             ->add('numero')
             ->add('clase')
         ;
+    }
+    
+    protected function configureRoutes(RouteCollectionInterface $collection): void
+    {
+        if ($this->isChild()) {
+            return;
+        }
+
+        // This is the route configuration as a parent
+        $collection->clear();
+
     }
 }

@@ -4,4 +4,10 @@ sonata_block:
     # enable the SonataAdminBundle block
     sonata.admin.block.admin_list:
       contexts: [admin]
+      
 
+sonata_admin:
+  title: 'BusTickets'
+  title_logo: images/apple-touch-icon.png
+
+  show_mosaic_button:   false
