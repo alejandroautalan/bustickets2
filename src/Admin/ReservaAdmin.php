@@ -159,7 +159,7 @@ final class ReservaAdmin extends BaseAdmin
             );
             
             $preference->auto_return = "https://localhost:8000/admin/app/pago/success?id=".$pago->getId();
-            echo var_dump($preference);exit;
+            #echo var_dump($preference);exit;
             $entityManager = $this->getEntityManager(Reserva::class);
             $reserva->setUrlpago($preference->init_point);#init_point
             $reserva->setEstado(Reserva::STATE_PENDING_PAYMENT);
