@@ -46,6 +46,9 @@ class Reserva
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $urlpago = null;
 
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $payment_id = null;
+
     public function __construct()
     {
         $this->boletos = new ArrayCollection();
@@ -210,6 +213,18 @@ class Reserva
     public function setUrlpago(?string $urlpago): static
     {
         $this->urlpago = $urlpago;
+
+        return $this;
+    }
+
+    public function getPaymentId(): ?string
+    {
+        return $this->payment_id;
+    }
+
+    public function setPaymentId(?string $payment_id): static
+    {
+        $this->payment_id = $payment_id;
 
         return $this;
     }
