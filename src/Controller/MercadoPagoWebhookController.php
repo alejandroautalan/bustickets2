@@ -52,7 +52,7 @@ class MercadoPagoWebhookController extends AbstractController
         }
 
         // Obtain the secret key for the user/application from Mercadopago developers site
-        $secret = $this->getParameter('WEBHOOK_SECRET');
+        $secret = $_ENV['WEBHOOK_SECRET'];
 
         // Generate the manifest string
         $manifest = "id:$dataID;request-id:$xRequestId;ts:$ts;";
