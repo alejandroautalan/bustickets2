@@ -153,16 +153,17 @@ final class ReservaAdmin extends BaseAdmin
             ]);
 
             $preference->back_urls = array(
-                "success" => "http://sd-1955153-h00014.ferozo.net/admin/app/pago?id=".$pago->getId(),
-                "failure" => "http://sd-1955153-h00014.ferozo.net/admin/app/pago?id=".$pago->getId(),
-                "pending" => "http://sd-1955153-h00014.ferozo.net/admin/app/pago?id=".$pago->getId(),
+                "success" => "https://elsantiague%C3%B1o.com.ar/admin/app/pago?id=".$pago->getId(),
+                "failure" => "https://elsantiague%C3%B1o.com.ar/admin/app/pago?id=".$pago->getId(),
+                "pending" => "https://elsantiague%C3%B1o.com.ar/admin/app/pago?id=".$pago->getId(),
             );
             
-            $preference->auto_return = "http://sd-1955153-h00014.ferozo.net/admin/app/pago?id=".$pago->getId();
+            $preference->auto_return = "https://elsantiague%C3%B1o.com.ar/admin/app/pago?id=".$pago->getId();
             #echo var_dump($preference);exit;
             $entityManager = $this->getEntityManager(Reserva::class);
             $reserva->setUrlpago($preference->init_point);#init_point
-            $reserva->setPaymentId($preference->id);
+            #$reserva->setPaymentId($preference->id);
+            $reserva->setPaymentId(123456);
             $reserva->setEstado(Reserva::STATE_PENDING_PAYMENT);
             $entityManager->persist($reserva);
             $entityManager->flush();
