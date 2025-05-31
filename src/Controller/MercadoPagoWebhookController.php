@@ -61,31 +61,16 @@ class MercadoPagoWebhookController extends AbstractController
         $sha = hash_hmac('sha256', $manifest, $secret);
         if ($sha === $hash) {
             // HMAC verification passed
-            echo "HMAC verification passed";
-        } else {
-            // HMAC verification failed
-            echo "HMAC verification failed";
-        }
-        if (isset($data['type']) && $data['type'] === 'payment') {
-            $paymentId = $data['data']['id'];
-
-            #MercadoPagoConfig::setAccessToken('APP_USR-7745628252612000-050318-f7578701336f67a894934818b76bc06f-2418800269'); // Obtén esto de tus credenciales de Mercado Pago
-
-            #$client = new PaymentClient();
-            #$payment = $client->get($paymentId);
-
-
-            // Ahora tienes el objeto de pago completo para trabajar
-            // $payment->status;
-            // $payment->transaction_amount;
-            // etc.
-
-            $reserva = $entityManager->getRepository(Reserva::class)->findBy(['payment_id' => $paymentId]);
+            $reserva = $entityManager->getRepository(Reserva::class)->findBy(['payment_id' => $dataID]);
             $reserva->setEstado(Reserva::STATE_COMPLETED);
             $entityManager->persist($reserva);
             $entityManager->flush();
 
+            return new Response('Webhook recibido y procesado', Response::HTTP_OK);
+        } else {
+            // HMAC verification failed
+            return new Response('HMAC verification failed', Response::HTTP_UNAUTHORIZED);
         }
-        return new Response('Webhook recibido y procesado', Response::HTTP_OK);
+
     }
 }
