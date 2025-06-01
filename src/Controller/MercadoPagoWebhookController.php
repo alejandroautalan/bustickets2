@@ -163,7 +163,7 @@ class MercadoPagoWebhookController extends AbstractController
         $preferenceId = $request->query->get('preference_id');
         ##actulizo payment_id####
         $reserva = $entityManager->getRepository(Reserva::class)->findBy(['preference_id' => $preferenceId]);
-        $reserva->setPaymentId($paymentId);
+        $reserva->setPreferenceId($paymentId);
         $entityManager->persist($reserva);
         $entityManager->flush();
         // Puedes agregar más parámetros según tus necesidades, como:
@@ -194,10 +194,6 @@ class MercadoPagoWebhookController extends AbstractController
                 break;
         }
 
-        // Recomendación: Si tienes un webhook, usa esta URL de retorno solo para feedback al usuario
-        // y para iniciar un proceso de verificación final si es necesario,
-        // pero no para actualizar el estado crítico de la orden.
-        // La actualización crítica debe hacerse siempre desde el webhook seguro con HMAC.
         $logger->info('Lógica de retorno de Mercado Pago ejecutada.', [
             'collection_status' => $collectionStatus,
             'external_reference' => $externalReference,

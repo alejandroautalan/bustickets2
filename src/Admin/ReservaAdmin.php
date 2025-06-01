@@ -160,7 +160,7 @@ final class ReservaAdmin extends BaseAdmin
                 "pending" => "https://xn--elsantiagueo-khb.com.ar/mercadopago/return",
             );
             
-            $preference->auto_return = "approved";
+            $preference->auto_return = "all";
             $entityManager = $this->getEntityManager(Reserva::class);
             $reserva->setUrlpago($preference->init_point);#init_point
             $reserva->setPaymentId($preference->id);
