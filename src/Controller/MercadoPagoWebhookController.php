@@ -102,7 +102,7 @@ class MercadoPagoWebhookController extends AbstractController
             $logger->info('Verificación HMAC de Mercado Pago exitosa para data.id: ' . $dataId);
             $accesst = $_ENV['ENV_ACCESS_TOKEN'];
             MercadoPagoConfig::setAccessToken($accesst);
-            $logger->warning('Fallo en la verificación HMAC de Mercado Pago.', [
+            $logger->warning('Datos del manifest.', [
                 'data_id' => $dataId,
                 'x_request_id' => $xRequestId,
                 'ts' => $ts,
@@ -145,5 +145,72 @@ class MercadoPagoWebhookController extends AbstractController
             ]);
             return new Response('Fallo en la verificación de firma.', Response::HTTP_UNAUTHORIZED);
         }
+    }
+
+    #[Route('/mercadopago/return', name: 'mercadopago_return', methods: ['GET'])]
+    public function returnUrl(Request $request, EntityManagerInterface $entityManager, LoggerInterface $logger): Response
+    {
+        // Loggear todos los parámetros recibidos para depuración
+        $queryParams = $request->query->all();
+        $logger->info('Mercado Pago Return URL recibida.', $queryParams);
+
+        // Obtener los parámetros relevantes
+        $collectionId = $request->query->get('collection_id');
+        $collectionStatus = $request->query->get('collection_status');
+        $paymentId = $request->query->get('payment_id'); // A menudo es lo mismo que collection_id
+        $status = $request->query->get('status'); // Estado general
+        $externalReference = $request->query->get('external_reference'); // Tu referencia externa si la enviaste
+        $preferenceId = $request->query->get('preference_id');
+        ##actulizo payment_id####
+        $reserva = $entityManager->getRepository(Reserva::class)->findBy(['preference_id' => $preferenceId]);
+        $reserva->setPaymentId($paymentId);
+        $entityManager->persist($reserva);
+        $entityManager->flush();
+        // Puedes agregar más parámetros según tus necesidades, como:
+        $paymentType = $request->query->get('payment_type');
+        $merchantOrderId = $request->query->get('merchant_order_id');
+        $siteId = $request->query->get('site_id');
+        $processingMode = $request->query->get('processing_mode');
+        $merchantAccountId = $request->query->get('merchant_account_id');
+
+        // Lógica de tu aplicación basada en el estado del pago
+        $message = '';
+        switch ($collectionStatus) {
+            case 'approved':
+                $message = '¡Tu pago ha sido aprobado! ID de la transacción: ' . $paymentId;
+                // Aquí podrías redirigir a una página de "Gracias por tu compra"
+                // O iniciar alguna lógica de actualización si no tienes webhooks confiables
+                break;
+            case 'rejected':
+                $message = 'Tu pago fue rechazado. Intenta de nuevo o prueba con otro medio de pago.';
+                // Aquí podrías redirigir a una página de "Pago rechazado"
+                break;
+            case 'pending':
+                $message = 'Tu pago está pendiente. Esperando confirmación.';
+                // Aquí podrías redirigir a una página de "Pago pendiente"
+                break;
+            default:
+                $message = 'Estado de pago desconocido o no especificado.';
+                break;
+        }
+
+        // Recomendación: Si tienes un webhook, usa esta URL de retorno solo para feedback al usuario
+        // y para iniciar un proceso de verificación final si es necesario,
+        // pero no para actualizar el estado crítico de la orden.
+        // La actualización crítica debe hacerse siempre desde el webhook seguro con HMAC.
+        $logger->info('Lógica de retorno de Mercado Pago ejecutada.', [
+            'collection_status' => $collectionStatus,
+            'external_reference' => $externalReference,
+            'message_to_user' => $message,
+        ]);
+
+        return new Response(
+            sprintf(
+                '<html><body><h1>Estado de tu pago</h1><p>%s</p><p>ID de la colección: %s</p><p>Referencia Externa: %s</p><p>Puedes regresar a la página principal haciendo clic <a href="/">aquí</a>.</p></body></html>',
+                $message,
+                $collectionId ?? 'N/A', // Usar el operador null coalescing para valores que podrían ser nulos
+                $externalReference ?? 'N/A'
+            )
+        );
     }
 }

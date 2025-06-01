@@ -49,6 +49,9 @@ class Reserva
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $payment_id = null;
 
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $preference_id = null;
+
     public function __construct()
     {
         $this->boletos = new ArrayCollection();
@@ -225,6 +228,18 @@ class Reserva
     public function setPaymentId(?string $payment_id): static
     {
         $this->payment_id = $payment_id;
+
+        return $this;
+    }
+
+    public function getPreferenceId(): ?string
+    {
+        return $this->preference_id;
+    }
+
+    public function setPreferenceId(?string $preference_id): static
+    {
+        $this->preference_id = $preference_id;
 
         return $this;
     }

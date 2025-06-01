@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Admin;
 
 use MercadoPago\Client\Preference\PreferenceClient;
+use Psr\Log\LoggerInterface;
 use Sonata\AdminBundle\Admin\AbstractAdmin;
 use Sonata\AdminBundle\Datagrid\DatagridMapper;
 use Sonata\AdminBundle\Datagrid\ListMapper;
@@ -154,12 +155,12 @@ final class ReservaAdmin extends BaseAdmin
             ]);
 
             $preference->back_urls = array(
-                "success" => "https://elsantiague%C3%B1o.com.ar/admin/app/pago?id=".$pago->getId(),
-                "failure" => "https://elsantiague%C3%B1o.com.ar/admin/app/pago?id=".$pago->getId(),
-                "pending" => "https://elsantiague%C3%B1o.com.ar/admin/app/pago?id=".$pago->getId(),
+                "success" => "https://xn--elsantiagueo-khb.com.ar/mercadopago/return",
+                "failure" => "https://xn--elsantiagueo-khb.com.ar/mercadopago/return",
+                "pending" => "https://xn--elsantiagueo-khb.com.ar/mercadopago/return",
             );
             
-            $preference->auto_return = "https://elsantiague%C3%B1o.com.ar/admin/app/pago?id=".$pago->getId();
+            $preference->auto_return = "approved";
             $entityManager = $this->getEntityManager(Reserva::class);
             $reserva->setUrlpago($preference->init_point);#init_point
             $reserva->setPaymentId($preference->id);
