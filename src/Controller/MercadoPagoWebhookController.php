@@ -5,6 +5,7 @@ namespace App\Controller;
 use App\Entity\Reserva;
 use Doctrine\ORM\EntityManagerInterface;
 use MercadoPago\Client\MercadoPagoClient;
+use Psr\Log\LoggerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
@@ -18,7 +19,7 @@ class MercadoPagoWebhookController extends AbstractController
 {
 
     #[Route('/webhook/mercadopago', name: 'mercadopago_webhook', methods: ['POST'])]
-    public function webhook(Request $request, EntityManagerInterface $entityManager): Response
+    public function webhook(Request $request, EntityManagerInterface $entityManager, LoggerInterface $logger): Response
     {
         // Obtain the x-signature value from the header
         $xSignature = $request->headers->get('HTTP_X_SIGNATURE');
@@ -57,10 +58,10 @@ class MercadoPagoWebhookController extends AbstractController
 
         // Generate the manifest string
         $manifest = "id:$dataID;request-id:$xRequestId;ts:$ts;";
-        echo $manifest.'<br>';
+        $logger->info($manifest);
         // Create an HMAC signature defining the hash type and the key as a byte array
         $sha = hash_hmac('sha256', $manifest, $secret);
-        echo $sha.'<br>';
+        $logger->info($sha);
         if ($sha === $hash) {
             // HMAC verification passed
             MercadoPagoConfig::setAccessToken("ENV_ACCESS_TOKEN");
@@ -81,7 +82,7 @@ class MercadoPagoWebhookController extends AbstractController
                     // $_POST contiene la informaciòn relacionada a la notificaciòn.
                     break;
             }
-            echo var_dump($payment);
+            $logger->info(json_encode($payment));
             $reserva = $entityManager->getRepository(Reserva::class)->findBy(['payment_id' => $payment->id]);
             $reserva->setEstado(Reserva::STATE_COMPLETED);
             $entityManager->persist($reserva);
