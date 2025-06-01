@@ -83,8 +83,6 @@ class MercadoPagoWebhookController extends AbstractController
         }
 
         // 4. Obtener la clave secreta
-        // Se recomienda definir esta clave en .env (o .env.local)
-        // Ejemplo: MERCADOPAGO_SECRET_KEY="tu_clave_secreta_aqui"
         $secret = $_ENV['WEBHOOK_SECRET'];
 
         if (null === $secret || empty($secret)) {
@@ -103,7 +101,7 @@ class MercadoPagoWebhookController extends AbstractController
             $logger->info('Verificación HMAC de Mercado Pago exitosa para data.id: ' . $dataId);
             $accesst = $_ENV['ENV_ACCESS_TOKEN'];
             MercadoPagoConfig::setAccessToken($accesst);
-            switch($_POST["type"]) {
+            switch((string) $notificationData['type']) {
                 case "payment":
                     $payment = MercadoPagoClient::find_by_id($dataId);
                     break;
