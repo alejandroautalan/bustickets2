@@ -36,9 +36,17 @@ class MercadoPagoWebhookController extends AbstractController
         }
 
         // 2. Obtener los Query params relacionados con la URL de la solicitud
-        // `query->get()` es la forma segura de obtener query parameters.
-        $dataId = $request->query->get('data.id', ''); // El segundo parámetro es el valor por defecto
+        $content = $request->getContent();
+        $data = json_decode($content, true);
+        if (json_last_error() !== JSON_ERROR_NONE || !isset($data['data']['id'])) {
+            $logger->warning('Webhook de Mercado Pago con cuerpo JSON inválido o sin data.id.', [
+                'content' => $content,
+                'json_error' => json_last_error_msg(),
+            ]);
+            return new Response('Cuerpo de solicitud inválido o sin data.id.', Response::HTTP_BAD_REQUEST);
+        }
 
+        $dataId = $data['data']['id'];
         // 3. Separar la x-signature en partes
         $parts = explode(',', $xSignature);
 
