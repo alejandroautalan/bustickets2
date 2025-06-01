@@ -7,6 +7,7 @@ use Doctrine\ORM\EntityManagerInterface;
 use MercadoPago\Client\MercadoPagoClient;
 use Psr\Log\LoggerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use MercadoPago\Client\Payment\PaymentClient;
@@ -35,18 +36,21 @@ class MercadoPagoWebhookController extends AbstractController
             return new Response('Headers faltantes.', Response::HTTP_BAD_REQUEST);
         }
 
-        // 2. Obtener los Query params relacionados con la URL de la solicitud
+        // 2. Obtener el cuerpo JSON y el 'id'
         $content = $request->getContent();
-        $data = json_decode($content, true);
-        if (json_last_error() !== JSON_ERROR_NONE || !isset($data['data']['id'])) {
-            $logger->warning('Webhook de Mercado Pago con cuerpo JSON inválido o sin data.id.', [
+        $notificationData = json_decode($content, true); // Decodificar a un array asociativo
+
+        // Verificar si se pudo decodificar el JSON y si contiene la clave 'id' en el nivel raíz
+        if (json_last_error() !== JSON_ERROR_NONE || !isset($notificationData['id'])) {
+            $logger->warning('Webhook de Mercado Pago con cuerpo JSON inválido o sin "id" en el nivel raíz.', [
                 'content' => $content,
                 'json_error' => json_last_error_msg(),
+                'decoded_data' => $notificationData // Para depuración
             ]);
-            return new Response('Cuerpo de solicitud inválido o sin data.id.', Response::HTTP_BAD_REQUEST);
+            return new JsonResponse(['message' => 'Cuerpo de solicitud inválido o sin "id".'], Response::HTTP_BAD_REQUEST);
         }
 
-        $dataId = $data['data']['id'];
+        $dataId = (string) $notificationData['id'];
         // 3. Separar la x-signature en partes
         $parts = explode(',', $xSignature);
 
