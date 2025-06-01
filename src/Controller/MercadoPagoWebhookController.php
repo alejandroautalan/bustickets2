@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use App\Entity\Reserva;
 use Doctrine\ORM\EntityManagerInterface;
+use MercadoPago\Client\MercadoPagoClient;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
@@ -56,12 +57,32 @@ class MercadoPagoWebhookController extends AbstractController
 
         // Generate the manifest string
         $manifest = "id:$dataID;request-id:$xRequestId;ts:$ts;";
-
+        echo $manifest.'<br>';
         // Create an HMAC signature defining the hash type and the key as a byte array
         $sha = hash_hmac('sha256', $manifest, $secret);
+        echo $sha.'<br>';
         if ($sha === $hash) {
             // HMAC verification passed
-            $reserva = $entityManager->getRepository(Reserva::class)->findBy(['payment_id' => $dataID]);
+            MercadoPagoConfig::setAccessToken("ENV_ACCESS_TOKEN");
+            switch($_POST["type"]) {
+                case "payment":
+                    $payment = MercadoPagoClient::find_by_id($_POST["data"]["id"]);
+                    break;
+                case "plan":
+                    $plan = MercadoPagoClient::find_by_id($_POST["data"]["id"]);
+                    break;
+                case "subscription":
+                    $subscription = MercadoPagoClient::find_by_id($_POST["data"]["id"]);
+                    break;
+                case "invoice":
+                    $invoice = MercadoPagoClient::find_by_id($_POST["data"]["id"]);
+                    break;
+                case "point_integration_wh":
+                    // $_POST contiene la informaciòn relacionada a la notificaciòn.
+                    break;
+            }
+            echo var_dump($payment);
+            $reserva = $entityManager->getRepository(Reserva::class)->findBy(['payment_id' => $payment->id]);
             $reserva->setEstado(Reserva::STATE_COMPLETED);
             $entityManager->persist($reserva);
             $entityManager->flush();

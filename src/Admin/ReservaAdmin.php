@@ -160,7 +160,6 @@ final class ReservaAdmin extends BaseAdmin
             );
             
             $preference->auto_return = "https://elsantiague%C3%B1o.com.ar/admin/app/pago?id=".$pago->getId();
-            #echo var_dump($preference);exit;
             $entityManager = $this->getEntityManager(Reserva::class);
             $reserva->setUrlpago($preference->init_point);#init_point
             $reserva->setPaymentId($preference->id);
