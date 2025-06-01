@@ -101,23 +101,23 @@ class MercadoPagoWebhookController extends AbstractController
             $logger->info('Verificación HMAC de Mercado Pago exitosa para data.id: ' . $dataId);
             $accesst = $_ENV['ENV_ACCESS_TOKEN'];
             MercadoPagoConfig::setAccessToken($accesst);
-            switch((string) $notificationData['type']) {
-                case "payment":
+            #switch((string) $notificationData['type']) {
+            #    case "payment":
                     $payment = MercadoPagoClient::find_by_id($dataId);
-                    break;
-                case "plan":
-                    $plan = MercadoPagoClient::find_by_id($dataId);
-                    break;
-                case "subscription":
-                    $subscription = MercadoPagoClient::find_by_id($dataId);
-                    break;
-                case "invoice":
-                    $invoice = MercadoPagoClient::find_by_id($dataId);
-                    break;
-                case "point_integration_wh":
-                    // $_POST contiene la informaciòn relacionada a la notificaciòn.
-                    break;
-            }
+            #        break;
+            #    case "plan":
+            #        $plan = MercadoPagoClient::find_by_id($dataId);
+            #        break;
+            #    case "subscription":
+            #        $subscription = MercadoPagoClient::find_by_id($dataId);
+            #        break;
+            #    case "invoice":
+            #        $invoice = MercadoPagoClient::find_by_id($dataId);
+            #        break;
+            #    case "point_integration_wh":
+            #        // $_POST contiene la informaciòn relacionada a la notificaciòn.
+            #        break;
+            #}
             $logger->info('Payment: ' . json_encode($payment));
             $reserva = $entityManager->getRepository(Reserva::class)->findBy(['payment_id' => $payment->id]);
             $reserva->setEstado(Reserva::STATE_COMPLETED);
