@@ -37,8 +37,8 @@ class MercadoPagoWebhookController extends AbstractController
             return new Response('Headers faltantes.', Response::HTTP_BAD_REQUEST);
         }
 
-        $logger->info('Query parameters recibidos:', $request->query->all());
-        $dataId = $request->query->get('data.id', '');
+        #$logger->info('Query parameters recibidos:', $request->query->all());
+        $dataId = $request->query->get('data_id', '');
         $notificationType = $request->query->get('type', '');
         // 3. Separar la x-signature en partes
         $parts = explode(',', $xSignature);
