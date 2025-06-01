@@ -37,21 +37,8 @@ class MercadoPagoWebhookController extends AbstractController
             return new Response('Headers faltantes.', Response::HTTP_BAD_REQUEST);
         }
 
-        // 2. Obtener el cuerpo JSON y el 'id'
-        $content = $request->getContent();
-        $notificationData = json_decode($content, true); // Decodificar a un array asociativo
-
-        // Verificar si se pudo decodificar el JSON y si contiene la clave 'id' en el nivel raíz
-        if (json_last_error() !== JSON_ERROR_NONE || !isset($notificationData['id'])) {
-            $logger->warning('Webhook de Mercado Pago con cuerpo JSON inválido o sin "id" en el nivel raíz.', [
-                'content' => $content,
-                'json_error' => json_last_error_msg(),
-                'decoded_data' => $notificationData // Para depuración
-            ]);
-            return new JsonResponse(['message' => 'Cuerpo de solicitud inválido o sin "id".'], Response::HTTP_BAD_REQUEST);
-        }
-
-        $dataId = (string) $notificationData['id'];
+        $dataId = $request->query->get('data.id', '');
+        $notificationType = $request->query->get('type', '');
         // 3. Separar la x-signature en partes
         $parts = explode(',', $xSignature);
 
@@ -110,10 +97,10 @@ class MercadoPagoWebhookController extends AbstractController
                 'received_hash' => $hash,
                 'manifest' => $manifest,
             ]);
-            #switch((string) $notificationData['type']) {
-            #    case "payment":
+            switch($notificationType) {
+                case "payment":
                     $payment = PreferenceClient::find_by_id($dataId);
-            #        break;
+                    break;
             #    case "plan":
             #        $plan = MercadoPagoClient::find_by_id($dataId);
             #        break;
@@ -126,7 +113,7 @@ class MercadoPagoWebhookController extends AbstractController
             #    case "point_integration_wh":
             #        // $_POST contiene la informaciòn relacionada a la notificaciòn.
             #        break;
-            #}
+            }
             $logger->info('Payment: ' . json_encode($payment));
             $reserva = $entityManager->getRepository(Reserva::class)->findBy(['payment_id' => $payment->id]);
             $reserva->setEstado(Reserva::STATE_COMPLETED);
@@ -163,7 +150,7 @@ class MercadoPagoWebhookController extends AbstractController
         $preferenceId = $request->query->get('preference_id');
         ##actulizo payment_id####
         $reserva = $entityManager->getRepository(Reserva::class)->findBy(['preference_id' => $preferenceId]);
-        $reserva->setPreferenceId($paymentId);
+        $reserva->setPaymentId($paymentId);
         $entityManager->persist($reserva);
         $entityManager->flush();
         // Puedes agregar más parámetros según tus necesidades, como:

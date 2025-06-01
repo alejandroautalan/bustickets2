@@ -163,7 +163,7 @@ final class ReservaAdmin extends BaseAdmin
             $preference->auto_return = "all";
             $entityManager = $this->getEntityManager(Reserva::class);
             $reserva->setUrlpago($preference->init_point);#init_point
-            $reserva->setPaymentId($preference->id);
+            $reserva->setPreferenceId($preference->id);
             #$reserva->setPaymentId('123456');
             $reserva->setEstado(Reserva::STATE_PENDING_PAYMENT);
             $entityManager->persist($reserva);
