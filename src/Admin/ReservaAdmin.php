@@ -140,7 +140,7 @@ final class ReservaAdmin extends BaseAdmin
         if(null !== $payment) {
             ##mercado pago###
             $pago = $reserva->getPagos()->last();
-            $accessToken = $_ENV['ACCESS_TOKEN'];
+            $accessToken = $_ENV['ENV_ACCESS_TOKEN'];
             MercadoPagoConfig::setAccessToken($accessToken);
             $client = new PreferenceClient();
             $preference = $client->create([
