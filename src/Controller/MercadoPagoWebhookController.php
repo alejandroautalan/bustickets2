@@ -5,6 +5,7 @@ namespace App\Controller;
 use App\Entity\Reserva;
 use Doctrine\ORM\EntityManagerInterface;
 use MercadoPago\Client\MercadoPagoClient;
+use MercadoPago\Client\Preference\PreferenceClient;
 use Psr\Log\LoggerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -101,9 +102,17 @@ class MercadoPagoWebhookController extends AbstractController
             $logger->info('Verificación HMAC de Mercado Pago exitosa para data.id: ' . $dataId);
             $accesst = $_ENV['ENV_ACCESS_TOKEN'];
             MercadoPagoConfig::setAccessToken($accesst);
+            $logger->warning('Fallo en la verificación HMAC de Mercado Pago.', [
+                'data_id' => $dataId,
+                'x_request_id' => $xRequestId,
+                'ts' => $ts,
+                'expected_hash' => $sha,
+                'received_hash' => $hash,
+                'manifest' => $manifest,
+            ]);
             #switch((string) $notificationData['type']) {
             #    case "payment":
-                    $payment = MercadoPagoClient::find_by_id($dataId);
+                    $payment = PreferenceClient::find_by_id($dataId);
             #        break;
             #    case "plan":
             #        $plan = MercadoPagoClient::find_by_id($dataId);
