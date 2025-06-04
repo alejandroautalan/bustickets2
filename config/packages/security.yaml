@@ -31,6 +31,16 @@ security:
                 secret: "123456"
                 lifetime: 2629746
                 path: /admin
+        main:
+            pattern: .*
+            context: user
+            login_link:
+                check_route: login_check
+                check_post_only: true
+                max_uses: 1
+                lifetime: 300
+                signature_properties: ['id']
+            logout: true
 
 
 
