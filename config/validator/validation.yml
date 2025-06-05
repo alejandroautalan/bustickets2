@@ -15,3 +15,21 @@ App\Entity\Reserva:
         - Sonata\Form\Validator\Constraints\InlineConstraint:
             service: app.inlinevalidator.reserva
             method: validate
+
+App\Form\Model\Registro:
+    properties:
+        nombre:
+            - NotBlank: ~
+            - Length:
+                min: 3
+                max: 64
+        apellido:
+            - NotBlank: ~
+            - Length:
+                min: 3
+                max: 64
+        nro_documento:
+            - Range:
+                min: 1000000
+                max: 100000000
+                notInRangeMessage: "DNI no válido."
