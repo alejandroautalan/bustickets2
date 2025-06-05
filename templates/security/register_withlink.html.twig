@@ -1,0 +1,50 @@
+{% extends 'sitebase.html.twig' %}
+
+{% block body %}
+
+<div class="header">
+    <div class="home-menu pure-menu pure-menu-horizontal">
+        <a class="pure-menu-heading" href="">Bustickets</a>
+
+        <ul class="pure-menu-list">
+            <li class="pure-menu-item pure-menu-selected"><a href="#" class="pure-menu-link">Home</a></li>
+            <li class="pure-menu-item"><a href="#" class="pure-menu-link">Sign Up</a></li>
+        </ul>
+    </div>
+</div>
+
+<div class="pure-g is-center">
+    <div class="pure-u-1-3"></div>
+    <div class="pure-u-1-3">
+      <form action="{{ path('register') }}" method="POST" class="pure-form pure-form-stacked">
+        <fieldset>
+            <legend>Registro por primera vez</legend>
+            {{ form_label(form.email, null, {'attr': {'class': 'foo2'}}) }}
+            {{ form_widget(form.email )}}
+            <span class="pure-form-message">{{ form_help(form.email) }}</span>
+            <span class="pure-form-message">{{ form_errors(form.email) }}</span>
+
+            {{ form_label(form.nombre) }}
+            {{ form_widget(form.nombre)}}
+            <span class="pure-form-message">{{ form_help(form.nombre) }}</span>
+            <span class="pure-form-message">{{ form_errors(form.nombre) }}</span>
+
+            {{ form_label(form.apellido) }}
+            {{ form_widget(form.apellido )}}
+            <span class="pure-form-message">{{ form_help(form.apellido) }}</span>
+            <span class="pure-form-message">{{ form_errors(form.apellido) }}</span>
+
+            {{ form_label(form.nro_documento) }}
+            {{ form_widget(form.nro_documento)}}
+            <span class="pure-form-message">{{ form_help(form.nro_documento) }}</span>
+            <span class="pure-form-message">{{ form_errors(form.nro_documento) }}</span>
+
+            <button type="submit" class="pure-button pure-button-primary">Enviar Enlace</button>
+        </fieldset>
+        {{ form_errors(form) }}
+        {{ form_rest(form) }}
+        </form>
+    </div>
+    <div class="pure-u-1-3"></div>
+</div>
+{% endblock %}
