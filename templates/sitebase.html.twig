@@ -13,6 +13,23 @@
         {% endblock %}
     </head>
     <body>
-        {% block body %}{% endblock %}
+    {% block body %}
+        {% block topmenu %}
+        <div class="header">
+            <div class="home-menu pure-menu pure-menu-horizontal">
+                <a class="pure-menu-heading" href="">Bustickets</a>
+                <ul class="pure-menu-list">
+                    <li class="pure-menu-item pure-menu-selected"><a href="#" class="pure-menu-link">Home</a></li>
+                    <li class="pure-menu-item"><a href="#" class="pure-menu-link">Sign Up</a></li>
+                </ul>
+            </div>
+        </div>
+        {% endblock %}
+        <div class="pure-g is-center">
+            <div class="pure-u-1-3">{% block body_left %}{% endblock %}</div>
+            <div class="pure-u-1-3">{% block body_center %}{% endblock %}</div>
+            <div class="pure-u-1-3">{% block body_right %}{% endblock %}</div>
+        </div>
+    {% endblock %}
     </body>
 </html>

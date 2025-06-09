@@ -20,6 +20,7 @@ use Sonata\UserBundle\Model\UserManagerInterface;
 
 use App\Form\Model\Registro;
 use App\Form\Type\RegistroType;
+use App\Notifier\CustomLoginLinkNotification;
 
 
 class SecurityController extends AbstractController
@@ -27,6 +28,8 @@ class SecurityController extends AbstractController
     #[Route('/login', name: 'login')]
     public function requestLoginLink(NotifierInterface $notifier, LoginLinkHandlerInterface $loginLinkHandler, UserRepository $userRepository, Request $request): Response
     {
+        $email = $request->get("email", "");
+
         // check if form is submitted
         if ($request->isMethod('POST')) {
             // load the user in some way (e.g. using the form input)
@@ -43,10 +46,12 @@ class SecurityController extends AbstractController
             $loginLink = $loginLinkDetails->getUrl();
 
             // create a notification based on the login link details
-            $notification = new LoginLinkNotification(
+            // $notification = new LoginLinkNotification(
+            $notification = new CustomLoginLinkNotification(
                 $loginLinkDetails,
-                'Welcome to MY WEBSITE!' // email subject
+                'Bienvenido a Bustickets!' // email subject
             );
+            $notification->setLoginLinkDetails($loginLinkDetails);
             // create a recipient for this user
             $recipient = new Recipient($user->getEmail());
 
@@ -54,11 +59,18 @@ class SecurityController extends AbstractController
             $notifier->send($notification, $recipient);
 
             // render a "Login link is sent!" page
-            return $this->render('security/login_link_sent.html.twig');
+            return $this->redirectToRoute('login_link_sent');
         }
 
         // if it's not submitted, render the form to request the "login link"
-        return $this->render('security/request_login_link.html.twig');
+        $context = ["email" => $email];
+        return $this->render('security/request_login_link.html.twig', $context);
+    }
+
+    #[Route('/login-link-sent', name: 'login_link_sent')]
+    public function showLoginLinkSent(Request $request): Response
+    {
+        return $this->render('security/login_link_sent.html.twig');
     }
 
     #[Route('/register', name: 'register')]
@@ -91,7 +103,7 @@ class SecurityController extends AbstractController
 
             $userManager->save($user);
 
-            return $this->redirectToRoute('task_success');
+            return $this->redirectToRoute('login', ["email" => $email]);
         }
 
         $context = [

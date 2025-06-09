@@ -29,6 +29,9 @@ services:
 
     Sonata\UserBundle\Model\UserManagerInterface: "@sonata.user.manager.user"
 
+    App\EventListener\LoginSuccessListener:
+        tags: [kernel.event_listener]
+
 
     #
     # INLINE VALIDATION SERVICES

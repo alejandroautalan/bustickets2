@@ -20,6 +20,10 @@ return [
         'path' => './assets/site.js',
         'entrypoint' => true,
     ],
+    'site_landing' => [
+        'path' => './assets/site_landing.js',
+    'entrypoint' => true,
+    ],
     '@hotwired/stimulus' => [
         'version' => '3.2.2',
     ],
