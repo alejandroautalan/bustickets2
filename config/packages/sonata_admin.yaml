@@ -18,3 +18,45 @@ sonata_admin:
         role_admin: ROLE_ADMIN
         role_super_admin: ROLE_SUPER_ADMIN
 
+  dashboard:
+    blocks:
+        -
+            position: left
+            type: sonata.admin.block.admin_list
+            settings:
+                groups: [g_all]
+            roles: [ROLE_ADMIN]
+        -
+            position: left
+            type: sonata.admin.block.admin_list
+            settings:
+                groups: [fug_servicios]
+            roles: [ ROLE_FINAL_USER ]
+    groups:
+        g_all:
+            label: Admin Menu
+            items:
+                - admin.modelo
+                - admin.marca
+                - admin.pago
+                - admin.pasajero
+                - admin.provincia
+                - admin.ciudad
+                - admin.parada
+                - admin.trayecto
+                - admin.trayecto
+                - admin.trayecto_parada
+                - admin.servicio
+                - admin.transporte
+                - admin.vehiculo
+                - admin.transporte_asiento
+                - admin.boleto
+                - admin.reserva
+                - sonata.user.admin.user
+            roles: [ROLE_ADMIN]
+        fug_servicios:
+            label: Servicios
+            items:
+                - admin.servicio
+            roles: [ROLE_FINAL_USER]
+

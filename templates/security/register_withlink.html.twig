@@ -24,6 +24,11 @@
       <span class="pure-form-message">{{ form_help(form.nro_documento) }}</span>
       <span class="pure-form-message">{{ form_errors(form.nro_documento) }}</span>
 
+      {{ form_label(form.sexo) }}
+      {{ form_widget(form.sexo)}}
+      <span class="pure-form-message">{{ form_help(form.sexo) }}</span>
+      <span class="pure-form-message">{{ form_errors(form.sexo) }}</span>
+
       <button type="submit" class="pure-button pure-button-primary">Enviar Enlace</button>
   </fieldset>
   {{ form_errors(form) }}

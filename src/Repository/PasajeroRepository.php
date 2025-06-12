@@ -16,6 +16,16 @@ class PasajeroRepository extends ServiceEntityRepository
         parent::__construct($registry, Pasajero::class);
     }
 
+    public function findOneByDni($value): ?Pasajero
+    {
+        return $this->createQueryBuilder('p')
+            ->andWhere('p.dni = :val')
+            ->setParameter('val', $value)
+            ->getQuery()
+            ->getOneOrNullResult()
+        ;
+    }
+
     //    /**
     //     * @return Pasajero[] Returns an array of Pasajero objects
     //     */
