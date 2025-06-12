@@ -19,8 +19,12 @@
             <div class="home-menu pure-menu pure-menu-horizontal">
                 <a class="pure-menu-heading" href="">Bustickets</a>
                 <ul class="pure-menu-list">
-                    <li class="pure-menu-item pure-menu-selected"><a href="#" class="pure-menu-link">Home</a></li>
-                    <li class="pure-menu-item"><a href="#" class="pure-menu-link">Sign Up</a></li>
+                    <li class="pure-menu-item pure-menu-selected">
+                        <a href="{{ url("app_home") }}" class="pure-menu-link">Inicio</a>
+                    </li>
+                    <li class="pure-menu-item">
+                        <a href="{{ url("login") }}" class="pure-menu-link">Login</a>
+                    </li>
                 </ul>
             </div>
         </div>

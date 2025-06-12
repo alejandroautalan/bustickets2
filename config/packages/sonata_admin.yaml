@@ -11,3 +11,10 @@ sonata_admin:
   title_logo: images/apple-touch-icon.png
 
   show_mosaic_button:   false
+
+  security:
+        handler: sonata.admin.security.handler.role
+
+        role_admin: ROLE_ADMIN
+        role_super_admin: ROLE_SUPER_ADMIN
+
