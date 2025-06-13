@@ -41,7 +41,7 @@ file that was distributed with this source code.
             {% endif %}
 
             <div class="pull-right">
-                {% if is_granted('ROLE_FINAL_USER') %}
+                {% if is_granted('ROLE_FINAL_USER') and (not is_granted('ROLE_SUPER_ADMIN')) %}
                   {% set _logout_uri = url("app_enduser_logout") %}
                 {% endif %}
                 <a href="{{ _logout_uri }}" class="btn btn-default btn-flat">
