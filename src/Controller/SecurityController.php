@@ -17,10 +17,13 @@ use Symfony\Component\Notifier\Recipient\Recipient;
 use Symfony\Component\Security\Http\LoginLink\LoginLinkNotification;
 
 use Sonata\UserBundle\Model\UserManagerInterface;
+use Doctrine\ORM\EntityManagerInterface;
 
 use App\Form\Model\Registro;
 use App\Form\Type\RegistroType;
 use App\Notifier\CustomLoginLinkNotification;
+use App\Repository\PasajeroRepository;
+use App\Entity\Pasajero;
 
 
 class SecurityController extends AbstractController
@@ -79,7 +82,9 @@ class SecurityController extends AbstractController
         LoginLinkHandlerInterface $loginLinkHandler,
         UserRepository $userRepository,
         Request $request,
-        UserManagerInterface $userManager
+        UserManagerInterface $userManager,
+        EntityManagerInterface $entityManager,
+        PasajeroRepository $pasajeroRepository,
     ): Response
     {
         $email = $request->get('email');
@@ -90,18 +95,8 @@ class SecurityController extends AbstractController
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
             $registro = $form->getData();
-            $username = $registro->getEmail();
-            $email = $registro->getEmail();
-            $password = bin2hex(random_bytes(64 / 2));  # 32 caracteres
 
-            $user = $userManager->create();
-            $user->setUsername($username);
-            $user->setEmail($email);
-            $user->setPlainPassword($password);
-            $user->setEnabled(true);
-            $user->setSuperAdmin(false);
-
-            $userManager->save($user);
+            $userRepository->registerFinalUser($registro, $userManager, $entityManager, $pasajeroRepository);
 
             return $this->redirectToRoute('login', ["email" => $email]);
         }

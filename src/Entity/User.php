@@ -17,9 +17,24 @@ class User extends BaseUser
     #[ORM\Column(type: 'integer')]
     protected $id;
 
+    #[ORM\Column(type: 'integer', nullable:True)]
+    private ?int $dni = null;
+
     public function getId(): ?int
     {
         return $this->id;
+    }
+
+    public function getDni(): ?int
+    {
+        return $this->dni;
+    }
+
+    public function setDni(int $dni): static
+    {
+        $this->dni = $dni;
+
+        return $this;
     }
     
 }

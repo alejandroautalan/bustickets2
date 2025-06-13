@@ -10,3 +10,11 @@ sonata_user_admin_security:
 sonata_user_admin_resetting:
     resource: '@SonataUserBundle/Resources/config/routing/admin_resetting.xml'
     prefix: /admin/resetting
+
+app_enduser_logout:
+    path: /logout
+    methods: GET
+
+app_home:
+    path: /
+    methods: GET

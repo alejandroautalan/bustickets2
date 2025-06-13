@@ -9,6 +9,7 @@ class Registro
     protected ?string $nombre;
     protected ?string $apellido;
     protected ?string $nro_documento;
+    protected ?string $sexo;
 
     public function getEmail(): ?string
     {
@@ -48,6 +49,16 @@ class Registro
     public function setNroDocumento(?int $nro_documento): void
     {
         $this->nro_documento = $nro_documento;
+    }
+
+    public function getSexo(): ?string
+    {
+        return $this->sexo;
+    }
+
+    public function setSexo(?string $sexo): void
+    {
+        $this->sexo = $sexo;
     }
 
 
