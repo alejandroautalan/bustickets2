@@ -17,7 +17,7 @@ class User extends BaseUser
     #[ORM\Column(type: 'integer')]
     protected $id;
 
-    #[ORM\Column(type: 'integer')]
+    #[ORM\Column(type: 'integer', nullable:True)]
     private ?int $dni = null;
 
     public function getId(): ?int
