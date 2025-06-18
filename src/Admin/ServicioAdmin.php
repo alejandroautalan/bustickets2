@@ -22,10 +22,30 @@ use Symfony\Component\Form\Extension\Core\Type\MoneyType;
 use App\Entity\Servicio;
 use Sonata\AdminBundle\Admin\AdminInterface;
 use Knp\Menu\ItemInterface as MenuItemInterface;
-
+use App\Admin\Extension\ServicioFUAdminExtension;
 
 final class ServicioAdmin extends AbstractAdmin
 {
+    protected function isFinalUser(): bool
+    {
+        $is_superadmin = $this->isGranted('ROLE_SUPER_RADMIN');
+        $is_finaluser = $this->isGranted('ROLE_FINAL_USER');
+        return (!$is_superadmin and $is_finaluser);
+    }
+
+    protected function configure(): void
+    {
+        if ($this->isFinalUser()) {
+            $this->addExtension(new ServicioFUAdminExtension());
+        }
+    }
+
+    public function showBtnBoletos(): bool
+    {
+        if($this->isFinalUser())
+            return False;
+        return True;
+    }
 
     public function configureRoutes(RouteCollectionInterface $collection): void
     {

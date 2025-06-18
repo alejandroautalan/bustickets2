@@ -24,14 +24,14 @@ sonata_admin:
             position: left
             type: sonata.admin.block.admin_list
             settings:
-                groups: [gservicio, gtransporte, glocalizacion, gusuarios]
-            roles: [ROLE_ADMIN, ROLE_OPERATOR]
-        -
-            position: left
-            type: sonata.admin.block.admin_list
-            settings:
-                groups: [fug_servicios]
-            roles: [ ROLE_FINAL_USER ]
+                groups: [gservicio, gtransporte, glocalizacion, gusuarios, fug_servicios]
+            roles: [ROLE_USER]
+        # -
+        #     position: left
+        #     type: sonata.admin.block.admin_list
+        #     settings:
+        #         groups: [fug_servicios]
+        #     roles: [ ROLE_FINAL_USER ]
     groups:
         gservicio:
             label: Servicios
@@ -41,6 +41,7 @@ sonata_admin:
                 - admin.boleto
                 - admin.pago
                 - admin.pasajero
+            roles: [ROLE_OPERATOR, ROLE_FINAL_USER]
         gtransporte:
             label: Transporte
             items:

@@ -20,6 +20,7 @@ use Sonata\Form\Type\CollectionType;
 use App\Admin\BaseAdmin;
 use App\Form\Type\AsientoSelectorType;
 
+use App\Entity\Pasajero;
 use App\Entity\Reserva;
 use App\Entity\Servicio;
 use App\Entity\Boleto;
@@ -32,14 +33,13 @@ use Symfony\Component\Form\Extension\Core\Type\FormType;
 
 final class ReservaAdmin extends BaseAdmin
 {
-    private Security $security; // Declara la propiedad como tipo Security
-
-    // Autowiring: Symfony inyectará automáticamente el servicio 'security'
-    public function __construct(string $code, string $class, string $baseControllerName, Security $security)
+    protected function isFinalUser(): bool
     {
-        parent::__construct($code, $class, $baseControllerName);
-        $this->security = $security;
+        $is_superadmin = $this->isGranted('ROLE_SUPER_RADMIN');
+        $is_finaluser = $this->isGranted('ROLE_FINAL_USER');
+        return (!$is_superadmin and $is_finaluser);
     }
+
     protected function configureDatagridFilters(DatagridMapper $filter): void
     {
         $filter
@@ -161,7 +161,7 @@ final class ReservaAdmin extends BaseAdmin
         if (!$object instanceof Reserva) {
             return;
         }
-        $user = $this->security->getUser();
+        $user = $this->getUser();
         if ($user instanceof User) {
             $object->setUser($user);
         }
@@ -169,7 +169,7 @@ final class ReservaAdmin extends BaseAdmin
 
     protected function postUpdate(object $object): void
     {
-        $user = $this->security->getUser();
+        $user = $this->getUser();
         $request = $this->getRequest();
         $finalize = $request->get('btn_finalize', null);
         if(null !== $finalize) {
@@ -238,7 +238,6 @@ final class ReservaAdmin extends BaseAdmin
 
     protected function preUpdate(object $reserva): void
     {
-
         $request = $this->getRequest();
         $toggle_asiento = $request->get('toggle_asiento', null);
         if(null !== $toggle_asiento) {
@@ -255,7 +254,7 @@ final class ReservaAdmin extends BaseAdmin
     protected function addOrRemovePago(Reserva $reserva): void
     {
         // Esto se ejecuta antes de guardar el formulario
-        $user = $this->security->getUser();
+        $user = $this->getUser();
         $has_boletos = $reserva->getBoletos()->count() > 0;
         $has_pagos = $reserva->getPagos()->count() > 0;
         if($has_boletos && !$has_pagos) {
@@ -284,6 +283,14 @@ final class ReservaAdmin extends BaseAdmin
     {
         // Esto se ejecuta ante de guardar el formulario
         $asientoRepo = $this->getEntityRepository(TransporteAsiento::class);
+        $pasajero = null;
+        if($this->isFinalUser()) {
+            $userRepo = $this->getEntityRepository(User::class);
+            $pasajero = $userRepo->getPasajeroForUser(
+                $this->getUser(),
+                $this->getEntityRepository(Pasajero::class)
+            );
+        }
 
         $reserva = $object;
         $servicio = $reserva->getServicio();
@@ -315,6 +322,7 @@ final class ReservaAdmin extends BaseAdmin
             ->setOrigen($trayecto->getOrigen())
             ->setDestino($trayecto->getDestino())
             ->setReserva($reserva)
+            ->setPasajero($pasajero)
             ->setEstado(Boleto::STATE_DRAFT)
             ;
             $entityManager->persist($boleto);
