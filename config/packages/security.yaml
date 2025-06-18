@@ -31,6 +31,16 @@ security:
                 secret: "123456"
                 lifetime: 2629746
                 path: /admin
+        main:
+            pattern: .*
+            context: user
+            login_link:
+                check_route: login_check
+                check_post_only: true
+                max_uses: 1
+                lifetime: 300
+                signature_properties: ['id']
+            logout: true
 
 
 
@@ -41,9 +51,14 @@ security:
         - { path: ^/admin/request$, role: PUBLIC_ACCESS }
         - { path: ^/admin/check-email$, role: PUBLIC_ACCESS }
         - { path: ^/admin/reset/.*$, role: PUBLIC_ACCESS }
-        - { path: ^/admin/, role: ROLE_ADMIN }
+        # - { path: ^/admin/, role: ROLE_ADMIN }
+        - { path: ^/admin/, role: ROLE_USER }
 
     role_hierarchy:
+        ROLE_FINAL_USER:
+            - ROLE_USER
+        ROLE_OPERATOR:
+            - ROLE_USER
         ROLE_ADMIN:
             - ROLE_USER
             - ROLE_SONATA_ADMIN
@@ -51,7 +66,5 @@ security:
         ROLE_SUPER_ADMIN:
             - ROLE_ADMIN
             - ROLE_ALLOWED_TO_SWITCH
-        ROLE_BOLETO:
-            - ROLE_USER
-            - ROLE_SONATA_ADMIN
-            - ROLE_SONATA_ADMIN_BOLETO_LIST    
+            - ROLE_OPERATOR
+            - ROLE_FINAL_USER

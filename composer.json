@@ -51,7 +51,9 @@
         "symfony/web-link": "6.4.*",
         "symfony/webhook": "6.4.*",
         "symfony/yaml": "6.4.*",
+        "twig/cssinliner-extra": "*",
         "twig/extra-bundle": "^2.12|^3.0",
+        "twig/inky-extra": "*",
         "twig/twig": "^2.12|^3.0"
     },
     "config": {

@@ -1,0 +1,11 @@
+{% extends 'sitebase.html.twig' %}
+
+{% block body_center %}
+<form action="{{ path('login') }}" method="POST" class="pure-form pure-form-aligned">
+    <fieldset>
+    <legend>Ingresar con enlace por correo</legend>
+        <input type="email" name="email" value="{{ email }}" placeholder="Tu correo electrónico aquí.">
+        <button type="submit">Enviar Enlace</button>
+    </fieldset>
+</form>
+{% endblock %}

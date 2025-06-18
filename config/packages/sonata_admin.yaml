@@ -11,3 +11,59 @@ sonata_admin:
   title_logo: images/apple-touch-icon.png
 
   show_mosaic_button:   false
+
+  security:
+        handler: sonata.admin.security.handler.role
+
+        role_admin: ROLE_ADMIN
+        role_super_admin: ROLE_SUPER_ADMIN
+
+  dashboard:
+    blocks:
+        -
+            position: left
+            type: sonata.admin.block.admin_list
+            settings:
+                groups: [gservicio, gtransporte, glocalizacion, gusuarios]
+            roles: [ROLE_ADMIN, ROLE_OPERATOR]
+        -
+            position: left
+            type: sonata.admin.block.admin_list
+            settings:
+                groups: [fug_servicios]
+            roles: [ ROLE_FINAL_USER ]
+    groups:
+        gservicio:
+            label: Servicios
+            items:
+                - admin.servicio
+                - admin.reserva
+                - admin.boleto
+                - admin.pago
+                - admin.pasajero
+        gtransporte:
+            label: Transporte
+            items:
+                - admin.transporte
+                - admin.vehiculo
+                - admin.marca
+                - admin.modelo
+                # - admin.transporte_asiento
+        glocalizacion:
+            label: Localización
+            items:
+                - admin.provincia
+                - admin.ciudad
+                - admin.trayecto
+                - admin.trayecto_parada
+                - admin.parada
+        gusuarios:
+            label: Usuarios y permisos
+            items:
+                - sonata.user.admin.user
+        fug_servicios:
+            label: Servicios
+            items:
+                - admin.servicio
+            roles: [ROLE_FINAL_USER]
+

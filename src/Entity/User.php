@@ -35,6 +35,9 @@ class User extends BaseUser
         $this->pagos = new ArrayCollection();
     }
 
+    #[ORM\Column(type: 'integer', nullable:True)]
+    private ?int $dni = null;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -96,6 +99,18 @@ class User extends BaseUser
                 $pago->setUser(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getDni(): ?int
+    {
+        return $this->dni;
+    }
+
+    public function setDni(int $dni): static
+    {
+        $this->dni = $dni;
 
         return $this;
     }

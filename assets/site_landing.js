@@ -5,5 +5,5 @@
  * which should already be in your base.html.twig.
  */
 import 'purecss';
-import './styles/site.css'
+import './styles/site_landing.css'
 console.log('This log comes from assets/site.js - welcome to AssetMapper! 🎉');
