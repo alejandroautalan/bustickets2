@@ -16,6 +16,8 @@ use Sonata\Form\Type\CollectionType;
 use App\Admin\BaseAdmin;
 use App\Form\Type\AsientoSelectorType;
 
+use App\Entity\User;
+use App\Entity\Pasajero;
 use App\Entity\Reserva;
 use App\Entity\Servicio;
 use App\Entity\Boleto;
@@ -26,6 +28,13 @@ use MercadoPago\MercadoPagoConfig;
 
 final class ReservaAdmin extends BaseAdmin
 {
+    protected function isFinalUser(): bool
+    {
+        $is_superadmin = $this->isGranted('ROLE_SUPER_RADMIN');
+        $is_finaluser = $this->isGranted('ROLE_FINAL_USER');
+        return (!$is_superadmin and $is_finaluser);
+    }
+
     protected function configureDatagridFilters(DatagridMapper $filter): void
     {
         $filter
@@ -236,6 +245,14 @@ final class ReservaAdmin extends BaseAdmin
     {
         // Esto se ejecuta ante de guardar el formulario
         $asientoRepo = $this->getEntityRepository(TransporteAsiento::class);
+        $pasajero = null;
+        if($this->isFinalUser()) {
+            $userRepo = $this->getEntityRepository(User::class);
+            $pasajero = $userRepo->getPasajeroForUser(
+                $this->getUser(),
+                $this->getEntityRepository(Pasajero::class)
+            );
+        }
 
         $reserva = $object;
         $servicio = $reserva->getServicio();
@@ -267,6 +284,7 @@ final class ReservaAdmin extends BaseAdmin
             ->setOrigen($trayecto->getOrigen())
             ->setDestino($trayecto->getDestino())
             ->setReserva($reserva)
+            ->setPasajero($pasajero)
             ->setEstado(Boleto::STATE_DRAFT)
             ;
             $entityManager->persist($boleto);

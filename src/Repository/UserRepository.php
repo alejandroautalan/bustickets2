@@ -21,6 +21,12 @@ class UserRepository extends ServiceEntityRepository
         parent::__construct($registry, User::class);
     }
 
+    public function getPasajeroForUser($user, PasajeroRepository $pasajeroRepository)
+    {
+        $pasajero = $pasajeroRepository->findOneByDni($user->getDni());
+        return $pasajero;
+    }
+
     public function registerFinalUser(
         Registro $registro,
         UserManagerInterface $userManager,
@@ -42,6 +48,8 @@ class UserRepository extends ServiceEntityRepository
             "ROLE_FINAL_USER",
             "ROLE_ADMIN_SERVICIO_LIST",
             "ROLE_ADMIN_SERVICIO_VIEW",
+            "ROLE_ADMIN_RESERVA_CREATE",
+            "ROLE_ADMIN_RESERVA_EDIT",
         ];
         foreach($roles as $role) {
             $user->addRole($role);
