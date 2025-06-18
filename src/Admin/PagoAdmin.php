@@ -65,10 +65,10 @@ final class PagoAdmin extends AbstractAdmin
     {
         $form
             #->add('id')
-            ->add('tipo', ChoiceType::class, [
-                'choices' => Pago::getTipoPagoChoices(),
-                  'label' => 'Tipo'])
-            ->add('numeroComprobante')
+            #->add('tipo', ChoiceType::class, [
+            #    'choices' => Pago::getTipoPagoChoices(),
+            #      'label' => 'Tipo'])
+            #->add('numeroComprobante')
             ->add('monto', MoneyType::class, [
                 'divisor' => 100,
                 'disabled' => true,

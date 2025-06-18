@@ -42,7 +42,7 @@ class Boleto
     #[ORM\JoinColumn(nullable: false)]
     private ?Servicio $servicio = null;
 
-    #[ORM\ManyToOne]
+    #[ORM\ManyToOne(targetEntity: Pasajero::class, cascade: ['persist'])]
     private ?Pasajero $pasajero = null;
 
     #[ORM\ManyToOne(inversedBy: 'boletos')]

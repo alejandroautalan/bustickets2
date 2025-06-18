@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Entity\Boleto;
 use App\Entity\Reserva;
 use Doctrine\ORM\EntityManagerInterface;
 use MercadoPago\Client\MercadoPagoClient;
@@ -37,7 +38,7 @@ class MercadoPagoWebhookController extends AbstractController
             return new Response('Headers faltantes.', Response::HTTP_BAD_REQUEST);
         }
 
-        #$logger->info('Query parameters recibidos:', $request->query->all());
+        $logger->info('Query parameters recibidos:', $request->query->all());
         $dataId = $request->query->get('data_id', '');
         $notificationType = $request->query->get('type', '');
         // 3. Separar la x-signature en partes
@@ -68,6 +69,7 @@ class MercadoPagoWebhookController extends AbstractController
                 'xSignature' => $xSignature,
                 'parts' => $parts,
             ]);
+            $logger->warning('X-Signature malformado.');
             return new Response('X-Signature malformado.', Response::HTTP_BAD_REQUEST);
         }
 
@@ -90,17 +92,28 @@ class MercadoPagoWebhookController extends AbstractController
             $logger->info('Verificación HMAC de Mercado Pago exitosa para data.id: ' . $dataId);
             $accesst = $_ENV['ENV_ACCESS_TOKEN'];
             MercadoPagoConfig::setAccessToken($accesst);
-            $logger->warning('Datos del manifest.', [
-                'data_id' => $dataId,
-                'x_request_id' => $xRequestId,
-                'ts' => $ts,
-                'expected_hash' => $sha,
-                'received_hash' => $hash,
-                'manifest' => $manifest,
-            ]);
             switch($notificationType) {
                 case "payment":
-                    $payment = PreferenceClient::find_by_id($dataId);
+                    $payment = new PaymentClient();
+                    $paymentObject =  $payment->get($dataId)->additional_info;
+                    #$logger->info('ALL: '.json_encode($payment->get($dataId)));
+                    #$logger->info('ID: '.$paymentObject->items[0]->id);
+                    $status = $payment->get($dataId)->status;
+                    $logger->info('STATUS: '.$status);
+                    if($status === 'approved' or $status === 'authorized'):
+                        $reserva = $entityManager->getRepository(Reserva::class)->find($paymentObject->items[0]->id);
+                        ##cambiar estado a reserva y agregar pago_id
+                        $reserva->setPaymentId($dataId);
+                        $reserva->setEstado(Reserva::STATE_COMPLETED);
+                        $entityManager->persist($reserva);
+                        ##cambiar estado a boletos
+                        foreach ($reserva->getBoletos() as $boleto):
+                            $boleto->setEstado(Boleto::STATE_RESERVED);
+                            $entityManager->persist($boleto);
+                        endforeach;
+                        $entityManager->flush();
+                    endif;
+                    return new Response('Webhook procesado con éxito.', Response::HTTP_OK);
                     break;
             #    case "plan":
             #        $plan = MercadoPagoClient::find_by_id($dataId);
@@ -115,12 +128,7 @@ class MercadoPagoWebhookController extends AbstractController
             #        // $_POST contiene la informaciòn relacionada a la notificaciòn.
             #        break;
             }
-            $logger->info('Payment: ' . json_encode($payment));
-            $reserva = $entityManager->getRepository(Reserva::class)->findBy(['payment_id' => $payment->id]);
-            $reserva->setEstado(Reserva::STATE_COMPLETED);
-            $entityManager->persist($reserva);
-            $entityManager->flush();
-            return new Response('Webhook procesado con éxito.', Response::HTTP_OK);
+
         } else {
             // Verificación HMAC fallida
             $logger->warning('Fallo en la verificación HMAC de Mercado Pago.', [
@@ -134,6 +142,75 @@ class MercadoPagoWebhookController extends AbstractController
             return new Response('Fallo en la verificación de firma.', Response::HTTP_UNAUTHORIZED);
         }
     }
+
+    #[Route('/mercadopago/backurl', name: 'mercadopago_backurl', methods: ['GET'])]
+    public function backUrl(Request $request, EntityManagerInterface $entityManager, LoggerInterface $logger): Response
+    {
+        // Loggear todos los parámetros recibidos para depuración
+        $queryParams = $request->query->all();
+        $logger->info('Mercado Pago Return URL recibida.', $queryParams);
+
+        // Obtener los parámetros relevantes
+        $collectionId = $request->query->get('collection_id');
+        $collectionStatus = $request->query->get('collection_status');
+        $paymentId = $request->query->get('payment_id'); // A menudo es lo mismo que collection_id
+        $status = $request->query->get('status'); // Estado general
+        $externalReference = $request->query->get('external_reference'); // Tu referencia externa si la enviaste
+        $preferenceId = $request->query->get('preference_id');
+        ##actulizo payment_id####
+        $reserva = $entityManager->getRepository(Reserva::class)->findOneBy(['preference_id' => $preferenceId]);
+        foreach ($reserva->getBoletos() as $boleto):
+            $b = $boleto->getAsiento().'<br>';
+        endforeach;
+        #$reserva->setPaymentId($paymentId);
+        #$entityManager->persist($reserva);
+        #$entityManager->flush();
+        // Puedes agregar más parámetros según tus necesidades, como:
+        $paymentType = $request->query->get('payment_type');
+        $merchantOrderId = $request->query->get('merchant_order_id');
+        $siteId = $request->query->get('site_id');
+        $processingMode = $request->query->get('processing_mode');
+        $merchantAccountId = $request->query->get('merchant_account_id');
+
+        // Lógica de tu aplicación basada en el estado del pago
+        $message = '';
+        switch ($collectionStatus) {
+            case 'approved':
+                $message = '¡Tu pago ha sido aprobado! ID de la transacción: ' . $paymentId;
+                // Aquí podrías redirigir a una página de "Gracias por tu compra"
+                // O iniciar alguna lógica de actualización si no tienes webhooks confiables
+                break;
+            case 'rejected':
+                $message = 'Tu pago fue rechazado. Intenta de nuevo o prueba con otro medio de pago.';
+                // Aquí podrías redirigir a una página de "Pago rechazado"
+                break;
+            case 'pending':
+                $message = 'Tu pago está pendiente. Esperando confirmación.';
+                // Aquí podrías redirigir a una página de "Pago pendiente"
+                break;
+            default:
+                $message = 'Estado de pago desconocido o no especificado.';
+                break;
+        }
+
+        $logger->info('Lógica de retorno de Mercado Pago ejecutada.', [
+            'collection_status' => $collectionStatus,
+            'external_reference' => $externalReference,
+            'message_to_user' => $message,
+            'boletos' => $b,
+        ]);
+
+        return $this->render('ReservaAdmin/pasajero_summary.html.twig', [
+            'mensaje' => $message,
+            'collectionId' => $collectionId,
+            'externalReference' => $externalReference,
+            'boletos' => $b,
+            'reserva' => $reserva
+        ]);
+
+    }
+
+
 
     #[Route('/mercadopago/return', name: 'mercadopago_return', methods: ['GET'])]
     public function returnUrl(Request $request, EntityManagerInterface $entityManager, LoggerInterface $logger): Response

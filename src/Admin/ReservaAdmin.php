@@ -4,7 +4,10 @@ declare(strict_types=1);
 
 namespace App\Admin;
 
+use App\Entity\User;
+use MercadoPago\Client\Payment\PaymentClient;
 use MercadoPago\Client\Preference\PreferenceClient;
+use MercadoPago\Resources\Preference;
 use Psr\Log\LoggerInterface;
 use Sonata\AdminBundle\Admin\AbstractAdmin;
 use Sonata\AdminBundle\Datagrid\DatagridMapper;
@@ -22,10 +25,20 @@ use App\Entity\Boleto;
 use App\Entity\Pago;
 use App\Entity\TransporteAsiento;
 use MercadoPago\MercadoPagoConfig;
+use Symfony\Bundle\SecurityBundle\Security;
+use Symfony\Component\Form\Extension\Core\Type\FormType;
 
 
 final class ReservaAdmin extends BaseAdmin
 {
+    private Security $security; // Declara la propiedad como tipo Security
+
+    // Autowiring: Symfony inyectará automáticamente el servicio 'security'
+    public function __construct(string $code, string $class, string $baseControllerName, Security $security)
+    {
+        parent::__construct($code, $class, $baseControllerName);
+        $this->security = $security;
+    }
     protected function configureDatagridFilters(DatagridMapper $filter): void
     {
         $filter
@@ -37,13 +50,18 @@ final class ReservaAdmin extends BaseAdmin
     protected function configureListFields(ListMapper $list): void
     {
         $list
-            ->add('id')
-            ->add('estado')
+            #->add('id')
+            ->add('estado', null, ['template' => 'ReservaAdmin/estado.html.twig'])
+            ->add('origen')
+            ->add('servicio.partida', null, ['label' => 'Dia y Hora'])
+            ->add('destino')
+            ->add('servicio.llegada', null, ['label' => 'Dia y Hora'])
+            ->add('boletos', null, ['Boletos'])
             ->add(ListMapper::NAME_ACTIONS, null, [
                 'actions' => [
-                    'show' => [],
-                    'edit' => [],
-                    'delete' => []
+                    #'show' => [],
+                    #'edit' => [],
+                    #'delete' => []
                 ],
             ]);
     }
@@ -107,14 +125,14 @@ final class ReservaAdmin extends BaseAdmin
        ->ifEnd()
        ->ifTrue($estado == Reserva::STATE_PENDING_PAYMENT)
        ->with('Reserva - Pago')
-       ->add('pagos', CollectionType::class, [
-           'label' => 'Pago',
-           'btn_add' => false,
-           'type_options' => [
-               'label' => false,
+           ->add('pagos', CollectionType::class, [
+               'label' => 'Pago',
                'btn_add' => false,
-               'delete' => false,],
-        ])
+               'type_options' => [
+                   'label' => false,
+                   'btn_add' => false,
+                   'delete' => false,],
+            ])
        ->ifEnd()
 
         ;
@@ -128,8 +146,20 @@ final class ReservaAdmin extends BaseAdmin
         ;
     }
 
+    public function prePersist(object $object): void
+    {
+        if (!$object instanceof Reserva) {
+            return;
+        }
+        $user = $this->security->getUser();
+        if ($user instanceof User) {
+            $object->setUser($user);
+        }
+    }
+
     protected function postUpdate(object $object): void
     {
+        $user = $this->security->getUser();
         $request = $this->getRequest();
         $finalize = $request->get('btn_finalize', null);
         if(null !== $finalize) {
@@ -144,27 +174,32 @@ final class ReservaAdmin extends BaseAdmin
             $accessToken = $_ENV['ENV_ACCESS_TOKEN'];
             MercadoPagoConfig::setAccessToken($accessToken);
             $client = new PreferenceClient();
-            $preference = $client->create([
-                "items"=> array(
-                    array(
-                        "title" => "El Santigueño Bus",
-                        "quantity" => 1,
-                        "unit_price" => ($pago->getImporteRecibido()/100)
-                    )
-                )
-            ]);
+            $itemsForPreference = [
+                [
+                    "id" => (string)$reserva->getId(), // Asegúrate de que el ID sea string
+                    "title" => "El Santigueño Bus",
+                    "quantity" => 1,
+                    "unit_price" => (float)($pago->getImporteRecibido() / 100) // Asegúrate de que sea float
+                ]
+            ];
 
-            $preference->back_urls = array(
-                "success" => "https://xn--elsantiagueo-khb.com.ar/mercadopago/return",
-                "failure" => "https://xn--elsantiagueo-khb.com.ar/mercadopago/return",
-                "pending" => "https://xn--elsantiagueo-khb.com.ar/mercadopago/return",
-            );
-            
-            $preference->auto_return = "all";
+            $requestData = [
+                "items" => $itemsForPreference,
+                "back_urls" => [
+                    "success" => "https://29bb-190-151-173-219.ngrok-free.app/mercadopago/backurl",
+                    "failure" => "https://29bb-190-151-173-219.ngrok-free.app/mercadopago/backurl",
+                    "pending" => "https://29bb-190-151-173-219.ngrok-free.app/mercadopago/backurl",
+                ],
+                "external_reference" => (string)$reserva->getId(),
+                "auto_return" => "all", // "all" o "approved"
+                // Otros parámetros que necesites: payer, payment_methods, etc.
+            ];
+            $preference = $client->create($requestData);
             $entityManager = $this->getEntityManager(Reserva::class);
             $reserva->setUrlpago($preference->init_point);#init_point
             $reserva->setPreferenceId($preference->id);
-            #$reserva->setPaymentId('123456');
+            $reserva->setUser($user);
+            #var_dump($preference);#$reserva->setPaymentId('123456');
             $reserva->setEstado(Reserva::STATE_PENDING_PAYMENT);
             $entityManager->persist($reserva);
             $entityManager->flush();
@@ -193,6 +228,7 @@ final class ReservaAdmin extends BaseAdmin
 
     protected function preUpdate(object $reserva): void
     {
+
         $request = $this->getRequest();
         $toggle_asiento = $request->get('toggle_asiento', null);
         if(null !== $toggle_asiento) {
@@ -208,7 +244,8 @@ final class ReservaAdmin extends BaseAdmin
 
     protected function addOrRemovePago(Reserva $reserva): void
     {
-        // Esto se ejecuta ante de guardar el formulario
+        // Esto se ejecuta antes de guardar el formulario
+        $user = $this->security->getUser();
         $has_boletos = $reserva->getBoletos()->count() > 0;
         $has_pagos = $reserva->getPagos()->count() > 0;
         if($has_boletos && !$has_pagos) {
@@ -218,6 +255,7 @@ final class ReservaAdmin extends BaseAdmin
             $total = $reserva->calcularMontoTotal();
             $porcentaje = $total*0.1;
             $pago->setMonto($total);
+            $pago->setUser($user);
             $pago->setImporteRecibido((int)$porcentaje);
             $reserva->addPago($pago);
             $entityManager->persist($pago);

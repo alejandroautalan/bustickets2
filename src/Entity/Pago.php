@@ -14,11 +14,13 @@ class Pago
     public const PAYMENT_TYPE_UNSPECIFIED = 0;
     public const PAYMENT_TYPE_CASH = 1;
     public const PAYMENT_TYPE_TRANSFER = 2;
+    public const PAYMENT_TYPE_MERCADOPAGO = 3;
 
     public static $tipo_pagos = [
         self::PAYMENT_TYPE_UNSPECIFIED => 'No especificado',
         self::PAYMENT_TYPE_CASH => 'Efectivo',
         self::PAYMENT_TYPE_TRANSFER => 'Transferencia',
+        self::PAYMENT_TYPE_MERCADOPAGO => 'MercadoPago',
     ];
 
     #[ORM\Id]
@@ -38,8 +40,6 @@ class Pago
     #[ORM\Column(type: Types::TEXT, nullable: true)]
     private ?string $observacion = null;
 
-    #[ORM\Column(nullable: true)]
-    private ?int $usuario = null;
 
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $numero_comprobante = null;
@@ -50,9 +50,13 @@ class Pago
     #[ORM\ManyToOne(inversedBy: 'pagos')]
     private ?Reserva $reserva = null;
 
+    #[ORM\ManyToOne(inversedBy: 'pagos')]
+    private ?User $user = null;
+
     public function __construct()
     {
         $this->fecha = new \DateTime();
+        $this->setTipo(self::PAYMENT_TYPE_MERCADOPAGO);
     }
 
     public function __toString()
@@ -117,18 +121,6 @@ class Pago
         return $this;
     }
 
-    public function getUsuario(): ?int
-    {
-        return $this->usuario;
-    }
-
-    public function setUsuario(?int $usuario): static
-    {
-        $this->usuario = $usuario;
-
-        return $this;
-    }
-
     public function getNumeroComprobante(): ?string
     {
         return $this->numero_comprobante;
@@ -161,6 +153,18 @@ class Pago
     public function setReserva(?Reserva $reserva): static
     {
         $this->reserva = $reserva;
+
+        return $this;
+    }
+
+    public function getUser(): ?User
+    {
+        return $this->user;
+    }
+
+    public function setUser(?User $user): static
+    {
+        $this->user = $user;
 
         return $this;
     }

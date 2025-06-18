@@ -1,0 +1,8 @@
+{% extends '@SonataAdmin/CRUD/base_list_field.html.twig' %}
+{% block field %}
+    {% set badge = { 0 : 'label label-default', 1 : 'label label-primary', 2 : 'label label-success'} %}
+    {% set nombre = {0 : 'Pago No Aprobado', 1 : 'Pendiente de Aprobacion', 2 : 'Pago Aprobado'} %}
+    {% if object.estado is not null %}
+        <span class="{{ badge[object.estado] }}">{{ nombre[object.estado] }}</span>
+    {% endif %}
+{% endblock %}

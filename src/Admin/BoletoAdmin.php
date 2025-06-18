@@ -16,6 +16,8 @@ use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\MoneyType;
 use Symfony\Component\Form\Extension\Core\DataTransformer\MoneyToLocalizedStringTransformer;
 use App\Entity\Boleto;
+use App\Entity\Pasajero;
+use App\Form\Type\PasajeroType;
 
 
 final class BoletoAdmin extends BaseAdmin
@@ -93,16 +95,22 @@ final class BoletoAdmin extends BaseAdmin
             #->add('viaje_fecha')
             #->add('viaje_hora')
             ->add('asiento', null, ['disabled' => true])
-            ->add('pasajero', ModelListType::class)
+            ->add('pasajero',  PasajeroType::class, [
+                'label' => false, // Puedes mantenerlo sin etiqueta principal
+                'by_reference' => false,
+                'empty_data' => function () {
+                    return new Pasajero();
+                },
+            ])
             ->add('costo', MoneyType::class, [
                 'divisor' => 100,
                 'currency' => 'ARS',
                 'disabled' => true,
             ])
-            ->add('estado', ChoiceType::class, [
-                'choices' => Boleto::getEstadoChoices(),
-                'disabled' => true,
-            ])
+            #->add('estado', ChoiceType::class, [
+            #    'choices' => Boleto::getEstadoChoices(),
+            #    'disabled' => true,
+            #])
         ;
     }
 

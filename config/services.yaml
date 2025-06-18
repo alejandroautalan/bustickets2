@@ -161,3 +161,7 @@ services:
             - { name: sonata.admin, model_class: App\Entity\Reserva, controller: App\Controller\ReservaAdminController, manager_type: orm, group: admin, label: Reserva }
         calls:
           - [setTemplate, ['edit', 'ReservaAdmin\edit.html.twig']]
+        arguments:
+            - 'admin.reserva'
+            - App\Entity\Reserva
+            - ''

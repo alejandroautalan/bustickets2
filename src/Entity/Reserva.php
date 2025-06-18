@@ -52,6 +52,9 @@ class Reserva
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $preference_id = null;
 
+    #[ORM\ManyToOne(inversedBy: 'reservas')]
+    private ?User $user = null;
+
     public function __construct()
     {
         $this->boletos = new ArrayCollection();
@@ -240,6 +243,18 @@ class Reserva
     public function setPreferenceId(?string $preference_id): static
     {
         $this->preference_id = $preference_id;
+
+        return $this;
+    }
+
+    public function getUser(): ?User
+    {
+        return $this->user;
+    }
+
+    public function setUser(?User $user): static
+    {
+        $this->user = $user;
 
         return $this;
     }
