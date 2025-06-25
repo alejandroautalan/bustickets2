@@ -22,6 +22,7 @@ class AsientoSelectorType extends AbstractType
             'transporte', #
             'asientos_libres', # numeros de asientos libres
             'asientos_reserva',
+            'idreserva',
         ));
     }
 
@@ -36,6 +37,7 @@ class AsientoSelectorType extends AbstractType
 
         $builder->setAttribute("transporte", $options['transporte']);
         $builder->setAttribute("asientos_libres", $options['asientos_libres']);
+        $builder->setAttribute("idreserva", $options['idreserva']);
         $builder->setAttribute("asientos_reserva", $options['asientos_reserva']);
     }
 
@@ -44,6 +46,7 @@ class AsientoSelectorType extends AbstractType
         parent::buildView($view, $form, $options);
 
         $view->vars['transporte'] = $form->getConfig()->getAttribute('transporte');
+        $view->vars['idreserva'] = $form->getConfig()->getAttribute('idreserva');
         $view->vars['asientos_libres'] = $form->getConfig()->getAttribute('asientos_libres');
         $view->vars['asientos_reserva'] = $form->getConfig()->getAttribute('asientos_reserva');
     }

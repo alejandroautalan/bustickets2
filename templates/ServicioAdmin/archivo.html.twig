@@ -1,4 +1,6 @@
+{% if is_granted('ROLE_SUPER_ADMIN') %}
 <a href="{{ admin.generateObjectUrl('archivo', object) }}" class="btn btn-sm btn-success view_link" title="{{ 'Archivo csv'|trans({}, 'SonataAdminBundle') }}" >
     <i class="fas fa-list-alt"></i>
     Archivo
 </a>
+{% endif %}

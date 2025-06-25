@@ -13,6 +13,7 @@ use Sonata\AdminBundle\Admin\AbstractAdmin;
 use Sonata\AdminBundle\Datagrid\DatagridMapper;
 use Sonata\AdminBundle\Datagrid\ListMapper;
 use Sonata\AdminBundle\Form\FormMapper;
+use Sonata\AdminBundle\Route\RouteCollectionInterface;
 use Sonata\AdminBundle\Show\ShowMapper;
 use Sonata\Form\Type\CollectionType;
 
@@ -45,6 +46,13 @@ final class ReservaAdmin extends BaseAdmin
             ->add('id')
             ->add('estado')
         ;
+    }
+
+    protected function configureRoutes(RouteCollectionInterface $collection): void
+    {
+        $collection->add('addBoleto', 'addBoleto');
+        $collection->add('modalForm', 'modalForm');
+
     }
 
     protected function configureListFields(ListMapper $list): void
@@ -106,10 +114,12 @@ final class ReservaAdmin extends BaseAdmin
             'transporte' => $servicio->getTransporte(),
             'asientos_libres' => $asientos_libres,
             'asientos_reserva' => $asientos_reserva,
+            'idreserva' => $reserva->getId(),
             'required' => false,
             'mapped' => false])
        ->add('boletos', CollectionType::class, [
            'btn_add' => false,
+           'disabled' => true,
            'type_options' => [
                 'label' => false,
                'btn_add' => false,
@@ -186,11 +196,11 @@ final class ReservaAdmin extends BaseAdmin
             $requestData = [
                 "items" => $itemsForPreference,
                 "back_urls" => [
-                    "success" => "https://29bb-190-151-173-219.ngrok-free.app/mercadopago/backurl",
-                    "failure" => "https://29bb-190-151-173-219.ngrok-free.app/mercadopago/backurl",
-                    "pending" => "https://29bb-190-151-173-219.ngrok-free.app/mercadopago/backurl",
+                    "success" => $_ENV['ENV_BACK_URL'],
+                    "failure" => $_ENV['ENV_BACK_URL'],
+                    "pending" => $_ENV['ENV_BACK_URL'],
                 ],
-                "external_reference" => (string)$reserva->getId(),
+                "external_reference" => 'reserva_'.$reserva->getId().'_usuario_'.$user->getId(),
                 "auto_return" => "all", // "all" o "approved"
                 // Otros parámetros que necesites: payer, payment_methods, etc.
             ];

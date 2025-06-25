@@ -1,4 +1,6 @@
+{% if is_granted('ROLE_SUPER_ADMIN') or is_granted('ROLE_OPERATOR')%}
 <a href="{{ path('admin_app_servicio_boleto_list', {'id': object.id}) }}" class="btn btn-sm btn-default view_link" title="{{ 'Listar Boletos'|trans({}, 'SonataAdminBundle') }}" >
     <i class="fas fa-list-alt"></i>
     Boletos
 </a>
+{% endif %}

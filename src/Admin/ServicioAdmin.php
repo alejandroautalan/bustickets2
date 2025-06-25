@@ -33,7 +33,7 @@ final class ServicioAdmin extends AbstractAdmin
     protected function configureDatagridFilters(DatagridMapper $filter): void
     {
         $filter
-            ->add('id')
+            #->add('id')
             ->add('nombre')
             ->add('partida')
             ->add('llegada')
@@ -61,11 +61,11 @@ final class ServicioAdmin extends AbstractAdmin
         ];
 
         $list
-            ->add('id')
-            ->add('nombre')
+            #->add('id')
+            ->add('nombre',  null, ['label' => 'Servicio'])
             ->add('partida')
             ->add('llegada')
-            ->add('estado', null, )
+            #->add('estado', null, )
             ->add(ListMapper::NAME_ACTIONS, null, [
                 'actions' => $actions,
             ]);

@@ -1,0 +1,49 @@
+{% extends '@SonataAdmin/standard_layout.html.twig' %}
+{% set badge = { 0 : 'label label-danger', 1 : 'label label-primary', 2 : 'label label-success'} %}
+{% set nombre = {0 : 'Rechazado', 1 : 'Pendiente de Aprobacion', 2 : 'Pago Aprobado'} %}
+{% block sonata_admin_content %}
+{% if reservas is not null %}
+    <h4>Resumen de la Reserva</h4>
+    {% for reserva in reservas %}
+    <div class="row-cols-2">
+        <div class="well well-sm">
+            <dl class="dl-horizontal">
+                <dt>Reserva:</dt>
+                <dd>{{ reserva.id }}</dd>
+
+                <dt>Collection ID:</dt>
+                <dd>{{ reserva.paymentId }}</dd>
+
+                <dt>Estado:</dt>
+                <dd><span class="{{ badge[reserva.estado] }}">{{ nombre[reserva.estado] }}</span></dd>
+
+                <dt>Origen:</dt>
+                <dd>{{ reserva.origen }} - <strong>Fecha y Hora :</strong> {{ reserva.servicio.partida|date('d-m-Y H:m') }}</dd>
+
+                <dt>Destino:</dt>
+                <dd>{{ reserva.destino }} - <strong>Fecha y Hora :</strong> {{ reserva.servicio.llegada|date('d-m-Y H:m') }}</dd>
+            </dl>
+            {% for boleto in reserva.boletos %}
+                <div class="alert alert-info box-info" role="alert">
+                    <dl class="dl-horizontal">
+                        <dt>Asiento:</dt>
+                        <dd>{{ boleto.asiento }}</dd>
+
+                        <dt>Nombre Completo:</dt>
+                        <dd>{{ boleto.pasajero.nombre }} {{ boleto.pasajero.apellido }}</dd>
+
+                        <dt>DNI:</dt>
+                        <dd>{{ boleto.pasajero.dni }}</dd>
+
+                        <dt>Sexo:</dt>
+                        <dd>{{ boleto.pasajero.sexo }}</dd>
+                    </dl>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+    {% endfor %}
+{% else %}
+    <p class="alert alert-info">Aún no hay un pasajero asociado a este boleto.</p>
+{% endif %}
+{% endblock %}

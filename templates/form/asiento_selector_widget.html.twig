@@ -38,11 +38,47 @@
         {% if asiento %}
             {% block celda_asiento %}
                 {% if asiento.id in asientos_libres %}
-                    {% set btn_class='btn btn-success btn-lg' %}
+
                     {% if asiento.id in asientos_reserva %}
                         {% set btn_class='btn btn-info btn-lg' %}
+                        <button class="{{ btn_class }}" type="submit" name="toggle_asiento" value="{{ asiento.id }}">{{ asiento.numero }}</button>
+                    {% else %}
+                        {% set btn_class='btn btn-success btn-lg' %}
+                        <a href="#" class="{{ btn_class }}" data-toggle="modal" data-target="#modal{{ asiento.id }}" onclick="procAsiento({{ form.vars.idreserva }},{{ asiento.id }},{{ asiento.numero }})">{{ asiento.numero }}</a>
+                        {# form para carga de pasajero del boleto #}
+                        <div class="modal fade" id="modal{{ asiento.id }}" tabindex="-1" role="dialog" aria-labelledby="modal" aria-hidden="true">
+                            <div class="modal-dialog modal-lg">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title" id="createModalLabel"></h5>
+                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                            <span aria-hidden="true">&times;</span>
+                                        </button>
+                                    </div>
+                                    <div class="modal-body" id="f{{ asiento.id }}"></div>
+                                </div>
+                            </div>
+                        </div>
+                        <script type="text/javascript">
+                            function procAsiento(idreserva,idasiento,asientonumero) {
+                                $.ajax({
+                                    url: '{{ path('admin_app_reserva_modalForm') }}',
+                                    method: 'POST',
+                                    processData: false,
+                                    contentType: "application/json; charset=utf-8",
+                                    data: JSON.stringify({ "idreserva": idreserva, "idasiento": idasiento, 'asientonumero': asientonumero}),
+                                    dataType: "json",
+                                    success: function (data) {
+                                        console.log('AJAX Success:', data);
+                                        $('#f'+idasiento).append().empty();
+                                        $('#f'+idasiento).append(data);
+                                        $('#f'+idasiento).find('select').select2();
+                                    }
+                                });
+                            }
+                        </script>
+
                     {% endif %}
-                    <button class="{{ btn_class }}" type="submit" name="toggle_asiento" value="{{ asiento.id }}">{{ asiento.numero }}</button>
                 {% else %}
                     {{ asiento.numero }}
                 {% endif %}
@@ -61,6 +97,8 @@
 </div>
 {% endfor %}
 </div>
+
+
 
 {% endblock %}
 {# kate: tab-width 2 #}

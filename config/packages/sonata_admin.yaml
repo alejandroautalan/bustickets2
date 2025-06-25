@@ -7,7 +7,7 @@ sonata_block:
       
 
 sonata_admin:
-  title: 'BusTickets'
+  title: 'SantiagueñoBus'
   title_logo: images/apple-touch-icon.png
 
   show_mosaic_button:   false
@@ -62,8 +62,12 @@ sonata_admin:
             items:
                 - sonata.user.admin.user
         fug_servicios:
-            label: Servicios
+            label: Usuario
             items:
-                - admin.servicio
+                - label: 'Mis Boletos' # Texto que se mostrará en el enlace
+                  route: 'app_misboletos' # El nombre de la ruta de tu controlador
+                  # route_parameters: { param1: value1 } # Si tu ruta requiere parámetros
+                  # icon: 'fa fa-ticket-alt' # Opcional: un icono para el enlace
+                  # roles: [ROLE_ADMIN] # Opcional: Restringe quién ve este enlace
             roles: [ROLE_FINAL_USER]
 

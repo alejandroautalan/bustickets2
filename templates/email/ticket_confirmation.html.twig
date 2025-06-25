@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Confirmación de Compra de Pasaje</title>
+    <style>
+        /* Estilos CSS en línea para compatibilidad con clientes de correo */
+        body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; margin: 0; padding: 0; background-color: #f4f4f4; }
+        .container { width: 100%; max-width: 600px; margin: 20px auto; background-color: #ffffff; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); overflow: hidden; }
+        .header { background-color: #00e765; color: white; padding: 20px; text-align: center; }
+        .header h1 { margin: 0; font-size: 24px; }
+        .content { padding: 25px; }
+        .content h2 { color: #007bff; border-bottom: 1px solid #eee; padding-bottom: 10px; margin-top: 20px; }
+        .details-table { width: 100%; border-collapse: collapse; margin-top: 15px; }
+        .details-table th, .details-table td { padding: 10px; border: 1px solid #eee; text-align: left; }
+        .details-table th { background-color: #f9f9f9; }
+        .footer { background-color: #f8f8f8; padding: 20px; text-align: center; font-size: 0.9em; color: #777; border-top: 1px solid #eee; }
+        .button-wrapper { text-align: center; margin-top: 30px; margin-bottom: 20px; }
+        .button { display: inline-block; background-color: #28a745; color: white; padding: 12px 25px; text-decoration: none; border-radius: 5px; font-size: 16px; font-weight: bold; }
+        .attention { background-color: #fff3cd; border-left: 5px solid #ffeeba; padding: 15px; margin-top: 20px; color: #856404; border-radius: 4px; }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="header">
+        <h1>¡Tu compra ha sido exitosa, {{ buyer_name }}!</h1>
+    </div>
+    <div class="content">
+        <p>Gracias por comprar tu pasaje con nosotros. A continuación, encontrarás los detalles de tu viaje.</p>
+
+        <h2>Detalles de tu Pasaje:</h2>
+        <table class="details-table">
+            <tr>
+                <th>Origen</th>
+                <td>{{ trip.origin }}</td>
+            </tr>
+            <tr>
+                <th>Destino</th>
+                <td>{{ trip.destination }}</td>
+            </tr>
+            <tr>
+                <th>Fecha y Hora</th>
+                <td>{{ trip.departure_date|date('d/m/Y') }} a las {{ trip.departure_time|date('H:i') }}</td>
+            </tr>
+            <tr>
+                <th>Empresa de Transporte</th>
+                <td>{{ trip.company }}</td>
+            </tr>
+
+            <tr>
+                <th>Servicio</th>
+                <td>{{ trip.service_type }}</td> {# Ej. "Semi Cama", "Cama", "Ejecutivo" #}
+            </tr>
+        </table>
+
+        <h2>Información de Pasajeros:</h2>
+        {% for t in ticket %}
+            <table class="details-table">
+                <tr>
+                    <th>Nombre Completo</th>
+                    <td>{{ t.seat_passenger }}</td>
+                </tr>
+                <tr>
+                    <th>DNI/Identificación</th>
+                    <td>{{ t.seat_dni }}</td>
+                </tr>
+                <tr>
+                    <th>Número de Asiento</th>
+                    <td>{{ t.seat_number }}</td>
+                </tr>
+                {#  <div class="button-wrapper">
+                    <a href="{{ ticket.download_link }}" class="button">Descargar tu Pasaje (PDF)</a>
+                </div>#}
+            </table>
+        {% endfor %}
+        <h2>Detalles de Pago:</h2>
+        <table class="details-table">
+            <tr>
+                <th>Monto Total Pagado</th>
+                <td>{{ payment.amount }}</td>
+            </tr>
+            <tr>
+                <th>Método de Pago</th>
+                <td>{{ payment.method }}</td>
+            </tr>
+            <tr>
+                <th>ID de Transacción Mercado Pago</th>
+                <td>{{ payment.transaction_id }}</td>
+            </tr>
+        </table>
+
+        <div class="attention">
+            <strong>Importante:</strong> Presenta tu DNI/identificación en el momento de abordar. ¡Buen viaje!
+        </div>
+
+        <p>Si tienes alguna pregunta, no dudes en contactarnos.</p>
+    </div>
+    <div class="footer">
+        <p>&copy; {{ "now"|date("Y") }} Tu Empresa de Pasajes El Santiagueño Bus. Todos los derechos reservados.</p>
+    </div>
+</div>
+</body>
+</html>

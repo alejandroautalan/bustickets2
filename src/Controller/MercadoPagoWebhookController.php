@@ -4,6 +4,9 @@ namespace App\Controller;
 
 use App\Entity\Boleto;
 use App\Entity\Reserva;
+use App\Entity\User;
+use App\Notifier\CustomLoginLinkNotification;
+use App\Notifier\TicketConfirmationNotification;
 use Doctrine\ORM\EntityManagerInterface;
 use MercadoPago\Client\MercadoPagoClient;
 use MercadoPago\Client\Preference\PreferenceClient;
@@ -11,6 +14,8 @@ use Psr\Log\LoggerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Notifier\NotifierInterface;
+use Symfony\Component\Notifier\Recipient\Recipient;
 use Symfony\Component\Routing\Attribute\Route;
 use MercadoPago\Client\Payment\PaymentClient;
 use MercadoPago\MercadoPagoConfig;
@@ -22,7 +27,7 @@ class MercadoPagoWebhookController extends AbstractController
 {
 
     #[Route('/webhook/mercadopago', name: 'mercadopago_webhook', methods: ['POST'])]
-    public function webhook(Request $request, EntityManagerInterface $entityManager, LoggerInterface $logger): Response
+    public function webhook(Request $request, NotifierInterface $notifier, EntityManagerInterface $entityManager, LoggerInterface $logger): Response
     {
         // 1. Obtener los valores de los headers X-Signature y X-Request-Id
         // `getRequestUri()` devuelve el valor del header, null si no existe.
@@ -38,7 +43,7 @@ class MercadoPagoWebhookController extends AbstractController
             return new Response('Headers faltantes.', Response::HTTP_BAD_REQUEST);
         }
 
-        $logger->info('Query parameters recibidos:', $request->query->all());
+        #$logger->info('Query parameters recibidos:', $request->query->all());
         $dataId = $request->query->get('data_id', '');
         $notificationType = $request->query->get('type', '');
         // 3. Separar la x-signature en partes
@@ -89,7 +94,7 @@ class MercadoPagoWebhookController extends AbstractController
 
         if ($sha === $hash) {
             // Verificación HMAC aprobada
-            $logger->info('Verificación HMAC de Mercado Pago exitosa para data.id: ' . $dataId);
+            $logger->info('Verificación HMAC de Mercado exitosa para data.id: ' . $dataId);
             $accesst = $_ENV['ENV_ACCESS_TOKEN'];
             MercadoPagoConfig::setAccessToken($accesst);
             switch($notificationType) {
@@ -99,9 +104,14 @@ class MercadoPagoWebhookController extends AbstractController
                     #$logger->info('ALL: '.json_encode($payment->get($dataId)));
                     #$logger->info('ID: '.$paymentObject->items[0]->id);
                     $status = $payment->get($dataId)->status;
-                    $logger->info('STATUS: '.$status);
+                    $logger->info('STATUS: '.$status.' external_refe: '.$payment->get($dataId)->external_reference);
+                    $externalReference = $payment->get($dataId)->external_reference;
+                    $parts = explode('_', $externalReference);
+                    $idReserva = (int)$parts[1];
+                    $idUsuario = (int)$parts[3];
+                    $ticketData = [];
                     if($status === 'approved' or $status === 'authorized'):
-                        $reserva = $entityManager->getRepository(Reserva::class)->find($paymentObject->items[0]->id);
+                        $reserva = $entityManager->getRepository(Reserva::class)->find($idReserva);
                         ##cambiar estado a reserva y agregar pago_id
                         $reserva->setPaymentId($dataId);
                         $reserva->setEstado(Reserva::STATE_COMPLETED);
@@ -110,10 +120,79 @@ class MercadoPagoWebhookController extends AbstractController
                         foreach ($reserva->getBoletos() as $boleto):
                             $boleto->setEstado(Boleto::STATE_RESERVED);
                             $entityManager->persist($boleto);
+                            $ticketData[] = [
+                                'seat_number'    => $boleto->getAsiento(),
+                                'seat_passenger' => $boleto->getPasajero()->getApellido().', '.$boleto->getPasajero()->getNombre(),
+                                'seat_dni'       => $boleto->getPasajero()->getDni(),
+                                'download_link'  => 'https://tuempresa.com/pasajes/descargar/ABCDE12345.pdf', // **GENERAR LINK SEGURO**
+                            ];
                         endforeach;
                         $entityManager->flush();
+                        ##email notificacion
+                        $usuario = $entityManager->getRepository(User::class)->find($idUsuario);
+                        $buyerEmail = $usuario->getEmail();
+                        $buyerName = $usuario->getEmail();
+                        $buyerIdNumber = $dataId;
+
+                        $tripData = [
+                            'origin' => $reserva->getOrigen(),
+                            'destination' => $reserva->getDestino(),
+                            'departure_date' => $reserva->getServicio()->getPartida()->format('d-m-Y H:m'),
+                            'departure_time' => $reserva->getServicio()->getLlegada()->format('d-m-Y H:m'),
+                            'company' => 'SantiagueñoBus',
+                            'service_type' => 'Servicio Comun',
+                        ];
+
+                        ##metodo de pago
+                        $paymentMethodId = $payment->get($dataId)->payment_method_id;
+                        switch ($paymentMethodId) {
+                            case 'visa':
+                                $friendlyPaymentMethod = 'Visa';
+                                break;
+                            case 'master':
+                                $friendlyPaymentMethod = 'Mastercard';
+                                break;
+                            case 'amex':
+                                $friendlyPaymentMethod = 'American Express';
+                                break;
+                            case 'naranja':
+                                $friendlyPaymentMethod = 'Naranja X';
+                                break;
+                            case 'account_money':
+                                $friendlyPaymentMethod = 'Dinero en cuenta de Mercado Pago';
+                                break;
+                            case 'rapipago':
+                                $friendlyPaymentMethod = 'Efectivo (Rapipago)';
+                                break;
+                            case 'pagofacil':
+                                $friendlyPaymentMethod = 'Efectivo (Pago Fácil)';
+                                break;
+                            // Añade más casos según los métodos de pago que aceptes
+                            default:
+                                $friendlyPaymentMethod = ucfirst(str_replace('_', ' ', $paymentMethodId)); // Intenta formatear
+                                break;
+                        }
+
+                        $paymentInfo = [
+                            'amount' => $payment->get($dataId)->transaction_amount,
+                            'method' => $friendlyPaymentMethod,
+                            'transaction_id' => $dataId, // El ID de Mercado Pago
+                        ];
+
+                        $notification = new TicketConfirmationNotification(
+                            $buyerName,
+                            $buyerIdNumber,
+                            $tripData,
+                            $ticketData,
+                            $paymentInfo,
+                            $buyerEmail
+                        );
+
+                        $notifier->send($notification, new Recipient($buyerEmail));
+                        $logger->info("Correo de confirmación enviado para el pasaje de {$buyerName} (ID MP: {$dataId})");
+                        return new Response('Webhook procesado con éxito.', Response::HTTP_OK);
                     endif;
-                    return new Response('Webhook procesado con éxito.', Response::HTTP_OK);
+
                     break;
             #    case "plan":
             #        $plan = MercadoPagoClient::find_by_id($dataId);
