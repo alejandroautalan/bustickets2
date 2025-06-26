@@ -4,9 +4,14 @@ declare(strict_types=1);
 
 namespace App\Admin;
 
-use Symfony\Component\Form\Extension\Core\Type\DateType;
+use Sonata\DoctrineORMAdminBundle\Filter\DateFilter;
+use Sonata\DoctrineORMAdminBundle\Filter\DateTimeFilter;
+use Sonata\DoctrineORMAdminBundle\Filter\DateTimeRangeFilter;
+use Sonata\Form\Type\DatePickerType;
+use Sonata\Form\Type\DateTimePickerType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
-
+use Symfony\Component\Form\Extension\Core\Type\DateTimeType;
+use Symfony\Component\Form\Extension\Core\Type\DateType;
 use Sonata\AdminBundle\Admin\AbstractAdmin;
 use Sonata\AdminBundle\Datagrid\DatagridMapper;
 use Sonata\AdminBundle\Datagrid\ListMapper;
@@ -33,11 +38,29 @@ final class ServicioAdmin extends AbstractAdmin
     protected function configureDatagridFilters(DatagridMapper $filter): void
     {
         $filter
-            #->add('id')
-            ->add('nombre')
-            ->add('partida')
-            ->add('llegada')
-            ->add('estado')
+            ->add('trayecto.origen', null, ['label' => 'Origen'])
+            ->add('trayecto.destino', null, ['label' => 'Destino'])
+            #->add('nombre')
+            ->add('partida', DateFilter::class, [
+                'field_type' => DateType::class,
+                'field_options' => [
+                    'widget' => 'single_text',
+                    'html5' => true,       // Desactiva el picker nativo HTML5 para poder usar formato personalizado
+                    #'format' => 'yyyy-MM-dd HH:mm:ss',
+                    'attr' => ['class' => 'form-control'],
+                ],
+            ])
+            ->add('llegada', DateFilter::class, [
+                'field_type' => DateType::class,
+                'field_options' => [
+                    'widget' => 'single_text',
+                    'html5' => true,       // Desactiva el picker nativo HTML5 para poder usar formato personalizado
+                    #'format' => 'yyyy-MM-dd HH:mm:ss',
+                    'attr' => ['class' => 'form-control'],
+                ],
+            ])
+            #->add('llegada')
+            #->add('estado')
         ;
     }
 
@@ -65,7 +88,11 @@ final class ServicioAdmin extends AbstractAdmin
             ->add('nombre',  null, ['label' => 'Servicio'])
             ->add('partida')
             ->add('llegada')
-            #->add('estado', null, )
+            ->add('costo', MoneyType::class, [
+                'divisor' => 100,
+                'currency' => 'ARS',
+                'template' => 'ServicioAdmin/costos.html.twig'
+            ] )
             ->add(ListMapper::NAME_ACTIONS, null, [
                 'actions' => $actions,
             ]);

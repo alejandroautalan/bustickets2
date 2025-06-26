@@ -36,7 +36,7 @@
     </button>
   {% endif %}
 
-  {% if object.showPaymentBtn %}
+  {% if object.showPaymentBtn and object.boletos.count > 0 %}
     <button type="submit" class="btn btn-warning" name="btn_payment">
         <i class="fa fa-save"></i> Pagar
     </button>
