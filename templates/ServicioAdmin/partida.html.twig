@@ -1,0 +1,12 @@
+{% extends '@SonataAdmin/CRUD/base_list_field.html.twig' %}
+
+{% block field %}
+    <div class="card" style="text-align: left">
+        <div class="card-header" >
+            {{ value|date('D d M') }}
+        </div>
+        <div class="card-body">
+            <p><strong><h4>{{ value|date('H:m') }}</h4></strong></p>
+        </div>
+    </div>
+{% endblock field %}

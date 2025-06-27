@@ -1,0 +1,51 @@
+{% extends '@SonataAdmin/CRUD/base_list_field.html.twig' %}
+
+
+{% block field %}
+
+    <div class="list-group mb-3">
+            <div class=" justify-content-between align-items-center">
+                <!-- Icono o Logo -->
+                <div class="align-items-center">
+                    <div >
+                        <span>{{ object.trayecto.origen }}</span> &raquo; <span>{{ object.trayecto.destino }} </span>
+                    </div>
+                    <br>
+                    <div class="align-items-center" style="min-height: auto;">
+                        <div class="card col-md-4 col-xs-4">
+                            <div class="card-header">
+                                {{ object.partida|date('D d M') }}
+                            </div>
+                            <div class="card-body">
+                                <figure>
+                                    <blockquote class="blockquote">
+                                        <p>{{ object.partida|date('H:m') }}</p>
+                                    </blockquote>
+                                </figure>
+                            </div>
+                        </div>
+                        <div class="card col-md-4 col-xs-4">
+                            <div class="card-header">
+                                {{ object.llegada|date('D d M') }}
+                            </div>
+                            <div class="card-body">
+                                <figure>
+                                    <blockquote class="blockquote">
+                                        <p>{{ object.llegada|date('H:m') }}</p>
+                                    </blockquote>
+                                </figure>
+                            </div>
+                        </div>
+                        <div class="card col-md-4 col-xs-4">
+                        <div class="card-body">
+                            <figure>
+                                <blockquote class="blockquote">
+                                    <p>ARS {{ (object.costo/100) |number_format(2, ',', '.') }}</p>
+                                </blockquote>
+                            </figure>
+                        </div>
+                    </div>
+                    </div>
+            </div>
+    </div>
+{% endblock field %}

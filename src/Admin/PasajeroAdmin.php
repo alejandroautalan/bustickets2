@@ -8,11 +8,16 @@ use Sonata\AdminBundle\Admin\AbstractAdmin;
 use Sonata\AdminBundle\Datagrid\DatagridMapper;
 use Sonata\AdminBundle\Datagrid\ListMapper;
 use Sonata\AdminBundle\Form\FormMapper;
+use Sonata\AdminBundle\Route\RouteCollectionInterface;
 use Sonata\AdminBundle\Show\ShowMapper;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 
 final class PasajeroAdmin extends AbstractAdmin
 {
+    public function configureRoutes(RouteCollectionInterface $collection): void
+    {
+        $collection->add('searchForDni', 'searchForDni');
+    }
     protected function configureDatagridFilters(DatagridMapper $filter): void
     {
         $filter

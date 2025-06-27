@@ -85,14 +85,14 @@ final class ServicioAdmin extends AbstractAdmin
 
         $list
             #->add('id')
-            ->add('nombre',  null, ['label' => 'Servicio'])
-            ->add('partida')
-            ->add('llegada')
-            ->add('costo', MoneyType::class, [
-                'divisor' => 100,
-                'currency' => 'ARS',
-                'template' => 'ServicioAdmin/costos.html.twig'
-            ] )
+            ->add('nombreTrayecto',  null, ['template' => 'ServicioAdmin/trayecto.html.twig', 'label' => 'Servicio'])
+            #->add('partida', null ,['template' => 'ServicioAdmin/partida.html.twig'])
+            #->add('llegada', null ,['template' => 'ServicioAdmin/llegada.html.twig'])
+            #->add('costo', MoneyType::class, [
+            #    'divisor' => 100,
+            #    'currency' => 'ARS',
+            #    'template' => 'ServicioAdmin/costos.html.twig'
+            #] )
             ->add(ListMapper::NAME_ACTIONS, null, [
                 'actions' => $actions,
             ]);

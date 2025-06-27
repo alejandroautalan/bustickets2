@@ -46,13 +46,18 @@ final class ReservaAdminController extends CRUDController
         $idasiento = $data->idasiento;
         $idreserva = $data->idreserva;
         $numeroasiento = $data->asientonumero;
+        $search = $this->generateUrl(
+            'admin_app_pasajero_searchForDni',
+            [],
+            UrlGeneratorInterface::ABSOLUTE_URL
+        );
         $url = $this->generateUrl(
             'admin_app_reserva_addBoleto',
             [],
             UrlGeneratorInterface::ABSOLUTE_URL
         );
-        $html = '<html>
-                    <form action="'.$url.'" method="post" enctype="multipart/form-data">
+
+        $html = '<form action="'.$url.'" method="post" enctype="multipart/form-data">
                     <div class="panel box box-primary" style="margin-bottom: 0px;">
                                                 <div class="box-header">
                                                     <h4 class="box-title">
@@ -63,7 +68,7 @@ final class ReservaAdminController extends CRUDController
                                                         <div class="form-group" style="text-align: left">
                                                             <label style="text-align: left" for="dni" class="control-label required">DNI</label>
                                                             <div class="sonata-ba-field-container">
-                                                                <input placeholder="Dni" type="number" id="dni" name="dni" required="required" class="form-control" />
+                                                                <input placeholder="Dni" type="number" id="dni" name="dni" required="required" class="form-control" onblur="searchPasajero(this.value)"/>
                                                                 <input type="hidden" id="idasiento" name="idasiento"  value="'.$idasiento.'" class="form-control" />
                                                                 <input type="hidden" id="idreserva" name="idreserva"  value="'.$idreserva.'" class="form-control" />
                                                             </div>
@@ -98,7 +103,31 @@ final class ReservaAdminController extends CRUDController
                                                 <button type="button" class="btn btn-default" data-dismiss="modal">Cerrar</button>
                                                 <button type="submit" class="btn btn-primary">Guardar Datos</button>
                                             </div>
-                    </form></html>';
+                    </form>';
+
+        $html .= <<<EOF
+                    <script type="text/javascript">
+                            function searchPasajero(dni) {
+                                $.ajax({
+                                    url: '{$search}',
+                                    method: 'POST',
+                                    processData: false,
+                                    contentType: "application/json; charset=utf-8",
+                                    data: JSON.stringify({ "dni": dni}),
+                                    dataType: "json",
+                                    success: function (data) {
+                                        console.log('AJAX Success:', data);
+                                        $('#apellido').val(data.apellido);
+                                        $('#nombre').val(data.nombre);
+                                        $('#sexo').val(data.sexo);
+                                        
+                                    }
+                                });
+                            }
+                        </script>
+                     
+EOF;
+
 
         return new JsonResponse($html);
     }

@@ -65,7 +65,12 @@ class Servicio
 
     public function __toString()
     {
-        return ''.$this->nombre;
+        return $this->trayecto->getOrigen().' > '.$this->trayecto->getDestino() ;
+    }
+
+    public function getNombreTrayecto()
+    {
+        return $this->trayecto->getOrigen().' > '.$this->trayecto->getDestino() ;
     }
 
     public function getId(): ?int

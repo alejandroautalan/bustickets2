@@ -1,5 +1,5 @@
 {% extends '@SonataAdmin/CRUD/base_list_field.html.twig' %}
 
 {% block field %}
-    ${{ (value/100) |number_format(2, ',', '.') }}
+    ARS {{ (value/100) |number_format(2, ',', '.') }}
 {% endblock field %}
