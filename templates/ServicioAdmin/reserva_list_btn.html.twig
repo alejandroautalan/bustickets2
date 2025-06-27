@@ -1,4 +1,6 @@
-<a href="{{ admin.generateObjectUrl('reserva', object) }}" class="btn btn-sm btn-danger view_link" title="{{ 'Reservar pasaje'|trans({}, 'SonataAdminBundle') }}" >
-    <i class="fas fa-ticket-alt"></i>
+{% if admin.hasRoute('reserva') %}
+<a href="{{ admin.generateObjectUrl('reserva', object) }}" class="btn btn-sm btn-primary view_link" title="{{ 'Reservar pasaje'|trans({}, 'SonataAdminBundle') }}" >
+    <i class="fas fa-list-alt"></i>
     Reserva
 </a>
+{% endif %}

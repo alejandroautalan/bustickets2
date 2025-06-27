@@ -15,12 +15,15 @@ class BaseAdmin extends Admin {
     protected $contexts = null;
     
     protected $disable_batch_actions = False;
+
+    protected $token_storage = null;
+
+    public function setTokenStorage($token_storage) {
+        $this->token_storage = $token_storage;
+    }
     
     public function getUser() {
-        $container = $this->getConfigurationPool()->getContainer();
-        $user = $container->get('security.token_storage')
-                          ->getToken()
-                          ->getUser();
+        $user = $this->token_storage->getToken()->getUser();
         return $user;
     }
 
