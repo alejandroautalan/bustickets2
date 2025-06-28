@@ -5,43 +5,36 @@
 {% if reservas is not null %}
     <h4>Resumen de la Reserva</h4>
     {% for reserva in reservas %}
-    <div class="row-cols-2">
-        <div class="well well-sm">
-            <dl class="dl-horizontal">
-                <dt>Reserva:</dt>
-                <dd>{{ reserva.id }}</dd>
-
-                <dt>Collection ID:</dt>
-                <dd>{{ reserva.paymentId }}</dd>
-
-                <dt>Estado:</dt>
-                <dd><span class="{{ badge[reserva.estado] }}">{{ nombre[reserva.estado] }}</span></dd>
-
-                <dt>Origen:</dt>
-                <dd>{{ reserva.origen }} - <strong>Fecha y Hora :</strong> {{ reserva.servicio.partida|date('d-m-Y H:m') }}</dd>
-
-                <dt>Destino:</dt>
-                <dd>{{ reserva.destino }} - <strong>Fecha y Hora :</strong> {{ reserva.servicio.llegada|date('d-m-Y H:m') }}</dd>
-            </dl>
-            {% for boleto in reserva.boletos %}
-                <div class="alert alert-info box-info" role="alert">
-                    <dl class="dl-horizontal">
-                        <dt>Asiento:</dt>
-                        <dd>{{ boleto.asiento }}</dd>
-
-                        <dt>Nombre Completo:</dt>
-                        <dd>{{ boleto.pasajero.nombre }} {{ boleto.pasajero.apellido }}</dd>
-
-                        <dt>DNI:</dt>
-                        <dd>{{ boleto.pasajero.dni }}</dd>
-
-                        <dt>Sexo:</dt>
-                        <dd>{{ boleto.pasajero.sexo }}</dd>
-                    </dl>
-                </div>
-            {% endfor %}
+        <div class="container-fluid">
+        <div class="box box-primary">
+            <div class="box-header">
+                <h4>Reserva: {{ reserva.id }}</h4>
+                <h4><strong>{{ reserva.origen }}</strong> &raquo; <strong>{{ reserva.destino }}</strong></h4>
+                <p>Pago: {{ reserva.paymentId }}</p>
+                <p>Estado: <span class="{{ badge[reserva.estado] }}">{{ nombre[reserva.estado] }}</span></p>
+                <p><u>Salida {{ reserva.servicio.partida|date('D d M') }} &raquo; <strong>{{ reserva.servicio.partida|date('H:m') }} Hs</strong></u></p>
+                <p><u>Llegada {{ reserva.servicio.llegada|date('D d M') }} &raquo; <strong>{{ reserva.servicio.llegada|date('H:m') }} Hs</strong></u></p>
+            </div>
+            <div class="col-md-12 flex-column" style="background-color: white">
+                {% for boleto in reserva.boletos %}
+                    <div class="row col-md-3 box-success">
+                        <div class="card" style="width: auto">
+                            <div class="card-header"><h4 class="card-title"><i>Boleto {{ boleto.id }}</i></h4></div>
+                            <div class="card-body">
+                                <figure>
+                                    <blockquote class="blockquote">
+                                        <p class="card-text"><strong>Asiento: </strong>{{ boleto.asiento.numero }}</p>
+                                        <p class="card-text"><strong>Nombre: </strong>{{ boleto.pasajero.nombre }} {{ boleto.pasajero.apellido }}</p>
+                                        <p class="card-text"><strong>DNI: </strong>{{ boleto.pasajero.dni }}</p>
+                                    </blockquote>
+                                </figure>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
         </div>
-    </div>
+        </div><br>
     {% endfor %}
 {% else %}
     <p class="alert alert-info">Aún no hay un pasajero asociado a este boleto.</p>

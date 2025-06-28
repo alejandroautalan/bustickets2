@@ -30,6 +30,7 @@ final class ServicioFUAdminExtension extends AbstractAdminExtension
         #unset($actions['asientos']);
     }
 
+
     public function configureRoutes(AdminInterface $admin, RouteCollectionInterface $collection): void
     {
         $collection->remove('show')

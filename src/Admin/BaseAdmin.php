@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace App\Admin;
 
 use Sonata\AdminBundle\Admin\AbstractAdmin as Admin;
+use Sonata\AdminBundle\Admin\AdminInterface;
 use Sonata\AdminBundle\Datagrid\DatagridMapper;
 use Sonata\AdminBundle\Datagrid\ListMapper;
 use Sonata\AdminBundle\Form\FormMapper;
@@ -124,6 +125,19 @@ class BaseAdmin extends Admin {
         return array_merge($parameters, array(
             'context' => $this->getRequest()->get('context', $this->getDefaultContext()),
         ));
+    }
+
+    protected function configureActionButtons(array $buttonList, string $action, ?object $object = null): array
+    {
+        $buttons = parent::configureActionButtons($buttonList, $action, $object);
+
+        if (in_array($action, ['create', 'edit'])) {
+            unset($buttons['create']);
+            unset($buttons['show']);
+            unset($buttons['list']);
+        }
+
+        return $buttons;
     }
 
 }
