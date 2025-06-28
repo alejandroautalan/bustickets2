@@ -1,34 +1,40 @@
 {% extends '@SonataAdmin/CRUD/edit.html.twig' %}
 {% block sonata_admin_content %}
-    {{ parent() }}
   {% if object.showBoletosBtn %}
       {% if admin.subject is not null and admin.subject.boletos is not null %}
-
+          <div class="box box-primary">
+          <div class="box-header">
+              <h4><strong>{{ admin.subject.origen }}</strong> &raquo; <strong>{{ admin.subject.destino }}</strong></h4>
+              <u>Salida {{ admin.subject.servicio.partida|date('D d M') }} &raquo; <strong>{{ admin.subject.servicio.partida|date('H:m') }} Hs</strong></p></u>
+              <u>Llegada {{ admin.subject.servicio.llegada|date('D d M') }} &raquo; <strong>{{ admin.subject.servicio.llegada|date('H:m') }} Hs</strong></u>
+          </div>
+          <div class="col-md-12 flex-column" style="background-color: white">
           {% for boleto in admin.subject.boletos %}
-            <div class="alert alert-info col-md-3" role="alert">
-              <h4>Resumen del Boleto {{ boleto.id }}</h4>
-              <dl class="dl-horizontal">
-                <dt>Asiento:</dt>
-                <dd>{{ boleto.asiento }}</dd>
-
-                <dt>Nombre Completo:</dt>
-                <dd>{{ boleto.pasajero.nombre }} {{ boleto.pasajero.apellido }}</dd>
-
-                <dt>DNI:</dt>
-                <dd>{{ boleto.pasajero.dni }}</dd>
-
-                <dt>Sexo:</dt>
-                <dd>{{ boleto.pasajero.sexo }}</dd>
-              </dl>
-            </div>
+              <div class="row col-md-3 box-success">
+                          <div class="card" style="width: auto">
+                              <div class="card-header"><h4 class="card-title">Boleto {{ boleto.id }}</h4></div>
+                              <div class="card-body">
+                                  <figure>
+                                      <blockquote class="blockquote">
+                                          <p class="card-text"><strong>Asiento: </strong>{{ boleto.asiento }}</p>
+                                          <p class="card-text"><strong>Nombre Completo: </strong>{{ boleto.pasajero.nombre }} {{ boleto.pasajero.apellido }}</p>
+                                          <p class="card-text"><strong>DNI: </strong>{{ boleto.pasajero.dni }}</p>
+                                      </blockquote>
+                                  </figure>
+                              </div>
+                          </div>
+              </div>
           {% endfor %}
+          </div>
+          </div>
       {% else %}
           <p class="alert alert-info">Aún no hay un pasajero asociado a este boleto.</p>
       {% endif %}
 
   {% endif %}
-
+    {{ parent() }}<br>
 {% endblock %}
+
 {% block sonata_form_actions %}
   {% if object.showBoletosBtn %}
     <button type="submit" class="btn btn-warning" name="btn_boletos">

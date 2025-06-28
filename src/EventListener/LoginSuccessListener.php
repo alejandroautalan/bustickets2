@@ -24,8 +24,8 @@ class LoginSuccessListener
         }
 
         # Process logins from main firewall
-        $dashboard = 'sonata_admin_dashboard';
-        $url = $this->urlGenerator->generate($dashboard);
+        $servicioList = 'admin_app_servicio_list';
+        $url = $this->urlGenerator->generate($servicioList);
         $event->setResponse(new RedirectResponse($url));
     }
 }

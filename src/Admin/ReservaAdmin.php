@@ -136,7 +136,7 @@ final class ReservaAdmin extends BaseAdmin
        ->ifTrue($estado == Reserva::STATE_PENDING_PAYMENT)
        ->with('Reserva - Pago')
            ->add('pagos', CollectionType::class, [
-               'label' => 'Pago',
+               'label' => false,
                'btn_add' => false,
                'type_options' => [
                    'label' => false,
@@ -222,6 +222,7 @@ final class ReservaAdmin extends BaseAdmin
             $entityManager->persist($reserva);
             $entityManager->flush();
         }
+
     }
 
     protected function finalizeReserva($object)

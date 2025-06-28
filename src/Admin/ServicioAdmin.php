@@ -94,10 +94,10 @@ final class ServicioAdmin extends AbstractAdmin
     protected function configureListFields(ListMapper $list): void
     {
         $actions = [
-            'show' => [],
+            #'show' => [],
             'edit' => [],
             'delete' => [],
-            'reserva' => ['template' => 'ServicioAdmin/reserva_list_btn.html.twig'],
+            #'reserva' => ['template' => 'ServicioAdmin/reserva_list_btn.html.twig'],
             #'asientos' => ['template' => 'ServicioAdmin/asientos_ocupacion.html.twig'],
             'archivo' => ['template' => 'ServicioAdmin/archivo.html.twig'],
             'boletos'  => ['template' => 'ServicioAdmin/boletos.html.twig'],
@@ -105,17 +105,13 @@ final class ServicioAdmin extends AbstractAdmin
 
         $list
             #->add('id')
-            ->add('nombreTrayecto',  null, ['template' => 'ServicioAdmin/trayecto.html.twig', 'label' => 'Servicio'])
-            #->add('partida', null ,['template' => 'ServicioAdmin/partida.html.twig'])
-            #->add('llegada', null ,['template' => 'ServicioAdmin/llegada.html.twig'])
-            #->add('costo', MoneyType::class, [
-            #    'divisor' => 100,
-            #    'currency' => 'ARS',
-            #    'template' => 'ServicioAdmin/costos.html.twig'
-            #] )
-            ->add(ListMapper::NAME_ACTIONS, null, [
+            ->add('nombreTrayecto',  null, ['template' => 'ServicioAdmin/trayecto.html.twig', 'label' => 'Servicio']);
+
+        if(!$this->isFinalUser()):
+            $list->add(ListMapper::NAME_ACTIONS, null, [
                 'actions' => $actions,
             ]);
+        endif;
     }
 
     protected function configureFormFields(FormMapper $form): void

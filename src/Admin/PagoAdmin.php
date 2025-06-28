@@ -79,7 +79,8 @@ final class PagoAdmin extends AbstractAdmin
                 'divisor' => 100,
                 'disabled' => true,
                 'currency' => 'ARS',
-                'label' => 'Importe a Pagar (un 10%)'
+                'label' => 'Importe a Pagar (un 10%)',
+                'help' => 'El resto se abonara en efectivo antes de subir al colectivo'
             ])
         ;
     }

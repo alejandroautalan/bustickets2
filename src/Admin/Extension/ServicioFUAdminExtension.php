@@ -21,19 +21,19 @@ final class ServicioFUAdminExtension extends AbstractAdminExtension
         $list->remove('id')
             ->remove('estado')
         ;
-        $actionsfd = $list->get(ListMapper::NAME_ACTIONS);
-        $options = $actionsfd->getOptions();
-        $actions = $options['actions'];
-        unset($actions['show']);
-        # unset($actions['reserva']);
-        unset($actions['archivo']);
-        unset($actions['asientos']);
+        #$actionsfd = $list->get(ListMapper::NAME_ACTIONS);
+        #$options = $actionsfd->getOptions();
+        #$actions = $options['actions'];
+        #unset($actions['show']);
+        #unset($actions['reserva']);
+        #unset($actions['archivo']);
+        #unset($actions['asientos']);
     }
 
     public function configureRoutes(AdminInterface $admin, RouteCollectionInterface $collection): void
     {
         $collection->remove('show')
-            # ->remove('reserva')
+            #->remove('reserva')
             ->remove('archivo')
             ->remove('asientos')
         ;
