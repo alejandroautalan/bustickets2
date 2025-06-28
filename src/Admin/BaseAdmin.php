@@ -131,7 +131,7 @@ class BaseAdmin extends Admin {
     {
         $buttons = parent::configureActionButtons($buttonList, $action, $object);
 
-        if (in_array($action, ['create', 'edit'])) {
+        if (in_array($action, ['create', 'edit', 'list'])) {
             unset($buttons['create']);
             unset($buttons['show']);
             unset($buttons['list']);
