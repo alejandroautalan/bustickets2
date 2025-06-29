@@ -3,7 +3,6 @@
 {% set nombre = {0 : 'Rechazado', 1 : 'Pendiente de Aprobacion', 2 : 'Pago Aprobado'} %}
 {% block sonata_admin_content %}
 {% if reservas is not null %}
-    <h4>Resumen de la Reserva</h4>
     {% for reserva in reservas %}
         <div class="container-fluid">
         <div class="box box-primary">
