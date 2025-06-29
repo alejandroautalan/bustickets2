@@ -68,3 +68,4 @@ security:
             - ROLE_ALLOWED_TO_SWITCH
             - ROLE_OPERATOR
             - ROLE_FINAL_USER
+            - ROLE_USER_BOLETO

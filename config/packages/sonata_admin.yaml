@@ -38,10 +38,10 @@ sonata_admin:
             items:
                 - admin.servicio
                 - admin.reserva
-                - admin.boleto
-                - admin.pago
+                #- admin.boleto
+                #- admin.pago
                 - admin.pasajero
-            roles: [ROLE_OPERATOR, ROLE_FINAL_USER]
+            roles: [ROLE_OPERATOR, ROLE_USER_BOLETO, ROLE_FINAL_USER]
         gtransporte:
             label: Transporte
             items:

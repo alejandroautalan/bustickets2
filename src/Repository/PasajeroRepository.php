@@ -21,6 +21,7 @@ class PasajeroRepository extends ServiceEntityRepository
         return $this->createQueryBuilder('p')
             ->andWhere('p.dni = :val')
             ->setParameter('val', $value)
+            ->getMaxResults(1)
             ->getQuery()
             ->getOneOrNullResult()
         ;

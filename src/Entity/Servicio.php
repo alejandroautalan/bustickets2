@@ -7,6 +7,8 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
+use Symfony\Component\Validator\Context\ExecutionContextInterface;
 
 #[ORM\Entity(repositoryClass: ServicioRepository::class)]
 class Servicio
@@ -20,9 +22,19 @@ class Servicio
     private ?string $nombre = null;
 
     #[ORM\Column(type: Types::DATETIME_MUTABLE)]
+    #[Assert\NotNull(message: 'La fecha no puede estar vacía')]
+    #[Assert\GreaterThanOrEqual(
+        value: 'today',
+        message: 'La fecha no puede ser anterior a hoy.'
+    )]
     private ?\DateTimeInterface $partida = null;
 
     #[ORM\Column(type: Types::DATETIME_MUTABLE)]
+    #[Assert\NotNull(message: 'La fecha no puede estar vacía')]
+    #[Assert\GreaterThanOrEqual(
+        value: 'today',
+        message: 'La fecha no puede ser anterior a hoy.'
+    )]
     private ?\DateTimeInterface $llegada = null;
 
     #[ORM\ManyToOne]
@@ -44,6 +56,17 @@ class Servicio
 
 
 
+    #[Assert\Callback]
+    public function validateFechas(ExecutionContextInterface $context, $payload)
+    {
+        if ($this->llegada && $this->partida) {
+            if ($this->partida > $this->llegada) {
+                $context->buildViolation('La fecha de partida no puede ser mayor que la fecha de llegada.')
+                    ->atPath('partida')
+                    ->addViolation();
+            }
+        }
+    }
 
     public static $estado_choices = [
         'Draft' => 1,

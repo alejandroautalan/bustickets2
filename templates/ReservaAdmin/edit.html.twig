@@ -12,12 +12,12 @@
           {% for boleto in admin.subject.boletos %}
               <div class="row col-md-3 box-success">
                           <div class="card" style="width: auto">
-                              <div class="card-header"><h4 class="card-title">Boleto {{ boleto.id }}</h4></div>
+                              <div class="card-header"><h4 class="card-title">Boleto <i>{{ boleto.id }}</i></h4></div>
                               <div class="card-body">
                                   <figure>
                                       <blockquote class="blockquote">
-                                          <p class="card-text"><strong>Asiento: </strong>{{ boleto.asiento }}</p>
-                                          <p class="card-text"><strong>Nombre Completo: </strong>{{ boleto.pasajero.nombre }} {{ boleto.pasajero.apellido }}</p>
+                                          <p class="card-text"><strong>Asiento: </strong>{{ boleto.asiento.numero }}</p>
+                                          <p class="card-text"><strong>Nombre: </strong>{{ boleto.pasajero.nombre }} {{ boleto.pasajero.apellido }}</p>
                                           <p class="card-text"><strong>DNI: </strong>{{ boleto.pasajero.dni }}</p>
                                       </blockquote>
                                   </figure>

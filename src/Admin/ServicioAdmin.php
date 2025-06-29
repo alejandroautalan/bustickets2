@@ -57,6 +57,11 @@ final class ServicioAdmin extends AbstractAdmin
 
     protected function configureDatagridFilters(DatagridMapper $filter): void
     {
+        $minAttr = [];
+        if (!$this->isGranted('ROLE_SUPER_ADMIN')) {
+            $minDate = date('Y-m-d');
+            $minAttr = ['min' => $minDate];
+        }
         $filter
             ->add('trayecto.origen', null, ['label' => 'Origen'])
             ->add('trayecto.destino', null, ['label' => 'Destino'])
@@ -67,7 +72,7 @@ final class ServicioAdmin extends AbstractAdmin
                     'widget' => 'single_text',
                     'html5' => true,       // Desactiva el picker nativo HTML5 para poder usar formato personalizado
                     #'format' => 'yyyy-MM-dd HH:mm:ss',
-                    'attr' => ['class' => 'form-control'],
+                    'attr' => array_merge(['class' => 'form-control'], $minAttr),
                 ],
             ])
             ->add('llegada', DateFilter::class, [
@@ -76,7 +81,7 @@ final class ServicioAdmin extends AbstractAdmin
                     'widget' => 'single_text',
                     'html5' => true,       // Desactiva el picker nativo HTML5 para poder usar formato personalizado
                     #'format' => 'yyyy-MM-dd HH:mm:ss',
-                    'attr' => ['class' => 'form-control'],
+                    'attr' => array_merge(['class' => 'form-control'], $minAttr),
                 ],
             ])
             #->add('llegada')
@@ -107,11 +112,11 @@ final class ServicioAdmin extends AbstractAdmin
             #->add('id')
             ->add('nombreTrayecto',  null, ['template' => 'ServicioAdmin/trayecto.html.twig', 'label' => 'Servicio']);
 
-        if(!$this->isFinalUser()):
-            $list->add(ListMapper::NAME_ACTIONS, null, [
-                'actions' => $actions,
-            ]);
-        endif;
+        #if(!$this->isFinalUser()):
+        #    $list->add(ListMapper::NAME_ACTIONS, null, [
+        #        'actions' => $actions,
+        #    ]);
+        #endif;
     }
 
     protected function configureFormFields(FormMapper $form): void

@@ -151,11 +151,20 @@ EOF;
         $trayecto = $servicio->getTrayecto();
         $asiento = $asientoRepo->find($idasiento);
 
-        $pasajero = new Pasajero();
-        $pasajero->setDni((int)$dni)
-                ->setApellido($apellido)
-                ->setNombre($nombre)
-                ->setSexo($sexo);
+        $pasajero_exist = $entityManager->getRepository(Pasajero::class)->findOneBy(['dni' => $dni]);
+        if($pasajero_exist):
+            $pasajero = $pasajero_exist;
+            $pasajero->setDni((int)$dni)
+                    ->setApellido($apellido)
+                    ->setNombre($nombre)
+                    ->setSexo($sexo);
+        else:
+            $pasajero = new Pasajero();
+            $pasajero->setDni((int)$dni)
+                    ->setApellido($apellido)
+                    ->setNombre($nombre)
+                    ->setSexo($sexo);
+        endif;
         $entityManager->persist($pasajero);
         # agregar boleto
         $boleto = new Boleto();

@@ -11,10 +11,48 @@
                         <span>{{ object.trayecto.origen }}</span> &raquo; <span>{{ object.trayecto.destino }} </span>
                     </div>
                     <div style="text-align: right">
-                        <a href="{{ admin.generateObjectUrl('reserva', object) }}" class="btn btn-sm btn-danger view_link" title="{{ 'Reservar pasaje'|trans({}, 'SonataAdminBundle') }}" style="right: auto">
-                            <i class="fas fa-ticket-alt"></i>
-                            Reserva
-                        </a>
+                        {% if is_granted('ROLE_FINAL_USER') and not is_granted('ROLE_SUPER_ADMIN') %}
+                            <a href="{{ admin.generateObjectUrl('reserva', object) }}" class="btn btn-sm btn-danger view_link" title="{{ 'Reservar pasaje'|trans({}, 'SonataAdminBundle') }}" style="min-width: 80px">
+                                <i class="fas fa-ticket-alt"></i>
+                                Reserva
+                            </a>
+                        {% endif %}
+                        {%  if is_granted('ROLE_USER_BOLETO') and not is_granted('ROLE_SUPER_ADMIN')%}
+                            <a href="{{ path('admin_app_servicio_boleto_list', {'id': object.id}) }}" class="btn btn-sm btn-primary view_link" title="{{ 'Listar Boletos'|trans({}, 'SonataAdminBundle') }}" style="min-width: 80px">
+                                <i class="fas fa-address-card"></i>
+                                Boletos
+                            </a>
+                        {% endif %}
+                        {% if is_granted('ROLE_SUPER_ADMIN') %}
+                            <div class="btn-group-vertical" role="group">
+                                <button id="btnGroupDrop1" type="button" class="btn btn-sm btn-danger view_link dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                    <i class="fa fa-gear"></i>
+                                    Acciones
+                                </button>
+                                <div class="dropdown-menu" aria-labelledby="btnGroupDrop1" style="min-width: 80px; margin: 0; padding: 0;">
+                                    <a href="{{ admin.generateObjectUrl('reserva', object) }}" class="btn btn-sm btn-default view_link" title="{{ 'Reservar pasaje'|trans({}, 'SonataAdminBundle') }}" style="min-width: 80px">
+                                        <i class="fas fa-ticket-alt"></i>
+                                        Reserva
+                                    </a><br>
+                                    <a href="{{ admin.generateObjectUrl('archivo', object) }}" class="btn btn-sm btn-default view_link" title="{{ 'Reservar pasaje'|trans({}, 'SonataAdminBundle') }}" style="min-width: 80px">
+                                        <i class="fas fa-file"></i>
+                                        Archivo
+                                    </a><br>
+                                    <a href="{{ path('admin_app_servicio_boleto_list', {'id': object.id}) }}" class="btn btn-sm btn-default view_link" title="{{ 'Listar Boletos'|trans({}, 'SonataAdminBundle') }}" style="min-width: 80px">
+                                        <i class="fas fa-address-card"></i>
+                                        Boletos
+                                    </a><br>
+                                    <a href="{{ admin.generateObjectUrl('edit', object) }}" class="btn btn-sm btn-default view_link" title="{{ 'Reservar pasaje'|trans({}, 'SonataAdminBundle') }}" style="min-width: 80px">
+                                        <i class="fas fa-edit"></i>
+                                        Editar
+                                    </a><br>
+                                    <a href="{{ admin.generateObjectUrl('delete', object) }}" class="btn btn-sm btn-default view_link" title="{{ 'Reservar pasaje'|trans({}, 'SonataAdminBundle') }}" style="min-width: 80px">
+                                        <i class="fas fa-trash"></i>
+                                        Borrar
+                                    </a>
+                                </div>
+                            </div>
+                        {% endif %}
                     </div>
                     <div class="align-items-center" style="min-height: auto;">
                         <div class="card col-md-4 col-xs-4">
@@ -24,7 +62,7 @@
                             <div class="card-body">
                                 <figure>
                                     <blockquote class="blockquote">
-                                        <i class="fa fa-clock-o"></i> <strong>{{ object.partida|date('H:m') }}</strong>
+                                        <i class="fa fa-clock-o"></i> <strong>{{ object.partida|date('H:i') }}</strong>
                                     </blockquote>
                                 </figure>
                             </div>
@@ -36,7 +74,7 @@
                             <div class="card-body">
                                 <figure>
                                     <blockquote class="blockquote">
-                                        <i class="fa fa-clock-o"></i> <strong>{{ object.llegada|date('H:m') }}</strong>
+                                        <i class="fa fa-clock-o"></i> <strong>{{ object.llegada|date('H:i') }}</strong>
                                     </blockquote>
                                 </figure>
                             </div>
