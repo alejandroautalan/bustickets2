@@ -40,6 +40,11 @@ final class ServicioAdmin extends AbstractAdmin
         }
     }
 
+    protected function configureBatchActions(array $actions): array
+    {
+        return [];
+    }
+
     public function showBtnBoletos(): bool
     {
         if($this->isFinalUser())
