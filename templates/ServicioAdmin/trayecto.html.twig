@@ -34,7 +34,7 @@
                                         <i class="fas fa-ticket-alt"></i>
                                         Reserva
                                     </a><br>
-                                    <a href="{{ admin.generateObjectUrl('archivo', object) }}" class="btn btn-sm btn-default view_link" title="{{ 'Reservar pasaje'|trans({}, 'SonataAdminBundle') }}" style="min-width: 80px">
+                                    <a href="{{ path('admin_app_servicio_archivo',  {'id': object.id}) }}" class="btn btn-sm btn-default view_link" title="{{ 'Reservar pasaje'|trans({}, 'SonataAdminBundle') }}" style="min-width: 80px">
                                         <i class="fas fa-file"></i>
                                         Archivo
                                     </a><br>
