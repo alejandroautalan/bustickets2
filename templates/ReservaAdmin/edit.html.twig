@@ -19,7 +19,7 @@
       {% if admin.subject is not null and admin.subject.boletos is not null %}
           <div class="box box-primary container-fluid">
           <div class="box-header">
-              <h4><strong>{{ admin.subject.origen }}</strong> &raquo; <strong>{{ admin.subject.destino }}</strong></h4>
+              <h4><i class="fa fa-bus"></i> <strong>{{ admin.subject.origen }}</strong> &raquo; <strong>{{ admin.subject.destino }}</strong></h4>
               <p><u>Salida {{ admin.subject.servicio.partida|date('D d M') }} &raquo; <strong>{{ admin.subject.servicio.partida|date('H:m') }} Hs</strong></u></p>
               <u>Llegada {{ admin.subject.servicio.llegada|date('D d M') }} &raquo; <strong>{{ admin.subject.servicio.llegada|date('H:m') }} Hs</strong></u>
           </div>
@@ -42,9 +42,9 @@
           {% endfor %}
           </div>
           </div>
-          <div class="box box-primary">
+          <div class="box box-primary container-fluid">
               <div class="box-header">
-                  <i class="fa fa-receipt"> Detalle de la compra</i>
+                  <h4><i class="fa fa-receipt"></i> <strong>Detalle de la compra</strong></h4>
               </div>
               {% for pago in admin.subject.pagos %}
               <div class="box-body container-fluid">
