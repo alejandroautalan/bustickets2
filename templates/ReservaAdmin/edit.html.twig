@@ -51,7 +51,7 @@
                   <h4>Pasajes: ARS {{ (pago.monto/100) |number_format(2, ',', '.') }}</h4>
                   <h4>*Saldo: ARS {{ ((pago.monto-pago.importeRecibido)/100) |number_format(2, ',', '.') }}</h4>
                   <h3><strong>Total: ARS {{ (pago.importeRecibido/100) |number_format(2, ',', '.') }}</strong></h3>
-                  <div class="help-block sonata-ba-field-help help-text">*El resto se abonara en efectivo antes de subir al colectivo</div>
+                  <div class="help-block sonata-ba-field-help help-text">*El resto se abonará en efectivo antes de subir al colectivo</div>
               </div>
               {% endfor %}
           </div>
