@@ -15,8 +15,8 @@
                         Completar compra
                     </a>
                 {% endif %}</p>
-            <p><u>Salida {{ reserva.servicio.partida|date('D d M') }} &raquo; <strong>{{ reserva.servicio.partida|date('H:m') }} Hs</strong></u></p>
-            <p><u>Llegada {{ reserva.servicio.llegada|date('D d M') }} &raquo; <strong>{{ reserva.servicio.llegada|date('H:m') }} Hs</strong></u></p>
+            <p><u>Salida</u> {{ reserva.servicio.partida|esp_date('%a %d %b') }} &raquo; <strong>{{ reserva.servicio.partida|date('H:m') }} Hs</strong></p>
+            <p><u>Llegada</u> {{ reserva.servicio.llegada|esp_date('%a %d %b') }} &raquo; <strong>{{ reserva.servicio.llegada|date('H:m') }} Hs</strong></p>
         </div>
         <div class="col-md-12 flex-column" style="background-color: white">
             {% for boleto in reserva.boletos %}
