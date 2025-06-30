@@ -1,11 +1,26 @@
 {% extends '@SonataAdmin/CRUD/edit.html.twig' %}
 {% block sonata_admin_content %}
+    {% block notice %}
+        {% if object.showPaymentBtn and object.boletos.count > 0 %}
+            {% include '@SonataTwig/FlashMessage/render.html.twig' %}
+        {% endif %}
+    {% endblock notice %}
+    {% if object.showPaymentBtn %}
+    <div class="box box-primary">
+        <div class="box-header">
+            <h4><strong>{{ admin.subject.origen }}</strong> &raquo; <strong>{{ admin.subject.destino }}</strong></h4>
+            <p><u>Salida: {{ admin.subject.servicio.partida|date('D d M') }} &raquo; <strong>{{ admin.subject.servicio.partida|date('H:m') }} Hs</strong></u></p>
+            <p><u>Llegada: {{ admin.subject.servicio.llegada|date('D d M') }} &raquo; <strong>{{ admin.subject.servicio.llegada|date('H:m') }} Hs</strong></u></p>
+            <strong>ARS {{ (admin.subject.servicio.costo/100) |number_format(2, ',', '.') }}</strong>
+        </div>
+    </div>
+    {% endif %}
   {% if object.showBoletosBtn %}
       {% if admin.subject is not null and admin.subject.boletos is not null %}
           <div class="box box-primary">
           <div class="box-header">
               <h4><strong>{{ admin.subject.origen }}</strong> &raquo; <strong>{{ admin.subject.destino }}</strong></h4>
-              <u>Salida {{ admin.subject.servicio.partida|date('D d M') }} &raquo; <strong>{{ admin.subject.servicio.partida|date('H:m') }} Hs</strong></p></u>
+              <p><u>Salida {{ admin.subject.servicio.partida|date('D d M') }} &raquo; <strong>{{ admin.subject.servicio.partida|date('H:m') }} Hs</strong></u></p>
               <u>Llegada {{ admin.subject.servicio.llegada|date('D d M') }} &raquo; <strong>{{ admin.subject.servicio.llegada|date('H:m') }} Hs</strong></u>
           </div>
           <div class="col-md-12 flex-column" style="background-color: white">
@@ -51,7 +66,6 @@
   {% if object.showFinalizeBtn %}
     <a href="{{ object.urlpago }}" name="btn_finalize" class="btn btn-warning" role="button" aria-pressed="true"><i class="fa fa-save"></i>Confirmar Reserva</a>
   {% endif %}
-
   {# Por ahora ocultar botones de admin
   {{ parent() }}
   #}

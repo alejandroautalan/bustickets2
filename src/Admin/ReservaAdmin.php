@@ -13,6 +13,7 @@ use Sonata\AdminBundle\Admin\AbstractAdmin;
 use Sonata\AdminBundle\Datagrid\DatagridMapper;
 use Sonata\AdminBundle\Datagrid\ListMapper;
 use Sonata\AdminBundle\Form\FormMapper;
+use Sonata\AdminBundle\Form\Type\ModelHiddenType;
 use Sonata\AdminBundle\Route\RouteCollectionInterface;
 use Sonata\AdminBundle\Show\ShowMapper;
 use Sonata\Form\Type\CollectionType;
@@ -29,6 +30,7 @@ use App\Entity\TransporteAsiento;
 use MercadoPago\MercadoPagoConfig;
 use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\Form\Extension\Core\Type\FormType;
+use Symfony\Component\Form\Extension\Core\Type\HiddenType;
 
 
 final class ReservaAdmin extends BaseAdmin
@@ -105,10 +107,10 @@ final class ReservaAdmin extends BaseAdmin
         #->add('id')
         #->add('estado')
         ->ifTrue($estado == Reserva::STATE_DRAFT)
-        ->with('Reserva - Selección Asientos')
-        ->add('origen', null, ['disabled' => true,])
-        ->add('destino', null, ['disabled' => true,])
-        ->add('servicio', null, ['disabled' => true,])
+        ->with('Selección Asientos')
+        ->add('origen', ModelHiddenType::class )
+        ->add('destino', ModelHiddenType::class)
+        ->add('servicio', ModelHiddenType::class)
         ->add('asientos', AsientoSelectorType::class, [
             'label' => 'Asientos disponibles',
             'transporte' => $servicio->getTransporte(),
@@ -134,7 +136,7 @@ final class ReservaAdmin extends BaseAdmin
        ->end()
        ->ifEnd()
        ->ifTrue($estado == Reserva::STATE_PENDING_PAYMENT)
-       ->with('Reserva - Pago')
+       ->with('Pago')
            ->add('pagos', CollectionType::class, [
                'label' => false,
                'btn_add' => false,

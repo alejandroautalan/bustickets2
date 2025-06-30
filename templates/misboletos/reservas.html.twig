@@ -1,6 +1,6 @@
 {% extends '@SonataAdmin/standard_layout.html.twig' %}
 {% set badge = { 0 : 'label label-danger', 1 : 'label label-primary', 2 : 'label label-success'} %}
-{% set nombre = {0 : 'Rechazado', 1 : 'Pendiente de Aprobacion', 2 : 'Pago Aprobado'} %}
+{% set nombre = {0 : 'Rechazado', 1 : 'Pendiente', 2 : 'Pago Aprobado'} %}
 {% block sonata_admin_content %}
 {% if reservas is not null %}
     {% for reserva in reservas %}
@@ -10,7 +10,13 @@
                 <h4>Reserva: {{ reserva.id }}</h4>
                 <h4><strong>{{ reserva.origen }}</strong> &raquo; <strong>{{ reserva.destino }}</strong></h4>
                 <p>Pago: {{ reserva.paymentId }}</p>
-                <p>Estado: <span class="{{ badge[reserva.estado] }}">{{ nombre[reserva.estado] }}</span></p>
+                <p>Estado: <span class="{{ badge[reserva.estado] }}">{{ nombre[reserva.estado] }}</span>
+                    {% if reserva.estado == 1 %}
+                    <a href="{{ path('admin_app_reserva_edit', {'id': reserva.id}) }}" class="btn btn-sm btn-default view_link" title="{{ 'Listar Boletos'|trans({}, 'SonataAdminBundle') }}" >
+                        <i class="fas fa-ticket-alt"></i>
+                        Completar compra
+                    </a>
+                    {% endif %}</p>
                 <p><u>Salida {{ reserva.servicio.partida|date('D d M') }} &raquo; <strong>{{ reserva.servicio.partida|date('H:m') }} Hs</strong></u></p>
                 <p><u>Llegada {{ reserva.servicio.llegada|date('D d M') }} &raquo; <strong>{{ reserva.servicio.llegada|date('H:m') }} Hs</strong></u></p>
             </div>
@@ -32,6 +38,8 @@
                     </div>
                 {% endfor %}
             </div>
+
+            <br>
         </div>
         </div><br>
     {% endfor %}
