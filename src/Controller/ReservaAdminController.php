@@ -183,7 +183,7 @@ EOF;
         $has_pagos = $reserva->getPagos()->count() > 0;
         if($has_boletos && !$has_pagos) {
             $pago = new Pago();
-            $pago->setTipo(Pago::PAYMENT_TYPE_UNSPECIFIED);
+            $pago->setTipo(Pago::PAYMENT_TYPE_MERCADOPAGO);
             $total = $reserva->calcularMontoTotal();
             $porcentaje = $total*0.1;
             $pago->setMonto($total);

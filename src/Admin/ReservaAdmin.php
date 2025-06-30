@@ -135,18 +135,17 @@ final class ReservaAdmin extends BaseAdmin
             ])
        ->end()
        ->ifEnd()
-       ->ifTrue($estado == Reserva::STATE_PENDING_PAYMENT)
-       ->with('Pago')
-           ->add('pagos', CollectionType::class, [
-               'label' => false,
-               'btn_add' => false,
-               'type_options' => [
-                   'label' => false,
-                   'btn_add' => false,
-                   'delete' => false,],
-            ])
-       ->ifEnd()
-
+       #->ifTrue($estado == Reserva::STATE_PENDING_PAYMENT)
+       #->with('Pago')
+       #    ->add('pagos', CollectionType::class, [
+       #        'label' => false,
+       #        'btn_add' => false,
+       #        'type_options' => [
+       #            'label' => false,
+       #            'btn_add' => false,
+       #            'delete' => false,],
+       #     ])
+       #->ifEnd()
         ;
     }
 
@@ -189,7 +188,7 @@ final class ReservaAdmin extends BaseAdmin
             $itemsForPreference = [
                 [
                     "id" => (string)$reserva->getId(), // Asegúrate de que el ID sea string
-                    "title" => "El Santigueño Bus",
+                    "title" => "Santigueño Bus",
                     "quantity" => 1,
                     "unit_price" => (float)($pago->getImporteRecibido() / 100) // Asegúrate de que sea float
                 ]
@@ -263,11 +262,11 @@ final class ReservaAdmin extends BaseAdmin
         if($has_boletos && !$has_pagos) {
             $entityManager = $this->getEntityManager(Pago::class);
             $pago = new Pago();
-            $pago->setTipo(Pago::PAYMENT_TYPE_UNSPECIFIED);
             $total = $reserva->calcularMontoTotal();
             $porcentaje = $total*0.1;
             $pago->setMonto($total);
             $pago->setUser($user);
+            $pago->setTipo(Pago::PAYMENT_TYPE_MERCADOPAGO);
             $pago->setImporteRecibido((int)$porcentaje);
             $reserva->addPago($pago);
             $entityManager->persist($pago);

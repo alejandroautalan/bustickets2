@@ -37,25 +37,25 @@ class ReservaInlineValidator
         # TODO
 
         # Validar Pago
-        if(Reserva::STATE_PENDING_PAYMENT == $reserva->getEstado()) {
-            $idx = 0;
-            foreach($reserva->getPagos() as $pago) {
-                $pago_indefinido = $pago->getTipo() == Pago::PAYMENT_TYPE_UNSPECIFIED;
-                if($pago_indefinido) {
-                    $msg = 'Seleccione Tipo de Pago';
-                    $errorElement->with('pagos['.$idx.'].tipo')->addViolation($msg)->end();
-                }
+        #if(Reserva::STATE_PENDING_PAYMENT == $reserva->getEstado()) {
+        #    $idx = 0;
+        #    foreach($reserva->getPagos() as $pago) {
+        #        $pago_indefinido = $pago->getTipo() == Pago::PAYMENT_TYPE_UNSPECIFIED;
+        #        if($pago_indefinido) {
+        #            $msg = 'Seleccione Tipo de Pago';
+        #            $errorElement->with('pagos['.$idx.'].tipo')->addViolation($msg)->end();
+        #        }
 
-                $total = $pago->getMonto();
-                $recibido = $pago->getImporteRecibido();
-                if($recibido < $total) {
-                    $msg = 'Importe recibido debe ser mayor o igual al total.';
-                    $errorElement->with('pagos['.$idx.'].importeRecibido')->addViolation($msg)->end();
-                }
+         #       $total = $pago->getMonto();
+         #       $recibido = $pago->getImporteRecibido();
+         #       if($recibido < $total) {
+         #           $msg = 'Importe recibido debe ser mayor o igual al total.';
+         #           $errorElement->with('pagos['.$idx.'].importeRecibido')->addViolation($msg)->end();
+         #       }
 
-                $idx += 1;
-            }
+         #       $idx += 1;
+         #   }
 
-        }
+        #}
     }
 }

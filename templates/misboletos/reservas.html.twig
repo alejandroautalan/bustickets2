@@ -12,7 +12,7 @@
                 <p>Pago: {{ reserva.paymentId }}</p>
                 <p>Estado: <span class="{{ badge[reserva.estado] }}">{{ nombre[reserva.estado] }}</span>
                     {% if reserva.estado == 1 %}
-                    <a href="{{ path('admin_app_reserva_edit', {'id': reserva.id}) }}" class="btn btn-sm btn-default view_link" title="{{ 'Listar Boletos'|trans({}, 'SonataAdminBundle') }}" >
+                    <a href="{{ path('admin_app_reserva_edit', {'id': reserva.id}) }}" class="btn btn-sm btn-default view_link" title="{{ 'Finalizar Compra'|trans({}, 'SonataAdminBundle') }}" >
                         <i class="fas fa-ticket-alt"></i>
                         Completar compra
                     </a>

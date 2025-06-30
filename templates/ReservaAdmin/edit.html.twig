@@ -9,15 +9,15 @@
     <div class="box box-primary">
         <div class="box-header">
             <h4><strong>{{ admin.subject.origen }}</strong> &raquo; <strong>{{ admin.subject.destino }}</strong></h4>
-            <p><u>Salida: {{ admin.subject.servicio.partida|date('D d M') }} &raquo; <strong>{{ admin.subject.servicio.partida|date('H:m') }} Hs</strong></u></p>
-            <p><u>Llegada: {{ admin.subject.servicio.llegada|date('D d M') }} &raquo; <strong>{{ admin.subject.servicio.llegada|date('H:m') }} Hs</strong></u></p>
-            <strong>ARS {{ (admin.subject.servicio.costo/100) |number_format(2, ',', '.') }}</strong>
+            <p><u>Salida: {{ admin.subject.servicio.partida|date('D d M') }} &raquo; <strong>{{ admin.subject.servicio.partida|date('H:i') }} Hs</strong></u></p>
+            <p><u>Llegada: {{ admin.subject.servicio.llegada|date('D d M') }} &raquo; <strong>{{ admin.subject.servicio.llegada|date('H:i') }} Hs</strong></u></p>
+            <h4 style="text-align: right"><strong>ARS {{ (admin.subject.servicio.costo/100) |number_format(2, ',', '.') }}</strong></h4>
         </div>
     </div>
     {% endif %}
   {% if object.showBoletosBtn %}
       {% if admin.subject is not null and admin.subject.boletos is not null %}
-          <div class="box box-primary">
+          <div class="box box-primary container-fluid">
           <div class="box-header">
               <h4><strong>{{ admin.subject.origen }}</strong> &raquo; <strong>{{ admin.subject.destino }}</strong></h4>
               <p><u>Salida {{ admin.subject.servicio.partida|date('D d M') }} &raquo; <strong>{{ admin.subject.servicio.partida|date('H:m') }} Hs</strong></u></p>
@@ -41,6 +41,19 @@
               </div>
           {% endfor %}
           </div>
+          </div>
+          <div class="box box-primary">
+              <div class="box-header">
+                  <i class="fa fa-receipt"> Detalle de la compra</i>
+              </div>
+              {% for pago in admin.subject.pagos %}
+              <div class="box-body container-fluid">
+                  <h4>Pasajes: ARS {{ (pago.monto/100) |number_format(2, ',', '.') }}</h4>
+                  <h4>*Saldo: ARS {{ ((pago.monto-pago.importeRecibido)/100) |number_format(2, ',', '.') }}</h4>
+                  <h3><strong>Total: ARS {{ (pago.importeRecibido/100) |number_format(2, ',', '.') }}</strong></h3>
+                  <div class="help-block sonata-ba-field-help help-text">*El resto se abonara en efectivo antes de subir al colectivo</div>
+              </div>
+              {% endfor %}
           </div>
       {% else %}
           <p class="alert alert-info">Aún no hay un pasajero asociado a este boleto.</p>

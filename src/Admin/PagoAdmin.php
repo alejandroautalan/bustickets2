@@ -69,19 +69,21 @@ final class PagoAdmin extends AbstractAdmin
             #    'choices' => Pago::getTipoPagoChoices(),
             #      'label' => 'Tipo'])
             #->add('numeroComprobante')
-            ->add('monto', MoneyType::class, [
-                'divisor' => 100,
-                'disabled' => true,
-                'currency' => 'ARS',
-            ])
+            #->add('monto', MoneyType::class, [
+            #    'divisor' => 100,
+            #    'disabled' => true,
+            #    'currency' => 'ARS',
+            #])
+            ->add('monto', HiddenType::class)
             #->add('fecha', DatePickerType::class, Array('label'=>'Fecha', 'format'=>'d/M/y'))
-            ->add('importeRecibido', MoneyType::class, [
-                'divisor' => 100,
-                'disabled' => true,
-                'currency' => 'ARS',
-                'label' => 'Importe a Pagar (un 10%)',
-                'help' => 'El resto se abonara en efectivo antes de subir al colectivo'
-            ])
+            #->add('importeRecibido', MoneyType::class, [
+            #    'divisor' => 100,
+            #    'disabled' => true,
+            #    'currency' => 'ARS',
+            #    'label' => 'Importe a Pagar (un 10%)',
+            #    'help' => 'El resto se abonara en efectivo antes de subir al colectivo'
+            #])
+            ->add('importeRecibido',HiddenType::class)
         ;
     }
 
