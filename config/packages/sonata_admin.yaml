@@ -8,7 +8,7 @@ sonata_block:
 
 sonata_admin:
   title: 'SantiagueñoBus'
-  title_logo: images/apple-touch-icon.png
+  title_logo: images/bus.png
 
   show_mosaic_button:   false
 
