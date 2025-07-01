@@ -11,11 +11,13 @@ class Boleto
 {
     public const STATE_DRAFT = 0;
     public const STATE_RESERVED = 1;
-    public const STATE_CANCELED = 2;
+    public const STATE_RESERVED_TAKEN = 2;
+    public const STATE_CANCELED = 3;
 
     public static $estados = [
         self::STATE_DRAFT => 'Nuevo',
         self::STATE_RESERVED => 'Reservado',
+        self::STATE_RESERVED_TAKEN => 'Ocupado',
         self::STATE_CANCELED => 'Cancelado',
     ];
 
