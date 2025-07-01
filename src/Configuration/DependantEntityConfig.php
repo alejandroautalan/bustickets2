@@ -6,6 +6,22 @@ namespace App\Configuration;
 use App\Entity\Ciudad;
 use App\Entity\Modelo;
 
+$php_84 = 8 * 10000 + 4 * 100;
+
+if (PHP_VERSION_ID < $php_84) {
+
+    function array_find(array $array, callable $callback): mixed
+    {
+        foreach ($array as $key => $value) {
+            if ($callback($value, $key)) {
+                return $value;
+            }
+        }
+        return null;
+    }
+}
+
+
 
 class DependantEntityConfig #implements ConfigurationInterface
 {
