@@ -1,6 +1,5 @@
 {% extends '@SonataAdmin/CRUD/base_list_field.html.twig' %}
 
-
 {% block field %}
 
     <div class="list-group mb-5 border border-primary container-fluid" style="border-color: #3c8dbc">
@@ -8,7 +7,7 @@
                 <!-- Icono o Logo -->
                 <div class="align-items-center">
                     <div class="border-bottom">
-                        <h5> <i class="fas fa-bus"></i><strong>{{ object.trayecto.origen }}</strong> &raquo; <strong>{{ object.trayecto.destino }} </strong></h5>
+                        <h5><i class="fas fa-bus"></i> <strong>{{ object.trayecto.origen }}</strong> &raquo; <strong>{{ object.trayecto.destino }} </strong></h5>
                     </div>
                     <div style="text-align: right">
                         {% if is_granted('ROLE_FINAL_USER') and not is_granted('ROLE_SUPER_ADMIN') %}

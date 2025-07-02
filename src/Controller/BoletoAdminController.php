@@ -13,12 +13,16 @@ use Doctrine\ORM\EntityManagerInterface;
 
 final class BoletoAdminController extends CRUDController
 {
-    public function asignarasientoAction(
+    public function asignarliberarasientoAction(
         EntityManagerInterface $entityManager
     ): RedirectResponse
     {
         $boleto = $this->admin->getSubject();
-        $boleto->setEstado(2);
+        if($boleto->getEstado() == 2):
+            $boleto->setEstado(1);
+        elseif($boleto->getEstado() == 1):
+            $boleto->setEstado(2);
+        endif;
 
         $entityManager->persist($boleto);
         $entityManager->flush();

@@ -52,3 +52,20 @@ $formMapper->add('settings', 'sonata_type_immutable_array', array(
     'translation_domain' => 'SonataMediaBundle',
 ));
 ```
+
+
+Public Key
+APP_USR-483ab6f4-783b-4412-9e79-8b9f9d16e0cc
+
+Access Token
+APP_USR-2352583760257351-063020-7330011c5de9a15c6b572acd3ae1c413-214189294
+
+Client ID
+2352583760257351
+
+Client Secret
+DpRdRKGpFz0tPaomoX0AmmQ75wKoJJDv
+
+clave secreta
+b865a2e56dc4070944859a2e19c85c754d0cec55f097cb62bfd3fe4d368e7aee
+

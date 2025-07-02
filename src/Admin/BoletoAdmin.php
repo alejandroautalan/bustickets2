@@ -26,7 +26,7 @@ final class BoletoAdmin extends BaseAdmin
 
     public function configureRoutes(RouteCollectionInterface $collection): void
     {
-        $collection->add('asignarasiento', 'asignarasiento');
+        $collection->add('asignarliberarasiento', 'asignarliberarasiento');
     }
 
     /**

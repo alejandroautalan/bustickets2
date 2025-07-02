@@ -1,3 +1,9 @@
-<a href="{{ path('admin_app_boleto_asignarasiento', {'id': object.id}) }}" class="btn btn-sm btn-info view_link" title="{{ 'Asignar asiento'|trans({}, 'SonataAdminBundle') }}" onclick="return confirm('Esta seguro de ocupar el asiento {{ object.asiento.numero }}, con la pasajero: {{ object.pasajero }}?')">
-    Asignar
-</a>
+{% if object.estado != 2 %}
+    <a href="{{ path('admin_app_boleto_asignarliberarasiento', {'id': object.id}) }}" class="btn btn-sm btn-success view_link" title="{{ 'Asignar asiento'|trans({}, 'SonataAdminBundle') }}" onclick="return confirm('Esta seguro de ocupar el asiento {{ object.asiento.numero }}, con la pasajero: {{ object.pasajero }}?')">
+        Asignar
+    </a>
+{% elseif object.estado == 2 %}
+    <a href="{{ path('admin_app_boleto_asignarliberarasiento', {'id': object.id}) }}" class="btn btn-sm btn-primary view_link" title="{{ 'Liberar asiento'|trans({}, 'SonataAdminBundle') }}" onclick="return confirm('Esta seguro de liberar el asiento {{ object.asiento.numero }}, con la pasajero: {{ object.pasajero }}?')">
+        Liberar
+    </a>
+{% endif %}

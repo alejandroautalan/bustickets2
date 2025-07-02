@@ -1,6 +1,6 @@
 {% extends '@SonataAdmin/CRUD/base_list_field.html.twig' %}
 {% block field %}
-    {% set badge = { 0 : 'label label-default', 1 : 'label label-primary', 2 : 'label label-success', 3 : 'label label-default'} %}
-    {% set nombre = {0 : 'XXXXXX', 1 : 'no ocupado', 2 : 'ocupado', 3 : 'label label-default'} %}
-    <span class="{{ badge[object.estado] }}">{{ nombre[object.estado] }}</span>
+    {% set badge = { 0 : 'label label-default', 1 : 'label label-primary', 2 : 'label label-success', 3 : 'label label-danger'} %}
+    {% set nombre = {0 : 'Nuevo', 1 : 'Reservado', 2 : 'Ocupado', 3 : 'Cancelado'} %}
+    <span class="{{ badge[object.estado] }}">{{ object.estadoTexto }}</span>
 {% endblock %}

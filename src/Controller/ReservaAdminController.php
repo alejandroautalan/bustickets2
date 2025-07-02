@@ -107,6 +107,7 @@ final class ReservaAdminController extends CRUDController
 
         $html .= <<<EOF
                     <script type="text/javascript">
+                            $('#sexo').select2();
                             function searchPasajero(dni) {
                                 $.ajax({
                                     url: '{$search}',
@@ -119,7 +120,7 @@ final class ReservaAdminController extends CRUDController
                                         console.log('AJAX Success:', data);
                                         $('#apellido').val(data.apellido);
                                         $('#nombre').val(data.nombre);
-                                        $('#sexo').val(data.sexo);
+                                        $('#sexo').val(data.sexo).select2();
                                         
                                     }
                                 });

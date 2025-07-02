@@ -69,6 +69,10 @@ class Boleto
         return array_flip(self::$estados);
     }
 
+    public function getEstadoTexto() {
+        return self::$estados[$this->estado] ?? 'Desconocido';
+    }
+
     public function getId(): ?int
     {
         return $this->id;
