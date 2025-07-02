@@ -7,6 +7,7 @@ namespace App\Admin;
 use Sonata\AdminBundle\Admin\AbstractAdmin;
 use Sonata\AdminBundle\Datagrid\DatagridMapper;
 use Sonata\AdminBundle\Datagrid\ListMapper;
+use Sonata\AdminBundle\Datagrid\ProxyQueryInterface;
 use Sonata\AdminBundle\Form\FormMapper;
 use Sonata\AdminBundle\Show\ShowMapper;
 use Sonata\AdminBundle\Form\Type\ModelListType;
@@ -47,6 +48,20 @@ final class BoletoAdmin extends BaseAdmin
             ->add('viaje_hora')
             ->add('costo')
         ;
+    }
+
+    protected function configureQuery(ProxyQueryInterface $query): ProxyQueryInterface
+    {
+        $query = parent::configureQuery($query);
+
+        $rootAlias = current($query->getRootAliases());
+        $estados = [Boleto::STATE_RESERVED, Boleto::STATE_RESERVED_TAKEN];
+        $query->andWhere(
+            $query->expr()->in($rootAlias . '.estado', $estados)
+        );
+        //$query->setParameter('my_param', 'my_value');
+
+        return $query;
     }
 
     protected function configureListFields(ListMapper $list): void

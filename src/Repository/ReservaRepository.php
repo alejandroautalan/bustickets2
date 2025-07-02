@@ -3,6 +3,7 @@
 namespace App\Repository;
 
 use App\Entity\Reserva;
+use App\Entity\Boleto;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
@@ -24,10 +25,22 @@ class ReservaRepository extends ServiceEntityRepository
             FROM App\Entity\Servicio s
             JOIN s.transporte t
             JOIN t.asientos ta
-            LEFT JOIN App\Entity\Boleto b WITH b.asiento = ta.id
+            LEFT JOIN App\Entity\Boleto b WITH b.asiento = ta.id AND b.servicio = s.id
             WHERE s = :servicio_id
-            AND  (b.asiento is NULL or b.estado = 0)'
-        )->setParameter('servicio_id', $servicio_id);
+              AND b.asiento is NULL
+              OR (b.estado = :boleto_draft
+                AND b.asiento not in (
+                    SELECT IDENTITY(bb.asiento) FROM App\Entity\Boleto bb
+                    where bb.servicio = :servicio_id
+                    and bb.estado in (:boleto_reservado, :boleto_reservado_taken)
+                    )
+                )
+            '
+        )->setParameter('servicio_id', $servicio_id)
+        ->setParameter('boleto_draft', Boleto::STATE_DRAFT)
+        ->setParameter('boleto_reservado', Boleto::STATE_RESERVED)
+        ->setParameter('boleto_reservado_taken', Boleto::STATE_RESERVED_TAKEN)
+        ;
         $rs = [];
         foreach($query->getResult() as $row) {
             $rs[] = $row['id'];
@@ -43,10 +56,12 @@ class ReservaRepository extends ServiceEntityRepository
             FROM App\Entity\Servicio s
             JOIN s.transporte t
             JOIN t.asientos ta
-            LEFT JOIN App\Entity\Boleto b WITH b.asiento = ta.id
+            LEFT JOIN App\Entity\Boleto b WITH b.asiento = ta.id AND b.servicio = s.id
             WHERE s = :servicio_id
-            AND  (b.asiento is not NULL and b.estado = 1)'
-        )->setParameter('servicio_id', $servicio_id);
+            AND  (b.asiento is not NULL and b.estado = :boleto_reservado)'
+        )->setParameter('servicio_id', $servicio_id)
+        ->setParameter('boleto_reservado', Boleto::STATE_RESERVED)
+        ;
         $rs = [];
         foreach($query->getResult() as $row) {
             $rs[] = $row['id'];

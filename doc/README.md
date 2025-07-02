@@ -2,7 +2,11 @@
 
 Comandos utiles despues de clonar:
 
+    # Instalar vendors javascrip/css
     php bin/console importmap:install
+    
+    # En producción:
+    php bin/console asset-map:compile
 
 Backup database:
 
