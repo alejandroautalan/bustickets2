@@ -1,0 +1,99 @@
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        document.querySelectorAll('.sonata-ba-tabs .nav-tabs a').forEach(function(tabLink) {
+            tabLink.addEventListener('click', function(e) {
+                e.preventDefault();
+
+                // Remove 'active' de todos los li
+                this.closest('ul').querySelectorAll('li').forEach(function(li) {
+                    li.classList.remove('active');
+                });
+
+                // Remove 'active' de todos los contenidos
+                document.querySelectorAll('.sonata-ba-tabs .tab-pane').forEach(function(pane) {
+                    pane.classList.remove('active');
+                });
+
+                // Agregar 'active' al tab clicado
+                this.closest('li').classList.add('active');
+
+                // Mostrar contenido correspondiente
+                const targetId = this.getAttribute('href').substring(1); // quitar '#'
+                document.getElementById(targetId).classList.add('active');
+            });
+        });
+    });
+</script>
+<style>
+    .sonata-ba-tabs .nav-tabs {
+        display: flex;
+        flex-direction: row;
+    }
+    .sonata-ba-tabs .nav-tabs li {
+        margin-right: 10px;
+    }
+    .sonata-ba-tabs .nav-tabs li.active {
+        font-weight: bold;
+        /* Puedes agregar más estilos para resaltarlas */
+    }
+</style>
+<div class="sonata-ba-tabs">
+        <div>
+            <div class="nav-tabs-custom">
+                <ul class="nav nav-tabs">
+                    {% set a = true %}
+                    {% for nested_group_field in form.children %}
+                    {% for form_group in associationAdmin.formgroups %}
+                        <li class="{% if a %}active{% endif %}">
+                            <a
+                                    href="#{{ id }}_{{ loop.parent.loop.index }}_{{ loop.index }}"
+                                    data-toggle="tab"
+                            >
+                                <i class="icon-exclamation-sign has-errors hide"></i>
+                                {% if form_group.translation_domain is defined and form_group.translation_domain is same as(false) %}
+                                    {{ form_group.label }}
+                                {% else %}
+                                    <img src="{{ asset('images/asiento.png') }}" class="img-fluid"> {{ nested_group_field.children.asiento.vars.data.numero }}{# form_group.label|trans({}, form_group.translation_domain ?? associationAdmin.translationDomain) #}
+                                {% endif %}
+                            </a>
+                        </li>
+                        {% set a = false %}
+                    {% endfor %}
+                    {% endfor %}
+                </ul>
+
+                <div class="tab-content">
+                    {% set a = true %}
+                    {% for nested_group_field in form.children %}
+                    {% for name, form_group in associationAdmin.formgroups %}
+                        <div
+                                class="tab-pane{% if a %} active{% endif %}"
+                                id="{{ id }}_{{ loop.parent.loop.index }}_{{ loop.index }}"
+                        >
+                            <fieldset>
+                                <div class="sonata-ba-collapsed-fields">
+                                    {% for field_name, form_field_name in form_group.fields|filter(form_field_name => nested_group_field.children[form_field_name] is defined) %}
+                                        {% set nested_field = nested_group_field.children[form_field_name] %}
+                                        <div class="sonata-ba-field-{{ id }}-{{ field_name }}">
+                                            {% if associationAdmin.formfielddescriptions[field_name] is defined %}
+                                                {{ form_row(nested_field) }}
+                                                {% set dummy = nested_group_field.setrendered %}
+                                            {% else %}
+                                                {{ form_row(nested_field) }}
+                                            {% endif %}
+                                        </div>
+                                        {% set a = false %}
+                                    {% endfor %}
+                                </div>
+                            </fieldset>
+                        </div>
+                    {% endfor %}
+                    {% endfor %}
+                </div>
+            </div>
+            {% if nested_group_field['_delete'] is defined %}
+                {{ form_row(nested_group_field['_delete'], {'label': 'action_delete', 'translation_domain': 'SonataAdminBundle'}) }}
+            {% endif %}
+        </div>
+</div>
+

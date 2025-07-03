@@ -4,6 +4,7 @@
 {% block sonata_admin_content %}
 {% if reservas is not null %}
     {% for reserva in reservas %}
+        {% if reserva.estado == 2 %}
         <div class="container-fluid">
         <div class="box box-primary">
             <div class="box-header">
@@ -42,6 +43,7 @@
             <br>
         </div>
         </div><br>
+        {% endif %}
     {% endfor %}
 {% else %}
     <p class="alert alert-info">Aún no hay un pasajero asociado a este boleto.</p>

@@ -9,11 +9,13 @@ use Sonata\AdminBundle\Datagrid\DatagridMapper;
 use Sonata\AdminBundle\Datagrid\ListMapper;
 use Sonata\AdminBundle\Datagrid\ProxyQueryInterface;
 use Sonata\AdminBundle\Form\FormMapper;
+use Sonata\AdminBundle\Form\Type\ModelHiddenType;
 use Sonata\AdminBundle\Show\ShowMapper;
 use Sonata\AdminBundle\Form\Type\ModelListType;
 use Sonata\AdminBundle\FieldDescription\FieldDescriptionInterface;
 use Sonata\AdminBundle\Route\RouteCollectionInterface;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
+use Symfony\Component\Form\Extension\Core\Type\HiddenType;
 use Symfony\Component\Form\Extension\Core\Type\MoneyType;
 use Symfony\Component\Form\Extension\Core\DataTransformer\MoneyToLocalizedStringTransformer;
 use App\Entity\Boleto;
@@ -109,7 +111,7 @@ final class BoletoAdmin extends BaseAdmin
             #->add('servicio')
             #->add('viaje_fecha')
             #->add('viaje_hora')
-            ->add('asiento', null, ['disabled' => true])
+            ->add('asiento', ModelHiddenType::class)
             ->add('pasajero',  PasajeroType::class, [
                 'label' => false, // Puedes mantenerlo sin etiqueta principal
                 'by_reference' => false,
@@ -117,11 +119,7 @@ final class BoletoAdmin extends BaseAdmin
                     return new Pasajero();
                 },
             ])
-            ->add('costo', MoneyType::class, [
-                'divisor' => 100,
-                'currency' => 'ARS',
-                'disabled' => true,
-            ])
+            ->add('costo', HiddenType::class)
             #->add('estado', ChoiceType::class, [
             #    'choices' => Boleto::getEstadoChoices(),
             #    'disabled' => true,

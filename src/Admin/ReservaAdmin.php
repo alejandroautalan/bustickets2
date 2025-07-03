@@ -95,6 +95,7 @@ final class ReservaAdmin extends BaseAdmin
 
     protected function configureReservaForm(FormMapper $form): void
     {
+
         $reserva = $this->getSubject();
         $servicio = $reserva->getServicio();
 
@@ -119,7 +120,8 @@ final class ReservaAdmin extends BaseAdmin
             'idreserva' => $reserva->getId(),
             'required' => false,
             'mapped' => false])
-       ->add('boletos', CollectionType::class, [
+        ->add('boletos', CollectionType::class, [
+           'label' => false,
            'btn_add' => false,
            'disabled' => true,
            'type_options' => [
@@ -129,12 +131,12 @@ final class ReservaAdmin extends BaseAdmin
                'delete' => false,]
             ], [
                 'btn_add' => false,
-             #'edit' => 'inline',
-             #'inline' => 'table',
-             'label' => false,
+                'edit' => 'inline',
+                'inline' => 'standard',
+                'label' => false,
             ])
-       ->end()
-       ->ifEnd()
+        ->end()
+        ->ifEnd()
        #->ifTrue($estado == Reserva::STATE_PENDING_PAYMENT)
        #->with('Pago')
        #    ->add('pagos', CollectionType::class, [
@@ -203,7 +205,6 @@ final class ReservaAdmin extends BaseAdmin
                 ],
                 "external_reference" => 'reserva_'.$reserva->getId().'_usuario_'.$user->getId(),
                 "auto_return" => "all", // "all" o "approved"
-                // Otros parámetros que necesites: payer, payment_methods, etc.
             ];
             $preference = $client->create($requestData);
             $entityManager = $this->getEntityManager(Reserva::class);

@@ -83,3 +83,63 @@
   {{ parent() }}
   #}
 {% endblock %}
+{% block stylesheets %}
+    {{ parent() }}
+    <style>
+        /* Estilos para pestañas horizontales */
+        .custom-collection-tabs {
+            margin-top: 20px;
+        }
+        .custom-tabs-nav {
+            display: flex;
+            list-style: none;
+            padding: 0;
+            margin: 0 0 10px 0;
+        }
+        .custom-tabs-nav li {
+            margin-right: 10px;
+            cursor: pointer;
+            padding: 5px 10px;
+            background: #f0f0f0;
+            border-radius: 4px;
+        }
+        .custom-tabs-nav li.active {
+            background: #007bff;
+            color: #fff;
+            font-weight: bold;
+        }
+        .tab-pane {
+            display: none;
+        }
+        .tab-pane.active {
+            display: block;
+        }
+    </style>
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const tabs = document.querySelectorAll('.custom-.tabs-nav li');
+            const panes = document.querySelectorAll('.tab-pane');
+
+            document.querySelectorAll('.custom-tabs-nav li').forEach(function(tab) {
+                tab.addEventListener('click', function(e) {
+                    e.preventDefault();
+
+                    // Remover 'active' de todos
+                    tabs.forEach(t => t.classList.remove('active'));
+                    panes.forEach(p => p.classList.remove('active'));
+
+                    // Añadir 'active' a la pestaña seleccionada
+                    this.classList.add('active');
+
+                    // Mostrar el contenido correspondiente
+                    const targetId = this.querySelector('a').getAttribute('data-target');
+                    document.getElementById(targetId).classList.add('active');
+                });
+            });
+        });
+    </script>
+{% endblock %}
