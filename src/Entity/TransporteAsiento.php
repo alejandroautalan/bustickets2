@@ -3,6 +3,8 @@
 namespace App\Entity;
 
 use App\Repository\TransporteAsientoRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: TransporteAsientoRepository::class)]
@@ -22,6 +24,12 @@ class TransporteAsiento
 
     #[ORM\Column(nullable: true)]
     private ?int $categoria = null;
+
+    /**
+     * @var Collection<int, Boleto>
+     */
+    #[ORM\OneToMany(targetEntity: Boleto::class, mappedBy: 'asiento')]
+    private Collection $boletos;
 
 
     public static $categorias = [
@@ -44,6 +52,11 @@ class TransporteAsiento
 
     #[ORM\Column(nullable: true)]
     private ?int $col = null;
+
+    public function __construct()
+    {
+        $this->boletos = new ArrayCollection();
+    }
 
     public static function getCategoriaChoices() {
         return array_flip(self::$categorias);
@@ -134,4 +147,35 @@ class TransporteAsiento
 
         return $this;
     }
+
+    /**
+     * @return Collection<int, Boleto>
+     */
+    public function getBoletos(): Collection
+    {
+        return $this->boletos;
+    }
+
+    public function addBoleto(Boleto $boleto): static
+    {
+        if (!$this->boletos->contains($boleto)) {
+            $this->boletos->add($boleto);
+            $boleto->setAsiento($this);
+        }
+
+        return $this;
+    }
+
+    public function removeBoleto(Boleto $boleto): static
+    {
+        if ($this->boletos->removeElement($boleto)) {
+            // set the owning side to null (unless already changed)
+            if ($boleto->getAsiento() === $this) {
+                $boleto->setAsiento(null);
+            }
+        }
+
+        return $this;
+    }
+
 }

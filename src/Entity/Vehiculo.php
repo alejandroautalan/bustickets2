@@ -113,4 +113,11 @@ class Vehiculo
 
         return $this;
     }
+
+    public function setActive(bool $is_active): static
+    {
+        $this->is_active = $is_active;
+
+        return $this;
+    }
 }

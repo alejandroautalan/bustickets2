@@ -32,7 +32,7 @@ class ReservaRepository extends ServiceEntityRepository
                 AND b.asiento not in (
                     SELECT IDENTITY(bb.asiento) FROM App\Entity\Boleto bb
                     where bb.servicio = :servicio_id
-                    and bb.estado in (:boleto_reservado, :boleto_reservado_taken)
+                    and bb.estado in (:boleto_reservado, :boleto_reservado_taken, :boleto_reservado_wait)
                     )
                 )
             '
@@ -40,6 +40,7 @@ class ReservaRepository extends ServiceEntityRepository
         ->setParameter('boleto_draft', Boleto::STATE_DRAFT)
         ->setParameter('boleto_reservado', Boleto::STATE_RESERVED)
         ->setParameter('boleto_reservado_taken', Boleto::STATE_RESERVED_TAKEN)
+        ->setParameter('boleto_reservado_wait', Boleto::STATE_RESERVED_WAIT)
         ;
         $rs = [];
         foreach($query->getResult() as $row) {

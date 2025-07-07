@@ -9,6 +9,7 @@ use App\Entity\Pago;
 use App\Entity\Pasajero;
 use App\Entity\Reserva;
 use App\Entity\TransporteAsiento;
+use Doctrine\DBAL\LockMode;
 use Doctrine\ORM\EntityManagerInterface;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -37,6 +38,40 @@ final class ReservaAdminController extends CRUDController
         }
 
         return parent::redirectTo($request, $object);
+    }
+
+    public function pagarAction(Request $request, EntityManagerInterface $entityManager): Response
+    {
+        $reserva_id = $request->get('id');
+        $reserva = $entityManager->getRepository(Reserva::class)->find($reserva_id);
+
+
+        foreach ($reserva->getBoletos() as $boleto):
+            if($boleto->getEstado() != Boleto::STATE_RESERVED_WAIT):
+                $boletoWait = $entityManager->getRepository(Boleto::class)->findOneBy(
+                    ['servicio' => $boleto->getServicio(), 'asiento' => $boleto->getAsiento(), 'estado' => boleto::STATE_RESERVED_WAIT]
+                );
+
+                if ($boletoWait) {
+                    $reserva->setEstado(Reserva::STATE_DRAFT);
+                    $reserva->removeBoleto($boleto);
+                    $entityManager->persist($reserva);
+                    $entityManager->flush();
+                    $this->addFlash('danger', 'El asiento: '.$boleto->getAsiento()->getNumero().' ya no esta disponible');
+                    return $this->redirectToRoute('admin_app_reserva_edit',['id' => $reserva->getId()]);
+                }
+
+                // Cambiar estado a reservado
+                $boleto->setEstado(boleto::STATE_RESERVED_WAIT);
+                $boleto->setUpdateAt(new \DateTimeImmutable());
+                $entityManager->persist($boleto);
+                $entityManager->flush();
+            endif;
+        endforeach;
+        $mercadopagourl =
+            $this->admin->getSubject()->getUrlpago();
+
+        return $this->redirect($mercadopagourl);
     }
 
     public function modalFormAction(Request $request): Response

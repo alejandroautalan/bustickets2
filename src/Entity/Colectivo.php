@@ -50,6 +50,7 @@ class Colectivo
     {
         $this->asientoColectivos = new ArrayCollection();
         $this->viajes = new ArrayCollection();
+        $this->asientos = new ArrayCollection();
     }
 
     public function __toString()

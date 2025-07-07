@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Admin;
 
+use Sonata\AdminBundle\Datagrid\ProxyQueryInterface;
 use Sonata\DoctrineORMAdminBundle\Filter\DateFilter;
 use Sonata\DoctrineORMAdminBundle\Filter\DateTimeFilter;
 use Sonata\DoctrineORMAdminBundle\Filter\DateTimeRangeFilter;
@@ -52,6 +53,30 @@ final class ServicioAdmin extends AbstractAdmin
         return True;
     }
 
+    protected function configureQuery(ProxyQueryInterface $query): ProxyQueryInterface
+    {
+        $filters = $this->getFilterParameters();
+        // Accede a los filtros aplicados
+        // array(4) { ["_page"]=> int(1) ["_per_page"]=> int(25) ["trayecto__trayectoParadas__parada"]=> array(1) { ["value"]=> string(2) "17" } ["trayecto__destino"]=> array(1) { ["value"]=> string(2) "19" } }
+        // Reemplaza 'nombre' con el nombre del filtro que quieres usar
+        if (isset($filters['trayecto__trayectoParadas__parada'])) {
+            // Obtiene los datos del filtro
+            $filterParadaO = $filters['trayecto__trayectoParadas__parada']['value'];
+            #$filterParadaD = $filters['rayecto__destino']['value'];
+
+            // Ahora puedes usar $filterData en tu query
+            if ($filterParadaO !== null && $filterParadaO !== '') {
+                $query->join($query->getRootAlias().'.trayecto', 't');
+                $query->join('t.trayectoParadas', 'tp');
+                $query->join('tp.parada', 'p');
+                $query->andWhere( 'p.id = :origen');
+                $query->setParameter('origen', '%' . $filterParadaO. '%');
+            }
+        }
+        return $query;
+        // Puedes hacer lo mismo con otros filtros
+    }
+
     public function configureRoutes(RouteCollectionInterface $collection): void
     {
         $collection->add('reserva', 'reserva');
@@ -68,7 +93,7 @@ final class ServicioAdmin extends AbstractAdmin
             $minAttr = ['min' => $minDate];
         }
         $filter
-            ->add('trayecto.origen', null, ['label' => 'Origen'])
+            ->add('trayecto.trayectoParadas.parada', null, ['label' => 'Origen'])
             ->add('trayecto.destino', null, ['label' => 'Destino'])
             #->add('nombre')
             ->add('partida', DateFilter::class, [

@@ -12,13 +12,16 @@ class Boleto
     public const STATE_DRAFT = 0;
     public const STATE_RESERVED = 1;
     public const STATE_RESERVED_TAKEN = 2;
-    public const STATE_CANCELED = 3;
+    public const STATE_RESERVED_WAIT = 3;
+    public const STATE_CANCELED = 4;
 
     public static $estados = [
         self::STATE_DRAFT => 'Nuevo',
         self::STATE_RESERVED => 'Reservado',
-        self::STATE_RESERVED_TAKEN => 'Ocupado',
+        self::STATE_RESERVED_TAKEN => 'Reserva Tomada',
+        self::STATE_RESERVED_WAIT => 'Reserva en espera',
         self::STATE_CANCELED => 'Cancelado',
+
     ];
 
     #[ORM\Id]
@@ -59,6 +62,9 @@ class Boleto
 
     #[ORM\Column(nullable: true)]
     private ?int $costo = null;
+
+    #[ORM\Column(nullable: true)]
+    private ?\DateTimeImmutable $update_at = null;
 
     public function __toString()
     {
@@ -194,6 +200,18 @@ class Boleto
     public function setCosto(?int $costo): static
     {
         $this->costo = $costo;
+
+        return $this;
+    }
+
+    public function getUpdateAt(): ?\DateTimeImmutable
+    {
+        return $this->update_at;
+    }
+
+    public function setUpdateAt(?\DateTimeImmutable $update_at): static
+    {
+        $this->update_at = $update_at;
 
         return $this;
     }

@@ -1,57 +1,75 @@
 {% extends '@SonataAdmin/CRUD/base_list_field.html.twig' %}
 
 {% block field %}
-
+    {# set filter_json = app.request.query.get('filter')|url_encode #}
     <div class="list-group mb-5 border border-primary container-fluid" style="border-color: #3c8dbc">
             <div class=" justify-content-between align-items-center">
                 <!-- Icono o Logo -->
                 <div class="align-items-center">
-                    <div class="border-bottom">
+                    <div class="border-bottom" style="padding-left: 5px">
                         <h5><i class="fas fa-bus"></i> <strong>{{ object.trayecto.origen }}</strong> &raquo; <strong>{{ object.trayecto.destino }} </strong></h5>
                     </div>
-                    <div style="text-align: right">
-                        {% if is_granted('ROLE_FINAL_USER') and not is_granted('ROLE_SUPER_ADMIN') %}
-                            <a href="{{ admin.generateObjectUrl('reserva', object) }}" class="btn btn-sm btn-danger view_link" title="{{ 'Reservar pasaje'|trans({}, 'SonataAdminBundle') }}" style="min-width: 80px">
-                                <i class="fas fa-ticket-alt"></i>
-                                Reserva
-                            </a>
-                        {% endif %}
-                        {%  if is_granted('ROLE_USER_BOLETO') and not is_granted('ROLE_SUPER_ADMIN')%}
-                            <a href="{{ path('admin_app_servicio_boleto_list', {'id': object.id}) }}" class="btn btn-sm btn-primary view_link" title="{{ 'Listar Boletos'|trans({}, 'SonataAdminBundle') }}" style="min-width: 80px">
-                                <i class="fas fa-address-card"></i>
-                                Boletos
-                            </a>
-                        {% endif %}
-                        {% if is_granted('ROLE_SUPER_ADMIN') %}
-                            <div class="btn-group-vertical" role="group">
-                                <button id="btnGroupDrop1" type="button" class="btn btn-sm btn-danger view_link dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                    <i class="fa fa-gear"></i>
-                                    Acciones
-                                </button>
-                                <div class="dropdown-menu" aria-labelledby="btnGroupDrop1" style="min-width: 80px; margin: 0; padding: 0;">
-                                    <a href="{{ admin.generateObjectUrl('reserva', object) }}" class="btn btn-sm btn-default view_link" title="{{ 'Reservar pasaje'|trans({}, 'SonataAdminBundle') }}" style="min-width: 80px">
-                                        <i class="fas fa-ticket-alt"></i>
-                                        Reserva
-                                    </a><br>
-                                        <a href="{{ path('admin_app_servicio_archivo',  {'id': object.id}) }}" class="btn btn-sm btn-default view_link" title="{{ 'Reservar pasaje'|trans({}, 'SonataAdminBundle') }}" style="min-width: 80px">
-                                        <i class="fas fa-file"></i>
-                                        Archivo
-                                    </a><br>
-                                    <a href="{{ path('admin_app_servicio_boleto_list', {'id': object.id}) }}" class="btn btn-sm btn-default view_link" title="{{ 'Listar Boletos'|trans({}, 'SonataAdminBundle') }}" style="min-width: 80px">
-                                        <i class="fas fa-address-card"></i>
-                                        Boletos
-                                    </a><br>
-                                    <a href="{{ admin.generateObjectUrl('edit', object) }}" class="btn btn-sm btn-default view_link" title="{{ 'Reservar pasaje'|trans({}, 'SonataAdminBundle') }}" style="min-width: 80px">
-                                        <i class="fas fa-edit"></i>
-                                        Editar
-                                    </a>{#<br>
-                                      <a href="{{ admin.generateObjectUrl('delete', object) }}" class="btn btn-sm btn-default view_link" title="{{ 'Reservar pasaje'|trans({}, 'SonataAdminBundle') }}" style="min-width: 80px">
-                                        <i class="fas fa-trash"></i>
-                                        Borrar
-                                    </a>#}
+
+                    <div class="container-fluid" style="padding-right: 1px">
+                        <div style="float: left">
+                            {% if object.asientosLibres != 0  %}
+                                Pasajes <span class="badge rounded-pill text-bg-warning">{{ object.asientosLibres }}</span> <a href="#" data-toggle="modal" data-target="#modal{{ object.id }}" >Trayecto</a>
+                            {% else %}
+                                <span class="badge badge-danger">Sin Pasajes</span>
+                            {% endif %}
+                        </div>
+                        <div style="float: right">
+                            {% if is_granted('ROLE_FINAL_USER') and not is_granted('ROLE_SUPER_ADMIN') %}
+                                {% if object.asientosLibres != 0 %}
+                                <a href="{{ admin.generateObjectUrl('reserva', object) }}" class="btn btn-sm btn-danger view_link" title="{{ 'Reservar pasaje'|trans({}, 'SonataAdminBundle') }}" style="min-width: 80px">
+                                    <i class="fas fa-ticket-alt"></i>
+                                    Reserva
+                                </a>
+                                {% else %}
+                                    <a href="{{ admin.generateObjectUrl('reserva', object) }}" class="btn btn-sm btn-danger disabled" title="{{ 'Reservar pasaje'|trans({}, 'SonataAdminBundle') }}" style="min-width: 80px">
+                                        <i class="fas fa-ban"></i>
+                                        Agotado
+                                    </a>
+                                {% endif %}
+                            {% endif %}
+                            {%  if is_granted('ROLE_USER_BOLETO') and not is_granted('ROLE_SUPER_ADMIN')%}
+                                <a href="{{ path('admin_app_servicio_boleto_list', {'id': object.id}) }}" class="btn btn-sm btn-primary view_link" title="{{ 'Listar Boletos'|trans({}, 'SonataAdminBundle') }}" style="min-width: 80px">
+                                    <i class="fas fa-address-card"></i>
+                                    Boletos
+                                </a>
+                            {% endif %}
+                            {% if is_granted('ROLE_SUPER_ADMIN') %}
+                                <div class="btn-group-vertical" role="group">
+                                    <button id="btnGroupDrop1" type="button" class="btn btn-sm btn-danger view_link dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                        <i class="fa fa-gear"></i>
+                                        Acciones
+                                    </button>
+                                    <div class="dropdown-menu" aria-labelledby="btnGroupDrop1" style="min-width: 80px; margin: 0; padding: 0;">
+
+                                        <a href="{{ admin.generateObjectUrl('reserva', object) }}" class="btn btn-sm btn-default view_link" title="{{ 'Reservar pasaje'|trans({}, 'SonataAdminBundle') }}" style="min-width: 80px">
+                                            <i class="fas fa-ticket-alt"></i>
+                                            Reserva
+                                        </a><br>
+                                            <a href="{{ path('admin_app_servicio_archivo',  {'id': object.id}) }}" class="btn btn-sm btn-default view_link" title="{{ 'Reservar pasaje'|trans({}, 'SonataAdminBundle') }}" style="min-width: 80px">
+                                            <i class="fas fa-file"></i>
+                                            Archivo
+                                        </a><br>
+                                        <a href="{{ path('admin_app_servicio_boleto_list', {'id': object.id}) }}" class="btn btn-sm btn-default view_link" title="{{ 'Listar Boletos'|trans({}, 'SonataAdminBundle') }}" style="min-width: 80px">
+                                            <i class="fas fa-address-card"></i>
+                                            Boletos
+                                        </a><br>
+                                        <a href="{{ admin.generateObjectUrl('edit', object) }}" class="btn btn-sm btn-default view_link" title="{{ 'Reservar pasaje'|trans({}, 'SonataAdminBundle') }}" style="min-width: 80px">
+                                            <i class="fas fa-edit"></i>
+                                            Editar
+                                        </a>{#<br>
+                                          <a href="{{ admin.generateObjectUrl('delete', object) }}" class="btn btn-sm btn-default view_link" title="{{ 'Reservar pasaje'|trans({}, 'SonataAdminBundle') }}" style="min-width: 80px">
+                                            <i class="fas fa-trash"></i>
+                                            Borrar
+                                        </a>#}
+                                    </div>
                                 </div>
-                            </div>
-                        {% endif %}
+                            {% endif %}
+                        </div>
                     </div>
                     <div class="align-items-center" style="min-height: auto;">
                         <div class="card col-md-4 col-xs-4">
@@ -92,7 +110,32 @@
                             </div>
                         </div>
                     </div>
-
             </div>
     </div>
+    {# modal taryecto puntos #}
+    <div class="modal fade" id="modal{{ object.id }}" tabindex="-1" role="dialog" aria-labelledby="modal{{ object.id }}" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title"><i class="fas fa-bus"></i> <strong>{{ object.trayecto.origen }}</strong> &raquo; <strong>{{ object.trayecto.destino }} </strong></h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <strong class="text-primary">Salida</strong> {{ object.partida|esp_date('%a %d %b') }} <i class="fa fa-clock-o"></i>{{ object.partida|date('H:i') }}Hs<br>
+                    <strong>{{ object.trayecto.origen }}</strong><br><br>
+                    {% for tp in object.trayecto.trayectoparadas %}
+                        <strong>Parada</strong><br>{{ tp.parada }}<br>
+                    {% endfor %}
+                    <br><strong class="text-primary">Llegada</strong> {{ object.llegada|esp_date('%a %d %b') }} <i class="fa fa-clock-o"></i>{{ object.llegada|date('H:i') }}Hs<br>
+                    <strong>{{ object.trayecto.destino }}</strong>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    {# fin modal trayectos #}
 {% endblock field %}

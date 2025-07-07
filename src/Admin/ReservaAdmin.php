@@ -54,6 +54,7 @@ final class ReservaAdmin extends BaseAdmin
     {
         $collection->add('addBoleto', 'addBoleto');
         $collection->add('modalForm', 'modalForm');
+        $collection->add('pagar', 'pagar');
 
     }
 
@@ -315,8 +316,11 @@ final class ReservaAdmin extends BaseAdmin
         $entityManager = $this->getEntityManager(Boleto::class);
         if(true == $asiento_existe) {
             # remover boleto
+            $boleto->setEstado(Boleto::STATE_DRAFT);
             $reserva->removeBoleto($boleto);
             $entityManager->remove($boleto);
+            $entityManager->persist($boleto);
+            $entityManager->flush();
         } else {
             # agregar boleto
             $boleto = new Boleto();

@@ -49,11 +49,16 @@
         {% set asiento=transporte.getAsientoEnGrilla(planta, row, col) %}
         {% if asiento %}
             {% block celda_asiento %}
-                {% if asiento.id in asientos_libres %}
+                {% if asiento.id in asientos_libres or asiento.id in asientos_reserva %}{# para ver asientos reservados pero en estado de espera #}
 
                     {% if asiento.id in asientos_reserva %}
-                        {% set btn_class='btn btn-primary btn-lg' %}
-                        <button class="{{ btn_class }}" type="submit" name="toggle_asiento" value="{{ asiento.id }}">{{ asiento.numero }}</button>
+                        {% if asiento.id not in asientos_libres %}{# es un asiento de mi reserva pero en estado WAIT (no esta libre) #}
+                            {% set btn_class='btn btn-warning btn-lg' %}
+                            <button class="{{ btn_class }}" type="submit" name="toggle_asiento" value="{{ asiento.id }}">{{ asiento.numero }}</button>
+                        {% else %}
+                            {% set btn_class='btn btn-primary btn-lg' %}
+                            <button class="{{ btn_class }}" type="submit" name="toggle_asiento" value="{{ asiento.id }}">{{ asiento.numero }}</button>
+                        {% endif %}
                     {% else %}
                         {% set btn_class='btn btn-outline-secondary btn-lg' %}
                         <a href="#" class="{{ btn_class }}" data-toggle="modal" data-target="#modal{{ asiento.id }}" onclick="procAsiento({{ form.vars.idreserva }},{{ asiento.id }},{{ asiento.numero }})">{{ asiento.numero }}</a>

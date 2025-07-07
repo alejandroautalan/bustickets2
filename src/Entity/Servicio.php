@@ -81,6 +81,20 @@ class Servicio
     #[ORM\OneToMany(targetEntity: Boleto::class, mappedBy: 'servicio')]
     private Collection $boletos;
 
+    public function getAsientosLibres()
+    {
+         $a = 0;
+         $b = 0;
+         foreach ($this->transporte->getAsientos() as $asiento):
+                 $a++;
+         endforeach;
+        foreach ($this->boletos as $boleto):
+            if($boleto->getEstado() == 3 or $boleto->getEstado() == 1):
+                $b++;
+            endif;
+        endforeach;
+         return $a-$b;
+    }
     public function __construct()
     {
         $this->boletos = new ArrayCollection();
