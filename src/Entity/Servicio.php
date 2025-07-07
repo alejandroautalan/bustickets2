@@ -121,6 +121,41 @@ class Servicio
         return $this->trayecto->getOrigen().' > '.$this->trayecto->getDestino() ;
     }
 
+    public function getFecha(): ?\DateTimeInterface {
+        return $this->getPartida();
+    }
+
+    public function setFecha(\DateTimeInterface $fecha): static
+    {
+        $this->recalcularFechasOrigenDestino($fecha);
+
+        return $this;
+    }
+
+    public function recalcularFechasOrigenDestino(\DateTimeInterface $fecha) {
+        $trayecto = $this->getTrayecto();
+        $paradas = $trayecto->getTrayectoParadas();
+        $tp_origen = $paradas->first();
+        $tp_destino = $paradas->last();
+
+        $dia = $tp_origen->getDia();
+        $hora = $tp_origen->getHoraPartida();
+        $interval_origen = sprintf('P%sDT%sH%sM', $dia, $hora->format('H'), $hora->format('i'));
+
+        $dia = $tp_destino->getDia();
+        $hora = $tp_destino->getHoraLLegada();
+        $interval_destino = sprintf('P%sDT%sH%sM', $dia, $hora->format('H'), $hora->format('i'));
+
+        $forigen = clone $fecha;
+        $fdestino = clone $fecha;
+
+        $forigen->add(new \DateInterval($interval_origen));
+        $fdestino->add(new \DateInterval($interval_destino));
+
+        $this->setPartida($forigen);
+        $this->setLlegada($fdestino);
+    }
+
     public function getNombreTrayecto()
     {
         return $this->trayecto->getOrigen().' > '.$this->trayecto->getDestino() ;
