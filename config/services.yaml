@@ -40,6 +40,10 @@ services:
         class: App\Validator\ReservaInlineValidator
         public: true
 
+    app.inlinevalidator.trayecto:
+        class: App\Validator\TrayectoInlineValidator
+        public: true
+
 
     #
     # ADMIN SERVICES
