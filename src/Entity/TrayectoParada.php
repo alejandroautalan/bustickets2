@@ -24,6 +24,9 @@ class TrayectoParada
     #[ORM\JoinColumn(nullable: false)]
     private ?Parada $parada = null;
 
+    #[ORM\Column(options: ["unsigned"])]
+    private ?int $tipo_parada_id = null;
+
     public function __toString()
     {
         return 'Punto:'.($this->parada? $this->parada->getNombre(): 'NUEVO');
@@ -66,6 +69,18 @@ class TrayectoParada
     public function setParada(?Parada $parada): static
     {
         $this->parada = $parada;
+
+        return $this;
+    }
+
+    public function getTipoParadaId(): ?int
+    {
+        return $this->tipo_parada_id;
+    }
+
+    public function setTipoParadaId(int $tipo_parada_id): static
+    {
+        $this->tipo_parada_id = $tipo_parada_id;
 
         return $this;
     }
