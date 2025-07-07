@@ -15,10 +15,17 @@ use Sonata\AdminBundle\Route\RouteCollectionInterface;
 use Sonata\AdminBundle\Admin\AdminInterface;
 use Knp\Menu\ItemInterface as MenuItemInterface;
 
+use App\Admin\Extension\CloneActionAdminExtension;
+
 
 
 final class TrayectoAdmin extends AbstractAdmin
 {
+    protected function configure(): void
+    {
+        $this->addExtension(new CloneActionAdminExtension());
+    }
+
     protected function configureDatagridFilters(DatagridMapper $filter): void
     {
         $filter
