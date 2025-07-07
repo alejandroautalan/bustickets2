@@ -3,6 +3,7 @@
 namespace App\Entity;
 
 use App\Repository\TrayectoParadaRepository;
+use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: TrayectoParadaRepository::class)]
@@ -26,6 +27,15 @@ class TrayectoParada
 
     #[ORM\Column(options: ["unsigned"])]
     private ?int $tipo_parada_id = null;
+
+    #[ORM\Column]
+    private ?int $dia = null;
+
+    #[ORM\Column(type: Types::TIME_MUTABLE, nullable: true)]
+    private ?\DateTimeInterface $hora_llegada = null;
+
+    #[ORM\Column(type: Types::TIME_MUTABLE, nullable: true)]
+    private ?\DateTimeInterface $hora_partida = null;
 
     public function __toString()
     {
@@ -81,6 +91,42 @@ class TrayectoParada
     public function setTipoParadaId(int $tipo_parada_id): static
     {
         $this->tipo_parada_id = $tipo_parada_id;
+
+        return $this;
+    }
+
+    public function getDia(): ?int
+    {
+        return $this->dia;
+    }
+
+    public function setDia(int $dia): static
+    {
+        $this->dia = $dia;
+
+        return $this;
+    }
+
+    public function getHoraLlegada(): ?\DateTimeInterface
+    {
+        return $this->hora_llegada;
+    }
+
+    public function setHoraLlegada(?\DateTimeInterface $hora_llegada): static
+    {
+        $this->hora_llegada = $hora_llegada;
+
+        return $this;
+    }
+
+    public function getHoraPartida(): ?\DateTimeInterface
+    {
+        return $this->hora_partida;
+    }
+
+    public function setHoraPartida(?\DateTimeInterface $hora_partida): static
+    {
+        $this->hora_partida = $hora_partida;
 
         return $this;
     }

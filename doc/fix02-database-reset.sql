@@ -18,6 +18,12 @@ ALTER TABLE `trayecto_parada` ADD COLUMN IF NOT EXISTS `tipo_parada_id` INT UNSI
 
 ALTER TABLE `trayecto` ADD  COLUMN IF NOT EXISTS `enabled` BOOL NULL DEFAULT 0 ;
 
+ALTER TABLE `trayecto_parada` ADD COLUMN IF NOT EXISTS `dia` SMALLINT UNSIGNED NOT NULL DEFAULT 0 ;
+ALTER TABLE `trayecto_parada` ADD COLUMN IF NOT EXISTS `hora_llegada` TIME NULL;
+ALTER TABLE `trayecto_parada` ADD COLUMN IF NOT EXISTS `hora_partida` TIME NULL;
+
+
+-- Datos provincias y ciudades
 
 INSERT INTO provincia (id, nombre) values
 (02, "Ciudad Autónoma de Buenos Aires"),
