@@ -5,6 +5,8 @@ namespace App\Configuration;
 #use Symfony\Component\Config\Definition\ConfigurationInterface;
 use App\Entity\Ciudad;
 use App\Entity\Modelo;
+use App\Entity\Vehiculo;
+
 
 $php_84 = 8 * 10000 + 4 * 100;
 
@@ -58,6 +60,7 @@ class DependantEntityConfig #implements ConfigurationInterface
                 'form_field' => 'ciudad',
                 'class' => Ciudad::class,
                 'search_order_field' => 'nombre',
+                'no_result_msg' => 'Sin resultados',
                 #'attr' => [
                 #    'data-sonata-select2' => 'false'
                 #]
@@ -70,6 +73,17 @@ class DependantEntityConfig #implements ConfigurationInterface
                 'form_field' => 'modelo',
                 'class' => Modelo::class,
                 'search_order_field' => 'nombre',
+                'no_result_msg' => 'Sin resultados',
+            ],
+            [
+                'config_name' => 'form_servicio:vehiculo_by_transporte',
+                'parent_entity_field' => 'transporte',
+                'parent_form_field'=> 'transporte',
+                'entity_field' => 'vehiculo',
+                'form_field' => 'vehiculo',
+                'class' => Vehiculo::class,
+                'search_order_field' => 'nombre',
+                'no_result_msg' => 'Sin resultados',
             ],
         ];
     }
