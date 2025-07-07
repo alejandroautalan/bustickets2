@@ -1,0 +1,7 @@
+{% set ext_action_name= 'objclone' %}
+{% if admin.hasRoute(ext_action_name) %}
+<a href="{{ admin.generateObjectUrl(ext_action_name, object) }}" class="btn btn-sm btn-primary view_link" title="{{ 'Duplicar'|trans({}, 'SonataAdminBundle') }}" >
+    <i class="fas fa-list-alt"></i>
+    Duplicar
+</a>
+{% endif %}
