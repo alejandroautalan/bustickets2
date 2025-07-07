@@ -63,6 +63,15 @@ final class TrayectoParadaAdmin extends AbstractAdmin
                 'label' => "Tipo",
                 'choices' => Trayecto::getTiposParadaChoices(),
             ])
+            ->add('dia', ChoiceType::class, ['choices' => [0, 1, 2, 3]])
+            ->add('hora_llegada', null, [
+                    'widget' => 'single_text',
+                    'label' => 'Llegada',
+                ])
+            ->add('hora_partida', null, [
+                    'widget' => 'single_text',
+                    'label' => 'Partida',
+                ])
             ->add('parada', ModelListType::class)
         ;
     }
