@@ -59,6 +59,13 @@ class Trayecto
         return array_flip(self::$tipos_parada);
     }
 
+    public function getParadasByNroOrden(): Collection
+    {
+        $criteria = new Criteria();
+        $criteria->orderBy(['nro_orden' => Order::Ascending]);
+        return $this->trayectoParadas->matching($criteria);
+    }
+
     public function getId(): ?int
     {
         return $this->id;
@@ -81,9 +88,10 @@ class Trayecto
      */
     public function getTrayectoParadas(): Collection
     {
-        $criteria = new Criteria();
-        $criteria->orderBy(['nro_orden' => Order::Ascending]);
-        return $this->trayectoParadas->matching($criteria);
+        //$criteria = new Criteria();
+        //$criteria->orderBy(['nro_orden' => Order::Ascending]);
+        //return $this->trayectoParadas->matching($criteria);
+        return $this->trayectoParadas;
     }
 
     public function addTrayectoParada(TrayectoParada $trayectoParada): static
