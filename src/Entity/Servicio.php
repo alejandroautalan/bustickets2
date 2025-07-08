@@ -134,24 +134,29 @@ class Servicio
 
     public function recalcularFechasOrigenDestino(\DateTimeInterface $fecha) {
         $trayecto = $this->getTrayecto();
-        $paradas = $trayecto->getTrayectoParadas();
+        $paradas = $trayecto->getParadasByNroOrden();
         $tp_origen = $paradas->first();
         $tp_destino = $paradas->last();
 
-        $dia = $tp_origen->getDia();
-        $hora = $tp_origen->getHoraPartida();
-        $interval_origen = sprintf('P%sDT%sH%sM', $dia, $hora->format('H'), $hora->format('i'));
+        $origen_dia = $tp_origen->getDia();
+        $origen_hora = $tp_origen->getHoraPartida();
 
-        $dia = $tp_destino->getDia();
-        $hora = $tp_destino->getHoraLLegada();
-        $interval_destino = sprintf('P%sDT%sH%sM', $dia, $hora->format('H'), $hora->format('i'));
+        $destino_dia = $tp_destino->getDia();
+        $destino_hora = $tp_destino->getHoraLLegada();
 
         $forigen = clone $fecha;
         $fdestino = clone $fecha;
 
-        $forigen->add(new \DateInterval($interval_origen));
-        $fdestino->add(new \DateInterval($interval_destino));
-
+        if($origen_hora !== null) {
+            $interval_origen = sprintf(
+                'P%sDT%sH%sM', $origen_dia, $origen_hora->format('H'), $origen_hora->format('i'));
+            $forigen->add(new \DateInterval($interval_origen));
+        }
+        if($destino_hora !== null) {
+            $interval_destino = sprintf(
+                'P%sDT%sH%sM', $destino_dia, $destino_hora->format('H'), $destino_hora->format('i'));
+            $fdestino->add(new \DateInterval($interval_destino));
+        }
         $this->setPartida($forigen);
         $this->setLlegada($fdestino);
     }
