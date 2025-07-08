@@ -32,6 +32,7 @@ class Trayecto
      * @var Collection<int, TrayectoParada>
      */
     #[ORM\OneToMany(targetEntity: TrayectoParada::class, mappedBy: 'trayecto', orphanRemoval: true, cascade: ["persist"])]
+    #[ORM\OrderBy(["nro_orden" => 'ASC'])]
     private Collection $trayectoParadas;
 
     #[ORM\ManyToOne]

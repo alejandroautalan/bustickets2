@@ -78,7 +78,7 @@ class TrayectoInlineValidator
                     $msg = $msg_hora;
                     $errorElement->with('trayectoParadas['.$idx.'].hora_llegada')->addViolation($msg)->end();
                 }
-                if($partida == null) {
+                if($partida == null and $es_punto_origen) {
                     $msg = $msg_hora;
                     $errorElement->with('trayectoParadas['.$idx.'].hora_partida')->addViolation($msg)->end();
                 }
