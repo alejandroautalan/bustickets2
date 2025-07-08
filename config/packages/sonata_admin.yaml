@@ -39,6 +39,7 @@ sonata_admin:
                 - admin.servicio
                 - admin.reserva
                 - admin.trayecto
+                - admin.config_precio
                 #- admin.boleto
                 #- admin.pago
                 - admin.pasajero

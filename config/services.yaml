@@ -44,6 +44,10 @@ services:
         class: App\Validator\TrayectoInlineValidator
         public: true
 
+    app.inlinevalidator.config_precio:
+        class: App\Validator\ConfigPrecioInlineValidator
+        public: true
+
 
     #
     # ADMIN SERVICES
@@ -171,3 +175,8 @@ services:
         calls:
             - [setTokenStorage, ['@security.token_storage']]
             - [setTemplate, ['edit', 'ReservaAdmin\edit.html.twig']]
+
+    admin.config_precio:
+        class: App\Admin\ConfigPrecioAdmin
+        tags:
+            - { name: sonata.admin, model_class: App\Entity\ConfigPrecio, controller: ~, manager_type: orm, group: admin, label: "Matriz de Precios" }

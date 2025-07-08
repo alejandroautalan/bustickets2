@@ -6,6 +6,7 @@ namespace App\Configuration;
 use App\Entity\Ciudad;
 use App\Entity\Modelo;
 use App\Entity\Vehiculo;
+use App\Entity\Parada;
 
 
 $php_84 = 8 * 10000 + 4 * 100;
@@ -84,6 +85,54 @@ class DependantEntityConfig #implements ConfigurationInterface
                 'class' => Vehiculo::class,
                 'search_order_field' => 'nombre',
                 'no_result_msg' => 'Sin resultados',
+            ],
+            [
+                'config_name' => 'form-config-precio:origen-ciudad-by-provincia',
+                'parent_entity_field' => 'provincia',
+                'parent_form_field'=> 'origen_provincia',
+                'entity_field' => 'origen_ciudad',
+                'form_field' => 'origen_ciudad',
+                'class' => Ciudad::class,
+                'search_order_field' => 'nombre',
+                'no_result_msg' => 'Sin resultados',
+                'required'=>false,
+                'label' => 'Ciudad',
+            ],
+            [
+                'config_name' => 'form-config-precio:origen-parada-by-ciudad',
+                'parent_entity_field' => 'ciudad',
+                'parent_form_field'=> 'origen_ciudad',
+                'entity_field' => 'origen_parada',
+                'form_field' => 'origen_parada',
+                'class' => Parada::class,
+                'search_order_field' => 'nombre',
+                'no_result_msg' => 'Sin resultados',
+                'required'=>false,
+                'label' => 'Parada',
+            ],
+            [
+                'config_name' => 'form-config-precio:destino-ciudad-by-provincia',
+                'parent_entity_field' => 'provincia',
+                'parent_form_field'=> 'destino_provincia',
+                'entity_field' => 'destino_ciudad',
+                'form_field' => 'destino_ciudad',
+                'class' => Ciudad::class,
+                'search_order_field' => 'nombre',
+                'no_result_msg' => 'Sin resultados',
+                'required'=>false,
+                'label' => 'Ciudad',
+            ],
+            [
+                'config_name' => 'form-config-precio:destino-parada-by-ciudad',
+                'parent_entity_field' => 'ciudad',
+                'parent_form_field'=> 'destino_ciudad',
+                'entity_field' => 'destino_parada',
+                'form_field' => 'destino_parada',
+                'class' => Parada::class,
+                'search_order_field' => 'nombre',
+                'no_result_msg' => 'Sin resultados',
+                'required'=>false,
+                'label' => 'Parada',
             ],
         ];
     }

@@ -23,6 +23,33 @@ ALTER TABLE `trayecto_parada` ADD COLUMN IF NOT EXISTS `hora_llegada` TIME NULL;
 ALTER TABLE `trayecto_parada` ADD COLUMN IF NOT EXISTS `hora_partida` TIME NULL;
 
 
+
+CREATE TABLE config_precio (
+    id INT AUTO_INCREMENT NOT NULL,
+    origen_provincia_id INT UNSIGNED NOT NULL,
+    origen_ciudad_id INT UNSIGNED DEFAULT NULL,
+    origen_parada_id INT UNSIGNED DEFAULT NULL,
+    destino_provincia_id INT UNSIGNED NOT NULL,
+    destino_ciudad_id INT UNSIGNED DEFAULT NULL,
+    destino_parada_id INT UNSIGNED DEFAULT NULL,
+    categoria_id INT DEFAULT NULL,
+    costo INT NOT NULL,
+    INDEX IDX_60C8AD60C5EDB832 (origen_provincia_id),
+    INDEX IDX_60C8AD6050E48BE3 (origen_ciudad_id),
+    INDEX IDX_60C8AD607C183E9D (origen_parada_id),
+    INDEX IDX_60C8AD608508D74D (destino_provincia_id),
+    INDEX IDX_60C8AD60A3A71B47 (destino_ciudad_id),
+    INDEX IDX_60C8AD608F5BAE39 (destino_parada_id),
+    PRIMARY KEY(id))
+DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_unicode_ci` ENGINE = InnoDB;
+ALTER TABLE config_precio ADD CONSTRAINT FK_60C8AD60C5EDB832 FOREIGN KEY (origen_provincia_id) REFERENCES provincia (id);
+ALTER TABLE config_precio ADD CONSTRAINT FK_60C8AD6050E48BE3 FOREIGN KEY (origen_ciudad_id) REFERENCES ciudad (id);
+ALTER TABLE config_precio ADD CONSTRAINT FK_60C8AD607C183E9D FOREIGN KEY (origen_parada_id) REFERENCES parada (id);
+ALTER TABLE config_precio ADD CONSTRAINT FK_60C8AD608508D74D FOREIGN KEY (destino_provincia_id) REFERENCES provincia (id);
+ALTER TABLE config_precio ADD CONSTRAINT FK_60C8AD60A3A71B47 FOREIGN KEY (destino_ciudad_id) REFERENCES ciudad (id);
+ALTER TABLE config_precio ADD CONSTRAINT FK_60C8AD608F5BAE39 FOREIGN KEY (destino_parada_id) REFERENCES parada (id);
+
+
 -- Datos provincias y ciudades
 
 INSERT INTO provincia (id, nombre) values
