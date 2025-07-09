@@ -16,6 +16,18 @@ App\Entity\Reserva:
             service: app.inlinevalidator.reserva
             method: validate
 
+App\Entity\Trayecto:
+    constraints:
+        - Sonata\Form\Validator\Constraints\InlineConstraint:
+            service: app.inlinevalidator.trayecto
+            method: validate
+
+App\Entity\ConfigPrecio:
+    constraints:
+        - Sonata\Form\Validator\Constraints\InlineConstraint:
+            service: app.inlinevalidator.config_precio
+            method: validate
+
 App\Form\Model\Registro:
     properties:
         nombre:

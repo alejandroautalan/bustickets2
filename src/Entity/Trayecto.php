@@ -5,11 +5,21 @@ namespace App\Entity;
 use App\Repository\TrayectoRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
+use Doctrine\Common\Collections\Order;
+use Doctrine\Common\Collections\Criteria;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: TrayectoRepository::class)]
 class Trayecto
 {
+    const TIPO_PARADA_ORIGEN = 1;
+    const TIPO_PARADA_DESTINO = 2;
+
+    public static $tipos_parada = [
+        self::TIPO_PARADA_ORIGEN => 'Origen',
+        self::TIPO_PARADA_DESTINO => 'Destino',
+    ];
+
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
@@ -21,16 +31,20 @@ class Trayecto
     /**
      * @var Collection<int, TrayectoParada>
      */
-    #[ORM\OneToMany(targetEntity: TrayectoParada::class, mappedBy: 'trayecto', orphanRemoval: true)]
+    #[ORM\OneToMany(targetEntity: TrayectoParada::class, mappedBy: 'trayecto', orphanRemoval: true, cascade: ["persist"])]
+    #[ORM\OrderBy(["nro_orden" => 'ASC'])]
     private Collection $trayectoParadas;
 
     #[ORM\ManyToOne]
-    #[ORM\JoinColumn(nullable: false)]
+    #[ORM\JoinColumn(nullable: true)]
     private ?Parada $origen = null;
 
     #[ORM\ManyToOne]
-    #[ORM\JoinColumn(nullable: false)]
+    #[ORM\JoinColumn(nullable: true)]
     private ?Parada $destino = null;
+
+    #[ORM\Column(nullable: true)]
+    private ?bool $enabled = null;
 
     public function __construct()
     {
@@ -40,6 +54,17 @@ class Trayecto
     public function __toString()
     {
         return ''.$this->nombre;
+    }
+
+    public static function getTiposParadaChoices() {
+        return array_flip(self::$tipos_parada);
+    }
+
+    public function getParadasByNroOrden(): Collection
+    {
+        $criteria = new Criteria();
+        $criteria->orderBy(['nro_orden' => Order::Ascending]);
+        return $this->trayectoParadas->matching($criteria);
     }
 
     public function getId(): ?int
@@ -64,6 +89,9 @@ class Trayecto
      */
     public function getTrayectoParadas(): Collection
     {
+        //$criteria = new Criteria();
+        //$criteria->orderBy(['nro_orden' => Order::Ascending]);
+        //return $this->trayectoParadas->matching($criteria);
         return $this->trayectoParadas;
     }
 
@@ -109,6 +137,18 @@ class Trayecto
     public function setDestino(?Parada $destino): static
     {
         $this->destino = $destino;
+
+        return $this;
+    }
+
+    public function isEnabled(): ?bool
+    {
+        return $this->enabled;
+    }
+
+    public function setEnabled(?bool $enabled): static
+    {
+        $this->enabled = $enabled;
 
         return $this;
     }

@@ -25,10 +25,16 @@ use Sonata\AdminBundle\Form\FormMapper;
 use Sonata\AdminBundle\Show\ShowMapper;
 use Sonata\AdminBundle\Route\RouteCollectionInterface;
 use Symfony\Component\Form\Extension\Core\Type\MoneyType;
-use App\Entity\Servicio;
 use Sonata\AdminBundle\Admin\AdminInterface;
 use Knp\Menu\ItemInterface as MenuItemInterface;
+
+use App\Entity\Servicio;
+use App\Entity\ConfigPrecio;
 use App\Admin\Extension\ServicioFUAdminExtension;
+use App\Form\Type\DependantEntityType;
+use App\Form\EventSubscriber\AddDependantEntityFieldSubscriber;
+use App\Configuration\DependantEntityConfig;
+
 
 final class ServicioAdmin extends AbstractAdmin
 {
@@ -66,6 +72,25 @@ final class ServicioAdmin extends AbstractAdmin
         if($this->isFinalUser())
             return False;
         return True;
+    }
+
+    public function getServicioCosto($origen_parada, $destino_parada) {
+        $repo_parada = $this->getModelManager()
+            ->getEntityManager(Parada::class)
+            ->getRepository(Parada::class)
+            ;
+        $repo_cp = $this->getModelManager()
+            ->getEntityManager(ConfigPrecio::class)
+            ->getRepository(ConfigPrecio::class)
+            ;
+        if(! $origen_parada instanceof Parada) {
+            $origen_parada = $repo_parada->find($origen_parada);
+        }
+        if(! $destino_parada instanceof Parada) {
+            $destino_parada = $repo_parada->find($destino_parada);
+        }
+        $precio = $repo_cp->getCosto($origen_parada, $destino_parada);
+        return $precio;
     }
 
     protected function configureQuery(ProxyQueryInterface $query): ProxyQueryInterface
@@ -202,19 +227,31 @@ final class ServicioAdmin extends AbstractAdmin
 
     protected function configureFormFields(FormMapper $form): void
     {
+        $dependant_subscriber = new AddDependantEntityFieldSubscriber();
+        $vehiculo_options = DependantEntityConfig::form_options('form_servicio:vehiculo_by_transporte');
+        $dependant_subscriber->addField('vehiculo', $vehiculo_options);
+
         $form
             #->add('id')
             ->add('nombre')
             ->add('trayecto')
             ->add('transporte')
-            ->add('vehiculo')
+            ->add('vehiculo', DependantEntityType::class, $vehiculo_options)
+            ->add('fecha', DateType::class, [
+                'widget' => 'single_text',
+                'required' => true,
+            ])
             ->add('partida', null, [
                 // renders it as a single text box
                 'widget' => 'single_text',
+                'disabled' => true,
+                'required' => false,
             ])
             ->add('llegada', null, [
                 // renders it as a single text box
                 'widget' => 'single_text',
+                'disabled' => true,
+                'required' => false,
             ])
             ->add('estado', ChoiceType::class, [
                 'choices' => Servicio::$estado_choices
@@ -224,6 +261,8 @@ final class ServicioAdmin extends AbstractAdmin
                 'currency' => 'ARS',
             ])
         ;
+        $builder = $form->getFormBuilder();
+        $builder->addEventSubscriber($dependant_subscriber);
     }
 
     protected function configureShowFields(ShowMapper $show): void

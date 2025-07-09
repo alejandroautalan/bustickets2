@@ -9,6 +9,7 @@ use Sonata\AdminBundle\Datagrid\DatagridMapper;
 use Sonata\AdminBundle\Datagrid\ListMapper;
 use Sonata\AdminBundle\Form\FormMapper;
 use Sonata\AdminBundle\Show\ShowMapper;
+use Sonata\Form\Type\CollectionType;
 
 use Sonata\AdminBundle\Route\RouteCollectionInterface;
 use Sonata\AdminBundle\Admin\AdminInterface;
@@ -44,11 +45,28 @@ final class TrayectoAdmin extends AbstractAdmin
 
     protected function configureFormFields(FormMapper $form): void
     {
+        $trayecto = $this->getSubject();
+        $is_new = $trayecto->getId() == null;
         $form
             #->add('id')
             ->add('nombre')
-            ->add('origen')
-            ->add('destino')
+            ->add('enabled', null, ['label' => 'Activo'])
+            ->add('trayectoParadas', CollectionType::class, [
+                'by_reference' => false,
+                'label' => 'Puntos del Trayecto',
+                'required' => false,
+            ],
+            [
+                'edit' => 'inline',
+                'inline' => 'table',
+                'sortable' => 'nro_orden',
+#                'limit' => 3,
+            ])
+            //->ifFalse($is_new)
+            //->add('origen', null, ["disabled" => true, 'required' => false])
+            //->add('destino', null, ["disabled" => true, 'required' => false])
+            //->ifEnd()
+            ;
         ;
     }
 

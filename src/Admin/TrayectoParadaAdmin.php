@@ -10,6 +10,10 @@ use Sonata\AdminBundle\Datagrid\ListMapper;
 use Sonata\AdminBundle\Form\FormMapper;
 use Sonata\AdminBundle\Show\ShowMapper;
 use Sonata\AdminBundle\Form\Type\ModelListType;
+use Symfony\Component\Form\Extension\Core\Type\HiddenType;
+use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
+
+use App\Entity\Trayecto;
 
 
 final class TrayectoParadaAdmin extends AbstractAdmin
@@ -39,11 +43,35 @@ final class TrayectoParadaAdmin extends AbstractAdmin
             ]);
     }
 
+    protected function alterNewInstance(object $object): void
+    {
+        $object->setTipoParadaId(Trayecto::TIPO_PARADA_DESTINO);
+    }
+
     protected function configureFormFields(FormMapper $form): void
     {
         $form
             #->add('id')
             ->add('nro_orden')
+            //->add('nro_orden', HiddenType::class, [
+            //    'required' => false,
+            //    'label' => 'Orden',
+            //    #'attr' => ['hidden' => true]
+            //])
+            ->add('tipo_parada_id', ChoiceType::class, [
+                #'required'=> false,
+                'label' => "Tipo",
+                'choices' => Trayecto::getTiposParadaChoices(),
+            ])
+            ->add('dia', ChoiceType::class, ['choices' => [0, 1, 2, 3]])
+            ->add('hora_llegada', null, [
+                    'widget' => 'single_text',
+                    'label' => 'Llegada',
+                ])
+            ->add('hora_partida', null, [
+                    'widget' => 'single_text',
+                    'label' => 'Partida',
+                ])
             ->add('parada', ModelListType::class)
         ;
     }

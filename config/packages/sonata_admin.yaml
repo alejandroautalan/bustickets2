@@ -38,6 +38,8 @@ sonata_admin:
             items:
                 - admin.servicio
                 - admin.reserva
+                - admin.trayecto
+                - admin.config_precio
                 #- admin.boleto
                 #- admin.pago
                 - admin.pasajero
@@ -55,8 +57,7 @@ sonata_admin:
             items:
                 - admin.provincia
                 - admin.ciudad
-                - admin.trayecto
-                - admin.trayecto_parada
+                # - admin.trayecto_parada
                 - admin.parada
         gusuarios:
             label: Usuarios y permisos
