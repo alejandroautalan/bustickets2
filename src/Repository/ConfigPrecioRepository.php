@@ -16,6 +16,50 @@ class ConfigPrecioRepository extends ServiceEntityRepository
         parent::__construct($registry, ConfigPrecio::class);
     }
 
+    public function getCosto($origen_parada, $destino_parada)
+    {
+        $entityManager = $this->getEntityManager();
+
+        $query = $entityManager->createQuery(
+            'SELECT cp.costo as costo, (
+                ISNULL(IDENTITY(cp.origen_parada)) + ISNULL(IDENTITY(cp.destino_parada)) +
+                ISNULL(IDENTITY(cp.origen_ciudad)) + ISNULL(IDENTITY(cp.destino_ciudad))
+            ) as peso
+            FROM App\Entity\ConfigPrecio cp
+            WHERE cp.origen_provincia = :origen_provincia_id
+            AND cp.destino_provincia = :destino_provincia_id
+
+            AND (
+                (
+                    cp.origen_parada = :origen_parada_id
+                    AND cp.destino_parada = :destino_parada_id
+                )
+                OR (
+                    cp.origen_parada is NULL
+                    AND cp.destino_parada IS NULL
+                    AND cp.origen_ciudad = :origen_ciudad_id
+                    AND cp.destino_ciudad = :destino_ciudad_id
+                )
+                OR (
+                    cp.origen_parada IS NULL
+                    AND cp.destino_parada is NULL
+                    AND cp.origen_ciudad IS NULL
+                    AND cp.destino_ciudad is NULL)
+            )
+            ORDER BY peso')
+        ->setParameter('origen_provincia_id', $origen_parada->getProvincia()->getId())
+        ->setParameter('destino_provincia_id', $destino_parada->getProvincia()->getId())
+        ->setParameter('origen_ciudad_id', $origen_parada->getCiudad()->getId())
+        ->setParameter('origen_parada_id', $origen_parada->getId())
+        ->setParameter('destino_ciudad_id', $destino_parada->getProvincia()->getId())
+        ->setParameter('destino_parada_id', $destino_parada->getId())
+        ->setMaxResults(1)
+        ;
+        $rs = $query->getResult();
+
+        return $rs[0]['costo'];
+    }
+
     public function existeConfiguracion(ConfigPrecio $config) {
         # Se utiliza en inline validator, $config puede no tener ID
 

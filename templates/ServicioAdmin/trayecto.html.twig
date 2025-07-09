@@ -103,7 +103,10 @@
                             <div class="card-body">
                                 <figure>
                                     <blockquote class="blockquote">
-                                        <strong>{{ (object.costo/100) |number_format(2, ',', '.') }}</strong>
+                                        {% set origen_id=app.request.query.all.filter.origen.value %}
+                                        {% set destino_id=app.request.query.all.filter.destino.value %}
+                                        {% set nuevo_precio= admin.getServicioCosto(origen_id, destino_id) %}
+                                        <strong>{{ (nuevo_precio/100) |number_format(2, ',', '.') }}</strong>
                                     </blockquote>
 
                                 </figure>

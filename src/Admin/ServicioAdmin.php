@@ -29,6 +29,7 @@ use Sonata\AdminBundle\Admin\AdminInterface;
 use Knp\Menu\ItemInterface as MenuItemInterface;
 
 use App\Entity\Servicio;
+use App\Entity\ConfigPrecio;
 use App\Admin\Extension\ServicioFUAdminExtension;
 use App\Form\Type\DependantEntityType;
 use App\Form\EventSubscriber\AddDependantEntityFieldSubscriber;
@@ -71,6 +72,25 @@ final class ServicioAdmin extends AbstractAdmin
         if($this->isFinalUser())
             return False;
         return True;
+    }
+
+    public function getServicioCosto($origen_parada, $destino_parada) {
+        $repo_parada = $this->getModelManager()
+            ->getEntityManager(Parada::class)
+            ->getRepository(Parada::class)
+            ;
+        $repo_cp = $this->getModelManager()
+            ->getEntityManager(ConfigPrecio::class)
+            ->getRepository(ConfigPrecio::class)
+            ;
+        if(! $origen_parada instanceof Parada) {
+            $origen_parada = $repo_parada->find($origen_parada);
+        }
+        if(! $destino_parada instanceof Parada) {
+            $destino_parada = $repo_parada->find($destino_parada);
+        }
+        $precio = $repo_cp->getCosto($origen_parada, $destino_parada);
+        return $precio;
     }
 
     protected function configureQuery(ProxyQueryInterface $query): ProxyQueryInterface
