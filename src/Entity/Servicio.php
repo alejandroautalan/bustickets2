@@ -54,6 +54,12 @@ class Servicio
     #[ORM\Column(nullable: true)]
     private ?int $costo = null;
 
+    ####para filter
+    #[ORM\Column(nullable: true)]
+    private ?int $origen = null;
+
+    #[ORM\Column(nullable: true)]
+    private ?int $destino = null;
 
 
     #[Assert\Callback]
@@ -81,6 +87,16 @@ class Servicio
     #[ORM\OneToMany(targetEntity: Boleto::class, mappedBy: 'servicio')]
     private Collection $boletos;
 
+    public function getOrigenDestinoTrayecto($od)
+    {
+        $parada_nombre = null;
+        foreach ($this->getTrayecto()->getTrayectoParadas() as $tp):
+            if ($tp->getParada()->getId() == $od):
+                $parada_nombre = $tp->getParada()->getNombre();
+            endif;
+        endforeach;
+        return $parada_nombre;
+    }
     public function getAsientosLibres()
     {
          $a = 0;
@@ -237,6 +253,42 @@ class Servicio
     public function setCosto(?int $costo): static
     {
         $this->costo = $costo;
+
+        return $this;
+    }
+
+    public function getTrayectoD(): ?Trayecto
+    {
+        return $this->trayectoD;
+    }
+
+    public function setTrayectoD(?Trayecto $trayectoD): static
+    {
+        $this->trayectoD = $trayectoD;
+
+        return $this;
+    }
+
+    public function getOrigen(): ?int
+    {
+        return $this->origen;
+    }
+
+    public function setOrigen(?int $origen): static
+    {
+        $this->origen = $origen;
+
+        return $this;
+    }
+
+    public function getDestino(): ?int
+    {
+        return $this->destino;
+    }
+
+    public function setDestino(?int $destino): static
+    {
+        $this->destino = $destino;
 
         return $this;
     }

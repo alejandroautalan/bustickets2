@@ -4,12 +4,17 @@ declare(strict_types=1);
 
 namespace App\Admin;
 
+use App\Entity\Pago;
+use App\Entity\Parada;
+use Doctrine\ORM\EntityManagerInterface;
 use Sonata\AdminBundle\Datagrid\ProxyQueryInterface;
+use Sonata\DoctrineORMAdminBundle\Filter\ChoiceFilter;
 use Sonata\DoctrineORMAdminBundle\Filter\DateFilter;
 use Sonata\DoctrineORMAdminBundle\Filter\DateTimeFilter;
 use Sonata\DoctrineORMAdminBundle\Filter\DateTimeRangeFilter;
 use Sonata\Form\Type\DatePickerType;
 use Sonata\Form\Type\DateTimePickerType;
+use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\DateTimeType;
 use Symfony\Component\Form\Extension\Core\Type\DateType;
@@ -27,6 +32,16 @@ use App\Admin\Extension\ServicioFUAdminExtension;
 
 final class ServicioAdmin extends AbstractAdmin
 {
+    /**
+     * @var EntityManagerInterface
+     */
+    private $entityManager;
+
+    public function __construct(EntityManagerInterface $entityManager)
+    {
+        $this->entityManager = $entityManager;
+        parent::__construct();
+    }
     protected function isFinalUser(): bool
     {
         $is_superadmin = $this->isGranted('ROLE_SUPER_RADMIN');
@@ -56,25 +71,26 @@ final class ServicioAdmin extends AbstractAdmin
     protected function configureQuery(ProxyQueryInterface $query): ProxyQueryInterface
     {
         $filters = $this->getFilterParameters();
-        // Accede a los filtros aplicados
-        // array(4) { ["_page"]=> int(1) ["_per_page"]=> int(25) ["trayecto__trayectoParadas__parada"]=> array(1) { ["value"]=> string(2) "17" } ["trayecto__destino"]=> array(1) { ["value"]=> string(2) "19" } }
-        // Reemplaza 'nombre' con el nombre del filtro que quieres usar
-        if (isset($filters['trayecto__trayectoParadas__parada'])) {
-            // Obtiene los datos del filtro
-            $filterParadaO = $filters['trayecto__trayectoParadas__parada']['value'];
-            #$filterParadaD = $filters['rayecto__destino']['value'];
+        if (isset($filters['origen']) && isset($filters['destino'])) {
+            $filterParadaO = $filters['origen']['value'];
+            $filterParadaD = $filters['destino']['value'];
 
-            // Ahora puedes usar $filterData en tu query
-            if ($filterParadaO !== null && $filterParadaO !== '') {
-                $query->join($query->getRootAlias().'.trayecto', 't');
-                $query->join('t.trayectoParadas', 'tp');
-                $query->join('tp.parada', 'p');
-                $query->andWhere( 'p.id = :origen');
-                $query->setParameter('origen', '%' . $filterParadaO. '%');
+            if ($filterParadaO !== '' && $filterParadaO !== '') {
+                $query->join($query->getRootAlias().'.trayecto', 't')
+                    ->join('t.trayectoParadas', 'tp_origen', 'WITH', 'tp_origen.parada = :origen')
+                    ->join('t.trayectoParadas', 'tp_destino', 'WITH', 'tp_destino.parada = :destino')
+                    ->Join('tp_origen.parada', 'ptp')
+                    ->Join('t.destino', 'pt')
+                    ->where('tp_origen.nro_orden < tp_destino.nro_orden')
+                    ->setParameter('origen', $filterParadaO)
+                    ->setParameter('destino', $filterParadaD);
             }
+        }else{
+            $query->where($query->getRootAlias().'.id = -100');
         }
+
+        // Devolver siempre el $query modificado
         return $query;
-        // Puedes hacer lo mismo con otros filtros
     }
 
     public function configureRoutes(RouteCollectionInterface $collection): void
@@ -85,6 +101,21 @@ final class ServicioAdmin extends AbstractAdmin
         $collection->add('ocuparAsiento', 'ocuparAsiento');
     }
 
+    private function getParadasChoices(): array
+    {
+        $em = $this->entityManager;
+
+        $paradas = $em->getRepository(\App\Entity\Parada::class)->findAll();
+
+        $choices = [];
+        foreach ($paradas as $parada) {
+            // La clave es la etiqueta visible, el valor es lo que usará el filtro
+            $choices[$parada->getNombre()] = $parada->getId();
+        }
+
+        return $choices;
+    }
+
     protected function configureDatagridFilters(DatagridMapper $filter): void
     {
         $minAttr = [];
@@ -93,10 +124,30 @@ final class ServicioAdmin extends AbstractAdmin
             $minAttr = ['min' => $minDate];
         }
         $filter
-            ->add('trayecto.trayectoParadas.parada', null, ['label' => 'Origen'])
-            ->add('trayecto.destino', null, ['label' => 'Destino'])
+            ->add('origen', null, [
+                'show_filter' => true,
+                'field_type' => EntityType::class,
+                'field_options' => [
+                    'class' => Parada::class,
+                    'placeholder' => 'Selecciona origen',
+                    'required' => true,
+                ]
+            ])
+            // Filtro por destino
+            ->add('destino', null, [
+                'show_filter' => true,
+                'field_type' => EntityType::class,
+                'field_options' => [
+                    'class' => Parada::class,
+                    'placeholder' => 'Selecciona destino',
+                    'required' => true,
+                ]
+            ])
+            #->add('trayecto.trayectoParadas.parada', null, ['label' => 'Origen'])
+            #->add('trayectoD.trayectoParadas.parada', null, ['label' => 'Origen'])
             #->add('nombre')
             ->add('partida', DateFilter::class, [
+                'show_filter' => true,
                 'field_type' => DateType::class,
                 'field_options' => [
                     'widget' => 'single_text',

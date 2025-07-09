@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Controller;
 
+use App\Entity\Parada;
 use Sonata\AdminBundle\Controller\CRUDController;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\HttpFoundation\RedirectResponse;
@@ -15,6 +16,7 @@ use Sonata\AdminBundle\Admin\Pool;
 use App\Form\Type\OcuparType;
 use App\Form\Type\AsientoSelectorType;
 use Sonata\Form\Type\CollectionType;
+use Symfony\Component\HttpFoundation\Request;
 // use App\Repository\TrayectoRepository;
 // use App\Model\Reserva;
 // use App\Form\Type\ReservaType;
@@ -24,15 +26,19 @@ final class ServicioAdminController extends CRUDController
 {
 
     public function reservaAction(
-        EntityManagerInterface $entityManager
+        EntityManagerInterface $entityManager, Request $request
     ): RedirectResponse
     {
+        $o = $request->get('origen');
+        $d = $request->get('destino');
+        $origen = $entityManager->getRepository(Parada::class)->find($o);
+        $destino = $entityManager->getRepository(Parada::class)->find($d);
         $servicio = $this->admin->getSubject();
         $trayecto = $servicio->getTrayecto();
         $reserva = new Reserva();
         $reserva->setServicio($servicio);
-        $reserva->setOrigen($trayecto->getOrigen());
-        $reserva->setDestino($trayecto->getDestino());
+        $reserva->setOrigen($origen);
+        $reserva->setDestino($destino);
 
         $entityManager->persist($reserva);
         $entityManager->flush();
