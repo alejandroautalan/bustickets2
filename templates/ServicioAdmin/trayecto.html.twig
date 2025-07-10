@@ -56,10 +56,10 @@
                                     </button>
                                     <div class="dropdown-menu" aria-labelledby="btnGroupDrop1" style="min-width: 80px; margin: 0; padding: 0;">
 
-                                        <a href="{{ admin.generateObjectUrl('reserva', object, {'origen':app.request.query.all.filter.origen.value, 'destino':app.request.query.all.filter.destino.value, 'fechahora_salida': reserva_fechahora_salida, 'fechahora_llegada': reserva_fechahora_llegada}) }}" class="btn btn-sm btn-default view_link" title="{{ 'Reservar pasaje'|trans({}, 'SonataAdminBundle') }}" style="min-width: 80px">
+                                        {#  <a href="{{ admin.generateObjectUrl('reserva', object, {'origen':app.request.query.all.filter.origen.value, 'destino':app.request.query.all.filter.destino.value, 'fechahora_salida': reserva_fechahora_salida, 'fechahora_llegada': reserva_fechahora_llegada}) }}" class="btn btn-sm btn-default view_link" title="{{ 'Reservar pasaje'|trans({}, 'SonataAdminBundle') }}" style="min-width: 80px">
                                             <i class="fas fa-ticket-alt"></i>
                                             Reserva
-                                        </a><br>
+                                        </a><br>#}
                                             <a href="{{ path('admin_app_servicio_archivo',  {'id': object.id}) }}" class="btn btn-sm btn-default view_link" title="{{ 'Reservar pasaje'|trans({}, 'SonataAdminBundle') }}" style="min-width: 80px">
                                             <i class="fas fa-file"></i>
                                             Archivo

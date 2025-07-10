@@ -34,6 +34,7 @@ use App\Admin\Extension\ServicioFUAdminExtension;
 use App\Form\Type\DependantEntityType;
 use App\Form\EventSubscriber\AddDependantEntityFieldSubscriber;
 use App\Configuration\DependantEntityConfig;
+use Symfony\Component\Validator\Constraints\Choice;
 
 
 final class ServicioAdmin extends AbstractAdmin
@@ -95,26 +96,47 @@ final class ServicioAdmin extends AbstractAdmin
 
     protected function configureQuery(ProxyQueryInterface $query): ProxyQueryInterface
     {
-        $filters = $this->getFilterParameters();
-        if (isset($filters['origen']) && isset($filters['destino'])) {
-            $filterParadaO = $filters['origen']['value'];
-            $filterParadaD = $filters['destino']['value'];
+        if ($this->isFinalUser()) {
+            $filters = $this->getFilterParameters();
+            if (isset($filters['origen']) && isset($filters['destino'])) {
+                $filterParadaO = $filters['origen']['value'];
+                $filterParadaD = $filters['destino']['value'];
 
-            if ($filterParadaO !== '' && $filterParadaO !== '') {
-                $query->join($query->getRootAlias().'.trayecto', 't')
-                    ->join('t.trayectoParadas', 'tp_origen', 'WITH', 'tp_origen.parada = :origen')
-                    ->join('t.trayectoParadas', 'tp_destino', 'WITH', 'tp_destino.parada = :destino')
-                    ->Join('tp_origen.parada', 'ptp')
-                    ->Join('t.destino', 'pt')
-                    ->where('tp_origen.nro_orden < tp_destino.nro_orden')
-                    ->setParameter('origen', $filterParadaO)
-                    ->setParameter('destino', $filterParadaD);
+                if ($filterParadaO !== '' && $filterParadaO !== '') {
+                    $query->join($query->getRootAlias() . '.trayecto', 't')
+                        ->join('t.trayectoParadas', 'tp_origen', 'WITH', 'tp_origen.parada = :origen ')
+                        ->join('t.trayectoParadas', 'tp_destino', 'WITH', 'tp_destino.parada = :destino ')
+                        ->where('tp_origen.nro_orden < tp_destino.nro_orden')
+                        ->andWhere('tp_origen.tipo_parada_id = 1')
+                        ->andWhere('tp_destino.tipo_parada_id = 2')
+                        ->andWhere($query->getRootAlias() . '.estado = 2')
+                        ->setParameter('origen', $filterParadaO)
+                        ->setParameter('destino', $filterParadaD);
+                }
+            } else {
+                $query->where($query->getRootAlias() . '.id = -100');
             }
-        }else{
-            $query->where($query->getRootAlias().'.id = -100');
-        }
+        } elseif($this->isGranted('ROLE_SUPER_ADMIN')){
+            #$filters = $this->getFilterParameters();
+            #if (isset($filters['origen']) && isset($filters['destino'])) {
+            #    $filterParadaO = $filters['origen']['value'];
+            #    $filterParadaD = $filters['destino']['value'];
 
-        // Devolver siempre el $query modificado
+            #    if ($filterParadaO !== '' && $filterParadaO !== '') {
+            #        $query->join($query->getRootAlias() . '.trayecto', 't')
+            #            ->join('t.trayectoParadas', 'tp_origen', 'WITH', 'tp_origen.parada = :origen ')
+            #            ->join('t.trayectoParadas', 'tp_destino', 'WITH', 'tp_destino.parada = :destino ')
+            #            ->where('tp_origen.nro_orden < tp_destino.nro_orden')
+            #            ->andWhere('tp_origen.tipo_parada_id = 1')
+            #            ->andWhere('tp_destino.tipo_parada_id = 2')
+            #            ->setParameter('origen', $filterParadaO)
+            #            ->setParameter('destino', $filterParadaD);
+            #    }
+            #} else {
+            #    $query->where($query->getRootAlias() . '.id = -100');
+            #}
+
+        }
         return $query;
     }
 
@@ -214,15 +236,27 @@ final class ServicioAdmin extends AbstractAdmin
             'boletos'  => ['template' => 'ServicioAdmin/boletos.html.twig'],
         ];
 
+        if($this->isFinalUser()):
         $list
             #->add('id')
             ->add('nombreTrayecto',  null, ['template' => 'ServicioAdmin/trayecto.html.twig', 'label' => 'Servicio']);
+        endif;
 
-        #if(!$this->isFinalUser()):
-        #    $list->add(ListMapper::NAME_ACTIONS, null, [
-        #        'actions' => $actions,
-        #    ]);
-        #endif;
+        if(!$this->isFinalUser()):
+            $list
+                ->add('id')
+                ->add('trayecto.origen')
+                ->add('trayecto.destino')
+                ->add('partida')
+                ->add('llegada')
+                ->add('estado', 'choice',[
+                    'choices' => Servicio::$estado_nombre_choices,
+                ])
+                ->add('costo', null, ['template' => 'ServicioAdmin/costos.html.twig'])
+                ->add(ListMapper::NAME_ACTIONS, null, [
+                'actions' => $actions,
+            ]);
+        endif;
     }
 
     protected function configureFormFields(FormMapper $form): void

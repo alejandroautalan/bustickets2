@@ -20,8 +20,8 @@
           <div class="box box-primary container-fluid">
           <div class="box-header">
               <h4><i class="fa fa-bus"></i> <strong>{{ admin.subject.origen }}</strong> &raquo; <strong>{{ admin.subject.destino }}</strong></h4>
-              <p><u>Salida {{ admin.subject.servicio.partida|date('D d M') }} &raquo; <strong>{{ admin.subject.servicio.partida|date('H:m') }} Hs</strong></u></p>
-              <u>Llegada {{ admin.subject.servicio.llegada|date('D d M') }} &raquo; <strong>{{ admin.subject.servicio.llegada|date('H:m') }} Hs</strong></u>
+              <p><u>Salida: {{ object.soloFechaSalida }} &raquo; <strong>{{ admin.subject.soloHsSalida }} Hs</strong></u></p>
+              <u>Llegada: {{ object.soloFechaLlegada }} &raquo; <strong>{{ admin.subject.soloHsLlegada }} Hs</strong></u>
           </div>
           <div class="col-md-12 flex-column" style="background-color: white">
           {% for boleto in admin.subject.boletos %}

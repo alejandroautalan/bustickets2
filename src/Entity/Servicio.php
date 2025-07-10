@@ -81,6 +81,12 @@ class Servicio
         'Finalizado'=> 4
     ];
 
+    public static $estado_nombre_choices = [
+        1 => 'Draft',
+         2 => 'Programado',
+        3 => 'Transporte',
+        4 => 'Finalizado'
+    ];
     /**
      * @var Collection<int, Boleto>
      */

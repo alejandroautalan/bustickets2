@@ -79,7 +79,9 @@ class Reserva
 
     public function getSoloFechaSalida()
     {
-        return $this->fecha_salida->format('d M Y');
+        setlocale(LC_TIME, 'es_AR.utf8');
+        // Usa strftime con el formato en estilo PHP:
+        return strftime('%a %d %b', $this->fecha_salida->getTimestamp());
     }
 
     public function getSoloHsSalida()
@@ -89,7 +91,9 @@ class Reserva
 
     public function getSoloFechaLlegada()
     {
-        return $this->fecha_llegada->format('d M Y');
+        setlocale(LC_TIME, 'es_AR.utf8');
+        // Usa strftime con el formato en estilo PHP:
+        return strftime('%a %d %b', $this->fecha_llegada->getTimestamp());
     }
 
     public function getSoloHsLlegada()
