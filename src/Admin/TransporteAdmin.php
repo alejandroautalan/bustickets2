@@ -13,10 +13,34 @@ use Sonata\AdminBundle\Show\ShowMapper;
 use Sonata\AdminBundle\Route\RouteCollectionInterface;
 use Sonata\AdminBundle\Admin\AdminInterface;
 use Knp\Menu\ItemInterface as MenuItemInterface;
+use Sonata\Form\Type\CollectionType;
+
+use App\Entity\Transporte;
+use App\Entity\TransporteAsiento;
+use App\Admin\Extension\CloneActionAdminExtension;
 
 
 final class TransporteAdmin extends AbstractAdmin
 {
+    protected function configure(): void
+    {
+        $this->addExtension(new CloneActionAdminExtension());
+    }
+
+    public function setupCloneFrom(Transporte $object, $clone_from_id)
+    {
+        $clone_from = $this->getObject($clone_from_id);
+        $object->setNombre(sprintf('%s - Copia', $clone_from->getNombre()));
+        $object->setGrillaRows($clone_from->getGrillaRows());
+        $object->setGrillaCols($clone_from->getGrillaCols());
+        $object->setPlantas($clone_from->getPlantas());
+
+        foreach($clone_from->getAsientos() as $child) {
+            $new_child = clone $child;
+            $object->addAsiento($new_child);
+        }
+    }
+
     protected function configureDatagridFilters(DatagridMapper $filter): void
     {
         $filter
@@ -47,6 +71,15 @@ final class TransporteAdmin extends AbstractAdmin
             ->add('plantas')
             ->add('grilla_rows')
             ->add('grilla_cols')
+            ->add('asientos', CollectionType::class, [
+                'by_reference' => false,
+                'label' => 'Asientos',
+                'required' => false,
+            ],
+            [
+                'edit' => 'inline',
+                'inline' => 'table',
+            ])
         ;
     }
 

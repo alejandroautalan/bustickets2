@@ -1,0 +1,7 @@
+{% if admin.hasRoute('objclone') %}
+<a href="{{ admin.generateUrl('create', {objclone_id: object.id}) }}" class="btn btn-sm btn-primary view_link" title="{{ 'Duplicar'|trans({}, 'SonataAdminBundle') }}" >
+    <i class="fas fa-list-alt"></i>
+    Duplicar
+</a>
+{% endif %}
+QUE HONDA????
