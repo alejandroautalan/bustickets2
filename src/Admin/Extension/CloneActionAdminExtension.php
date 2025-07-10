@@ -17,35 +17,23 @@ use Sonata\AdminBundle\Route\RouteCollectionInterface;
 */
 final class CloneActionAdminExtension extends AbstractAdminExtension
 {
-    public function configureRoutes(AdminInterface $admin, RouteCollectionInterface $collection): void
-    {
-        $collection->add('objclone');
-    }
-
-    public function configureActionButtons(
-        AdminInterface $admin,
-        array $list,
-        string $action,
-        ?object $object = null,
-    ): array {
-
-        return $list;
-    }
-
     public function configureListFields(ListMapper $list): void
     {
         $actionsfd = $list->get(ListMapper::NAME_ACTIONS);
         $options = $actionsfd->getOptions();
         $actions = $options['actions'];
-
         $actions['objclone'] = [
             'template' => 'AdminExtension/objclone_list_btn.html.twig',
         ];
-        //print_r($actions); die();
+        $actionsfd->setOption('actions', $actions);
     }
 
-    public function configureQuery(AdminInterface $admin, ProxyQueryInterface $query): void
+    public function alterNewInstance(AdminInterface $admin, object $object): void
     {
+        $clone_from_id = $admin->getRequest()->get('clone_from_id', null);
+        if(null !== $clone_from_id) {
+            $admin->setupCloneFrom($object, $clone_from_id);
+        }
     }
 
 }
