@@ -1,13 +1,23 @@
 {% extends '@SonataAdmin/CRUD/base_list_field.html.twig' %}
 
 {% block field %}
-    {# set filter_json = app.request.query.all.filter.origen.value #}
+    <style type="text/css">
+        .sonata-toggle-filter.sonata-ba-action {
+            display: none !important;
+        }
+    </style>
+    {% set origen = app.request.query.all.filter.origen.value %}
+    {% set destino = app.request.query.all.filter.destino.value %}
+    {% set fecha_salida = object.partida|date_modify(object.origenDestinoTrayectoDias(origen)) %}
+    {% set fecha_llegada = object.partida|date_modify(object.origenDestinoTrayectoDias(destino)) %}
+    {% set reserva_fechahora_salida = fecha_salida|date('Y-m-d')~ ' ' ~object.origenDestinoTrayectoHs(origen)|date('H:i') %}
+    {% set reserva_fechahora_llegada = fecha_llegada|date('Y-m-d')~ ' ' ~object.origenDestinoTrayectoHs(destino)|date('H:i') %}
     <div class="list-group mb-5 border border-primary container-fluid" style="border-color: #3c8dbc">
             <div class=" justify-content-between align-items-center">
                 <!-- Icono o Logo -->
                 <div class="align-items-center">
                     <div class="border-bottom" style="padding-left: 5px">
-                        <h5><i class="fas fa-bus"></i> <strong>{{ object.origenDestinoTrayecto(app.request.query.all.filter.origen.value) }}</strong> &raquo; <strong>{{ object.origenDestinoTrayecto(app.request.query.all.filter.destino.value) }} </strong></h5>
+                        <h5><i class="fas fa-bus"></i> <strong>{{ object.origenDestinoTrayecto(origen) }}</strong> &raquo; <strong>{{ object.origenDestinoTrayecto(destino) }} </strong></h5>
                     </div>
 
                     <div class="container-fluid" style="padding-right: 1px">
@@ -21,7 +31,7 @@
                         <div style="float: right">
                             {% if is_granted('ROLE_FINAL_USER') and not is_granted('ROLE_SUPER_ADMIN') %}
                                 {% if object.asientosLibres != 0 %}
-                                <a href="{{ admin.generateObjectUrl('reserva', object,{ 'origen':app.request.query.all.filter.origen.value, 'destino':app.request.query.all.filter.destino.value}) }}" class="btn btn-sm btn-danger view_link" title="{{ 'Reservar pasaje'|trans({}, 'SonataAdminBundle') }}" style="min-width: 80px">
+                                <a href="{{ admin.generateObjectUrl('reserva', object,{ 'origen':app.request.query.all.filter.origen.value, 'destino':app.request.query.all.filter.destino.value, 'fechahora_salida': reserva_fechahora_salida, 'fechahora_llegada': reserva_fechahora_llegada}) }}" class="btn btn-sm btn-danger view_link" title="{{ 'Reservar pasaje'|trans({}, 'SonataAdminBundle') }}" style="min-width: 80px">
                                     <i class="fas fa-ticket-alt"></i>
                                     Reserva
                                 </a>
@@ -46,7 +56,7 @@
                                     </button>
                                     <div class="dropdown-menu" aria-labelledby="btnGroupDrop1" style="min-width: 80px; margin: 0; padding: 0;">
 
-                                        <a href="{{ admin.generateObjectUrl('reserva', object, {'origen':app.request.query.all.filter.origen.value, 'destino':app.request.query.all.filter.destino.value}) }}" class="btn btn-sm btn-default view_link" title="{{ 'Reservar pasaje'|trans({}, 'SonataAdminBundle') }}" style="min-width: 80px">
+                                        <a href="{{ admin.generateObjectUrl('reserva', object, {'origen':app.request.query.all.filter.origen.value, 'destino':app.request.query.all.filter.destino.value, 'fechahora_salida': reserva_fechahora_salida, 'fechahora_llegada': reserva_fechahora_llegada}) }}" class="btn btn-sm btn-default view_link" title="{{ 'Reservar pasaje'|trans({}, 'SonataAdminBundle') }}" style="min-width: 80px">
                                             <i class="fas fa-ticket-alt"></i>
                                             Reserva
                                         </a><br>
@@ -74,24 +84,27 @@
                     <div class="align-items-center" style="min-height: auto;">
                         <div class="card col-md-4 col-xs-4">
                             <div class="card-header">
-                                <cite title="Source Title">Salida</cite> <br>{{ object.partida|esp_date('%a %d %b') }}
+
+                                <cite title="Source Title">Salida</cite> <br>{{ fecha_salida|esp_date('%a %d %b') }}
                             </div>
                             <div class="card-body">
                                 <figure>
                                     <blockquote class="blockquote">
-                                        <i class="fa fa-clock-o"></i> <strong>{{ object.partida|date('H:i') }}</strong>
+                                        <i class="fa fa-clock-o"></i> <strong>{{ object.origenDestinoTrayectoHs(origen)|date('H:i') }}</strong>
                                     </blockquote>
                                 </figure>
                             </div>
                         </div>
                         <div class="card col-md-4 col-xs-4">
                             <div class="card-header">
-                                <cite title="Source Title">LLegada</cite><br> {{ object.llegada|esp_date('%a %d %b') }}
+
+                                <cite title="Source Title">LLegada</cite><br> {{ fecha_llegada|esp_date('%a %d %b') }}
                             </div>
                             <div class="card-body">
                                 <figure>
                                     <blockquote class="blockquote">
-                                        <i class="fa fa-clock-o"></i> <strong>{{ object.llegada|date('H:i') }}</strong>
+
+                                        <i class="fa fa-clock-o"></i> <strong>{{ object.origenDestinoTrayectoHs(destino)|date('H:i') }}</strong>
                                     </blockquote>
                                 </figure>
                             </div>
@@ -103,9 +116,7 @@
                             <div class="card-body">
                                 <figure>
                                     <blockquote class="blockquote">
-                                        {% set origen_id=app.request.query.all.filter.origen.value %}
-                                        {% set destino_id=app.request.query.all.filter.destino.value %}
-                                        {% set nuevo_precio= admin.getServicioCosto(origen_id, destino_id) %}
+                                        {% set nuevo_precio= admin.getServicioCosto(origen, destino) %}
                                         <strong>{{ (nuevo_precio/100) |number_format(2, ',', '.') }}</strong>
                                     </blockquote>
 
@@ -114,6 +125,7 @@
                         </div>
                     </div>
             </div>
+    </div>
     </div>
     {# modal taryecto puntos #}
     <div class="modal fade" id="modal{{ object.id }}" tabindex="-1" role="dialog" aria-labelledby="modal{{ object.id }}" aria-hidden="true">
@@ -126,13 +138,14 @@
                     </button>
                 </div>
                 <div class="modal-body">
-                    <strong class="text-primary">Salida</strong> {{ object.partida|esp_date('%a %d %b') }} <i class="fa fa-clock-o"></i>{{ object.partida|date('H:i') }}Hs<br>
-                    <strong>{{ object.origenDestinoTrayecto(app.request.query.all.filter.origen.value) }}</strong><br><br>
+                    <strong class="text-primary">Salida</strong> {{ fecha_salida|esp_date('%a %d %b') }} <i class="fa fa-clock-o"></i>{{ object.origenDestinoTrayectoHs(origen)|date('H:i') }}Hs<br>
+                    <strong>{{ object.origenDestinoTrayecto(origen) }}</strong><br><br>
                     {% for tp in object.trayecto.trayectoparadas %}
                         <strong>Parada</strong><br>{{ tp.parada }}<br>
                     {% endfor %}
-                    <br><strong class="text-primary">Llegada</strong> {{ object.llegada|esp_date('%a %d %b') }} <i class="fa fa-clock-o"></i>{{ object.llegada|date('H:i') }}Hs<br>
-                    <strong>{{ object.origenDestinoTrayecto(app.request.query.all.filter.destino.value) }}</strong>
+                    {# set fecha_llegada = object.partida|date_modify(object.origenDestinoTrayectoDias(destino)) #}
+                    <br><strong class="text-primary">Llegada</strong> {{ fecha_llegada|esp_date('%a %d %b') }} <i class="fa fa-clock-o"></i>{{ object.origenDestinoTrayectoHs(destino)|date('H:i') }}Hs<br>
+                    <strong>{{ object.origenDestinoTrayecto(destino) }}</strong>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>

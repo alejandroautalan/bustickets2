@@ -31,18 +31,21 @@ final class ServicioAdminController extends CRUDController
     {
         $o = $request->get('origen');
         $d = $request->get('destino');
+        $fecha_salida = \DateTime::createFromFormat('Y-m-d H:i', $request->get('fechahora_salida'));;
+        $fecha_llegada = \DateTime::createFromFormat('Y-m-d H:i',$request->get('fechahora_llegada'));
         $origen = $entityManager->getRepository(Parada::class)->find($o);
         $destino = $entityManager->getRepository(Parada::class)->find($d);
         $servicio = $this->admin->getSubject();
         $trayecto = $servicio->getTrayecto();
         $reserva = new Reserva();
+        $reserva->setCosto($this->admin->getServicioCosto($origen,$destino));
         $reserva->setServicio($servicio);
         $reserva->setOrigen($origen);
         $reserva->setDestino($destino);
-
+        $reserva->setFechaSalida($fecha_salida);
+        $reserva->setFechaLlegada($fecha_llegada);
         $entityManager->persist($reserva);
         $entityManager->flush();
-
         return $this->redirectToRoute('admin_app_reserva_edit', ['id' => $reserva->getId()]);
     }
 

@@ -5,6 +5,7 @@ namespace App\Entity;
 use App\Repository\ReservaRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
+use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: ReservaRepository::class)]
@@ -55,6 +56,16 @@ class Reserva
     #[ORM\ManyToOne(inversedBy: 'reservas')]
     private ?User $user = null;
 
+    #[ORM\Column]
+    private ?int $costo = null;
+
+    #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]
+    private ?\DateTimeInterface $fecha_salida = null;
+
+    #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]
+    private ?\DateTimeInterface $fecha_llegada = null;
+
+
     public function __construct()
     {
         $this->boletos = new ArrayCollection();
@@ -64,6 +75,26 @@ class Reserva
     public function __toString()
     {
         return 'Reserva:'.$this->getId();
+    }
+
+    public function getSoloFechaSalida()
+    {
+        return $this->fecha_salida->format('d M Y');
+    }
+
+    public function getSoloHsSalida()
+    {
+        return $this->fecha_salida->format('H:i');
+    }
+
+    public function getSoloFechaLlegada()
+    {
+        return $this->fecha_llegada->format('d M Y');
+    }
+
+    public function getSoloHsLlegada()
+    {
+        return $this->fecha_llegada->format('H:i');
     }
 
     public function showBoletosBtn() {
@@ -126,7 +157,7 @@ class Reserva
     {
         if (!$this->boletos->contains($boleto)) {
             $this->boletos->add($boleto);
-            $boleto->setCosto($this->getServicio()->getCosto());
+            $boleto->setCosto($this->getCosto());
             $boleto->setReserva($this);
         }
 
@@ -258,4 +289,41 @@ class Reserva
 
         return $this;
     }
+
+    public function getCosto(): ?int
+    {
+        return $this->costo;
+    }
+
+    public function setCosto(int $costo): static
+    {
+        $this->costo = $costo;
+
+        return $this;
+    }
+
+    public function getFechaSalida(): ?\DateTimeInterface
+    {
+        return $this->fecha_salida;
+    }
+
+    public function setFechaSalida(?\DateTimeInterface $fecha_salida): static
+    {
+        $this->fecha_salida = $fecha_salida;
+
+        return $this;
+    }
+
+    public function getFechaLlegada(): ?\DateTimeInterface
+    {
+        return $this->fecha_llegada;
+    }
+
+    public function setFechaLlegada(?\DateTimeInterface $fecha_llegada): static
+    {
+        $this->fecha_llegada = $fecha_llegada;
+
+        return $this;
+    }
+    
 }

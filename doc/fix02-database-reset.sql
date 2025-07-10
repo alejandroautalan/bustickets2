@@ -52,31 +52,31 @@ ALTER TABLE config_precio ADD CONSTRAINT FK_60C8AD608F5BAE39 FOREIGN KEY (destin
 
 -- Datos provincias y ciudades
 
-INSERT INTO provincia (id, nombre) values
-(02, "Ciudad Autónoma de Buenos Aires"),
-(58, "Neuquén"),
-(74, "San Luis"),
-(82, "Santa Fe"),
-(46, "La Rioja"),
-(10, "Catamarca"),
-(90, "Tucumán"),
-(22, "Chaco"),
-(34, "Formosa"),
-(78, "Santa Cruz"),
-(26, "Chubut"),
-(50, "Mendoza"),
-(30, "Entre Ríos"),
-(70, "San Juan"),
-(38, "Jujuy"),
-(86, "Santiago del Estero"),
-(62, "Río Negro"),
-(18, "Corrientes"),
-(54, "Misiones"),
-(66, "Salta"),
-(14, "Córdoba"),
-(06, "Buenos Aires"),
-(42, "La Pampa"),
-(94, "Tierra del Fuego, Antártida e Islas del Atlántico Sur") ;
+    INSERT INTO provincia (id, nombre) values
+    (02, "Ciudad Autónoma de Buenos Aires"),
+    (58, "Neuquén"),
+    (74, "San Luis"),
+    (82, "Santa Fe"),
+    (46, "La Rioja"),
+    (10, "Catamarca"),
+    (90, "Tucumán"),
+    (22, "Chaco"),
+    (34, "Formosa"),
+    (78, "Santa Cruz"),
+    (26, "Chubut"),
+    (50, "Mendoza"),
+    (30, "Entre Ríos"),
+    (70, "San Juan"),
+    (38, "Jujuy"),
+    (86, "Santiago del Estero"),
+    (62, "Río Negro"),
+    (18, "Corrientes"),
+    (54, "Misiones"),
+    (66, "Salta"),
+    (14, "Córdoba"),
+    (06, "Buenos Aires"),
+    (42, "La Pampa"),
+    (94, "Tierra del Fuego, Antártida e Islas del Atlántico Sur") ;
 
 
 INSERT INTO ciudad (id, id_gobar, provincia_id, nombre) values

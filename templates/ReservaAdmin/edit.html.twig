@@ -8,10 +8,10 @@
     {% if object.showPaymentBtn %}
     <div class="box box-primary">
         <div class="box-header">
-            <h4><strong>{{ admin.subject.origen }}</strong> &raquo; <strong>{{ admin.subject.destino }}</strong></h4>
-            <p><u>Salida: {{ admin.subject.servicio.partida|date('D d M') }} &raquo; <strong>{{ admin.subject.servicio.partida|date('H:i') }} Hs</strong></u></p>
-            <p><u>Llegada: {{ admin.subject.servicio.llegada|date('D d M') }} &raquo; <strong>{{ admin.subject.servicio.llegada|date('H:i') }} Hs</strong></u></p>
-            <h4 style="text-align: right"><strong>ARS {{ (admin.subject.servicio.costo/100) |number_format(2, ',', '.') }}</strong></h4>
+            <h4><strong>{{ object.origen }}</strong> &raquo; <strong>{{ object.destino }}</strong></h4>
+            <p><u>Salida: {{ object.soloFechaSalida }} &raquo; <strong>{{ admin.subject.soloHsSalida }} Hs</strong></u></p>
+            <p><u>Llegada: {{ object.soloFechaLlegada }} &raquo; <strong>{{ admin.subject.soloHsLlegada }} Hs</strong></u></p>
+            <h4 style="text-align: right"><strong>ARS {{ (admin.subject.costo/100) |number_format(2, ',', '.') }}</strong></h4>
         </div>
     </div>
     {% endif %}

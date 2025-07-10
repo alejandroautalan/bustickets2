@@ -97,6 +97,32 @@ class Servicio
         endforeach;
         return $parada_nombre;
     }
+
+    public function getOrigenDestinoTrayectoDias($od)
+    {
+        $parada_dia = 0;
+        foreach ($this->getTrayecto()->getTrayectoParadas() as $tp):
+            if ($tp->getParada()->getId() == $od):
+                    $parada_dia = $tp->getDia();
+            endif;
+        endforeach;
+        return '+'.$parada_dia.' day';
+    }
+
+    public function getOrigenDestinoTrayectoHs($od)
+    {
+        $parada_hs = null;
+        foreach ($this->getTrayecto()->getTrayectoParadas() as $tp):
+            if ($tp->getParada()->getId() == $od):
+                if($tp->getTipoParadaId() == 1):
+                    $parada_hs = $tp->getHoraPartida();
+                else:
+                    $parada_hs = $tp->getHoraLlegada();
+                endif;
+            endif;
+        endforeach;
+        return $parada_hs;
+    }
     public function getAsientosLibres()
     {
          $a = 0;
