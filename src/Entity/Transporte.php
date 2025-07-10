@@ -21,7 +21,8 @@ class Transporte
     /**
      * @var Collection<int, TransporteAsiento>
      */
-    #[ORM\OneToMany(targetEntity: TransporteAsiento::class, mappedBy: 'transporte', orphanRemoval: true)]
+    #[ORM\OneToMany(targetEntity: TransporteAsiento::class, mappedBy: 'transporte', orphanRemoval: true, cascade: ["persist"])]
+    #[ORM\OrderBy(["numero" => 'ASC'])]
     private Collection $asientos;
 
     #[ORM\Column(nullable: true)]

@@ -15,6 +15,8 @@ use Sonata\AdminBundle\Route\RouteCollectionInterface;
 use Sonata\AdminBundle\Admin\AdminInterface;
 use Knp\Menu\ItemInterface as MenuItemInterface;
 
+use App\Entity\Trayecto;
+use App\Entity\TrayectoParada;
 use App\Admin\Extension\CloneActionAdminExtension;
 
 
@@ -24,6 +26,18 @@ final class TrayectoAdmin extends AbstractAdmin
     protected function configure(): void
     {
         $this->addExtension(new CloneActionAdminExtension());
+    }
+
+    public function setupCloneFrom(Trayecto $object, $clone_from_id)
+    {
+        $clone_from = $this->getObject($clone_from_id);
+        //$object->setEnabled($clone_from->isEnabled());
+        $object->setEnabled(false);
+        $object->setNombre(sprintf('%s - Copia', $clone_from->getNombre()));
+        foreach($clone_from->getTrayectoParadas() as $tp) {
+            $tpnew = clone $tp;
+            $object->addTrayectoParada($tpnew);
+        }
     }
 
     protected function configureDatagridFilters(DatagridMapper $filter): void
