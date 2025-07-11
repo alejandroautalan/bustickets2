@@ -89,7 +89,7 @@
                             </div>
                             <div class="card-body">
                                 <figure>
-                                    <blockquote class="blockquote">
+                                    <blockquote class="blockquote" style="padding: 10px 10px">
                                         <strong>{{ fecha_salida|esp_date('%a %d %b') }}</strong>
                                     </blockquote>
                                 </figure>
@@ -101,7 +101,7 @@
                             </div>
                             <div class="card-body">
                                 <figure>
-                                    <blockquote class="blockquote">
+                                    <blockquote class="blockquote" style="padding: 10px 10px">
                                         <strong>{{ fecha_llegada|esp_date('%a %d %b') }}</strong>
                                     </blockquote>
                                 </figure>
@@ -113,7 +113,7 @@
                             </div>
                             <div class="card-body">
                                 <figure>
-                                    <blockquote class="blockquote">
+                                    <blockquote class="blockquote" style="padding: 10px 10px">
                                         {% set nuevo_precio= admin.getServicioCosto(origen, destino) %}
                                         <strong>{{ (nuevo_precio/100) |number_format(2, ',', '.') }}</strong>
                                     </blockquote>
