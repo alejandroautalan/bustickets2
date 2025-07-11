@@ -85,26 +85,24 @@
                         <div class="card col-md-4 col-xs-4">
                             <div class="card-header">
 
-                                <cite title="Source Title">Salida</cite> <br>{{ fecha_salida|esp_date('%a %d %b') }}
+                                <cite title="Source Title">Salida</cite> <br><i class="fa fa-clock-o"></i> {{ object.origenDestinoTrayectoHs(origen)|date('H:i') }}
                             </div>
                             <div class="card-body">
                                 <figure>
                                     <blockquote class="blockquote">
-                                        <i class="fa fa-clock-o"></i> <strong>{{ object.origenDestinoTrayectoHs(origen)|date('H:i') }}</strong>
+                                        <strong>{{ fecha_salida|esp_date('%a %d %b') }}</strong>
                                     </blockquote>
                                 </figure>
                             </div>
                         </div>
                         <div class="card col-md-4 col-xs-4">
                             <div class="card-header">
-
-                                <cite title="Source Title">LLegada</cite><br> {{ fecha_llegada|esp_date('%a %d %b') }}
+                                <cite title="Source Title">LLegada</cite><br><i class="fa fa-clock-o"></i> {{ object.origenDestinoTrayectoHs(destino)|date('H:i') }}
                             </div>
                             <div class="card-body">
                                 <figure>
                                     <blockquote class="blockquote">
-
-                                        <i class="fa fa-clock-o"></i> <strong>{{ object.origenDestinoTrayectoHs(destino)|date('H:i') }}</strong>
+                                        <strong>{{ fecha_llegada|esp_date('%a %d %b') }}</strong>
                                     </blockquote>
                                 </figure>
                             </div>
