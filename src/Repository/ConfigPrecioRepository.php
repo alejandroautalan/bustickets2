@@ -30,28 +30,25 @@ class ConfigPrecioRepository extends ServiceEntityRepository
             AND cp.destino_provincia = :destino_provincia_id
 
             AND (
-                (
-                    cp.origen_parada = :origen_parada_id
-                    AND cp.destino_parada = :destino_parada_id
+                (cp.origen_parada = :origen_parada_id)
+                or
+                (cp.origen_parada is NULL and cp.origen_ciudad = :origen_ciudad_id)
+                or
+                (cp.origen_parada is NULL AND cp.origen_ciudad is NULL)
                 )
-                OR (
-                    cp.origen_parada is NULL
-                    AND cp.destino_parada IS NULL
-                    AND cp.origen_ciudad = :origen_ciudad_id
-                    AND cp.destino_ciudad = :destino_ciudad_id
+            AND (
+                (cp.destino_parada = :destino_parada_id)
+                or
+                (cp.destino_parada is NULL and cp.destino_ciudad = :destino_ciudad_id)
+                or
+                (cp.destino_parada is NULL AND cp.destino_ciudad is NULL)
                 )
-                OR (
-                    cp.origen_parada IS NULL
-                    AND cp.destino_parada is NULL
-                    AND cp.origen_ciudad IS NULL
-                    AND cp.destino_ciudad is NULL)
-            )
             ORDER BY peso')
         ->setParameter('origen_provincia_id', $origen_parada->getProvincia()->getId())
-        ->setParameter('destino_provincia_id', $destino_parada->getProvincia()->getId())
         ->setParameter('origen_ciudad_id', $origen_parada->getCiudad()->getId())
         ->setParameter('origen_parada_id', $origen_parada->getId())
-        ->setParameter('destino_ciudad_id', $destino_parada->getProvincia()->getId())
+        ->setParameter('destino_provincia_id', $destino_parada->getProvincia()->getId())
+        ->setParameter('destino_ciudad_id', $destino_parada->getCiudad()->getId())
         ->setParameter('destino_parada_id', $destino_parada->getId())
         ->setMaxResults(1)
         ;
