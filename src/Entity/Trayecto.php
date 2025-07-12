@@ -7,6 +7,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\Common\Collections\Order;
 use Doctrine\Common\Collections\Criteria;
+use Doctrine\Common\Collections\Expr\Comparison;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: TrayectoRepository::class)]
@@ -64,6 +65,15 @@ class Trayecto
     {
         $criteria = new Criteria();
         $criteria->orderBy(['nro_orden' => Order::Ascending]);
+        return $this->trayectoParadas->matching($criteria);
+    }
+
+    public function getParadasOrigen(): Collection
+    {
+        $criteria = new Criteria();
+        $exp1 = new Comparison('tipo_parada_id', Comparison::EQ, self::TIPO_PARADA_ORIGEN);
+        $criteria->where($exp1)
+            ->orderBy(['nro_orden' => Order::Ascending]);
         return $this->trayectoParadas->matching($criteria);
     }
 

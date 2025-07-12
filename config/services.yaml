@@ -36,6 +36,10 @@ services:
     #
     # INLINE VALIDATION SERVICES
     #
+    app.inlinevalidator.servicio:
+        class: App\Validator\ServicioInlineValidator
+        public: true
+
     app.inlinevalidator.reserva:
         class: App\Validator\ReservaInlineValidator
         public: true

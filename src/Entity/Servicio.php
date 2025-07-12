@@ -74,18 +74,23 @@ class Servicio
         }
     }
 
+    const STATE_DRAFT = 1;
+    const STATE_PROGRAMMED = 2;
+    const STATE_TRANSPORTING = 3;
+    const STATE_FINISHED = 4;
+
     public static $estado_choices = [
-        'Draft' => 1,
-        'Programado' => 2,
-        'Transporte' => 3,
-        'Finalizado'=> 4
+        'Draft' => self::STATE_DRAFT,
+        'Programado' => self::STATE_PROGRAMMED,
+        'Transporte' => self::STATE_TRANSPORTING,
+        'Finalizado'=> self::STATE_FINISHED
     ];
 
     public static $estado_nombre_choices = [
-        1 => 'Draft',
-         2 => 'Programado',
-        3 => 'Transporte',
-        4 => 'Finalizado'
+        self::STATE_DRAFT        => 'Draft',
+        self::STATE_PROGRAMMED   => 'Programado',
+        self::STATE_TRANSPORTING => 'Transporte',
+        self::STATE_FINISHED     => 'Finalizado'
     ];
     /**
      * @var Collection<int, Boleto>

@@ -10,6 +10,12 @@ App\Entity\Boleto:
         costo:
             - GreaterThan: 500
 
+App\Entity\Servicio:
+    constraints:
+        - Sonata\Form\Validator\Constraints\InlineConstraint:
+            service: app.inlinevalidator.servicio
+            method: validate
+
 App\Entity\Reserva:
     constraints:
         - Sonata\Form\Validator\Constraints\InlineConstraint:

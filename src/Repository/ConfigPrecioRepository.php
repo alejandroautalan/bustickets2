@@ -52,9 +52,12 @@ class ConfigPrecioRepository extends ServiceEntityRepository
         ->setParameter('destino_parada_id', $destino_parada->getId())
         ->setMaxResults(1)
         ;
-        $rs = $query->getResult();
-
-        return $rs[0]['costo'];
+        $costo = null;
+        $rs = $query->getOneOrNullResult();
+        if(null !== $rs) {
+            $costo = $rs['costo'];
+        }
+        return $costo;
     }
 
     public function existeConfiguracion(ConfigPrecio $config) {
