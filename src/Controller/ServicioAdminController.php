@@ -17,6 +17,10 @@ use App\Form\Type\OcuparType;
 use App\Form\Type\AsientoSelectorType;
 use Sonata\Form\Type\CollectionType;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\JsonResponse;
+use Sonata\AdminBundle\Exception\BadRequestParamHttpException;
+use Sonata\AdminBundle\Datagrid\SimplePager;
+use Sonata\AdminBundle\Datagrid\DatagridInterface;
 // use App\Repository\TrayectoRepository;
 // use App\Model\Reserva;
 // use App\Form\Type\ReservaType;
@@ -24,6 +28,54 @@ use Symfony\Component\HttpFoundation\Request;
 
 final class ServicioAdminController extends CRUDController
 {
+
+    public function autocompleteItemsAction(Request $request) {
+        $context = $request->get('_context', '');
+        $field = $request->get('field');
+        if (!\is_string($field)) {
+            throw new BadRequestParamHttpException('field', 'string', $field);
+        }
+
+        $searchText = $request->get('q', '');
+        if (!\is_string($searchText)) {
+            throw new BadRequestParamHttpException('q', 'string', $searchText);
+        }
+        $minimumInputLength= 3;
+        if (mb_strlen($searchText, 'UTF-8') < $minimumInputLength) {
+            return new JsonResponse(['status' => 'KO', 'message' => 'Too short search string.'], Response::HTTP_FORBIDDEN);
+        }
+
+        $itemsPerPage = intval($request->get(DatagridInterface::PER_PAGE, 10));
+        $pageNumber = intval($request->get(DatagridInterface::PAGE, 1));
+
+
+        $items = [];  # $items = [['id' => '1', 'label' => 'Hola carola.',],];
+
+        if ('filter' === $context) {
+            $query = $this->admin->getModelManager()->createQuery(Parada::class, 'p');
+            $query->andWhere('p.nombre LIKE :search_txt')
+                ->setParameter('search_txt', sprintf('%%%s%%', $searchText))
+                ;
+
+            $pager = new SimplePager($itemsPerPage);
+            $pager->setQuery($query);
+            $pager->setPage($pageNumber);
+            $results = $pager->getCurrentPageResults();
+            foreach($results as $model) {
+                $item = [
+                    'id' => $model->getId(),
+                    'label' => $model->getNombre(),
+                ];
+                $items[] = $item;
+            }
+        }
+
+        return new JsonResponse([
+            'status' => 'OK',
+            'more' => \count($items) > 0 && !$pager->isLastPage(),
+            'items' => $items,
+        ]);
+    }
 
     public function reservaAction(
         EntityManagerInterface $entityManager, Request $request

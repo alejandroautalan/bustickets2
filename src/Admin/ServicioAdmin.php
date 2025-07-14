@@ -12,6 +12,10 @@ use Sonata\DoctrineORMAdminBundle\Filter\ChoiceFilter;
 use Sonata\DoctrineORMAdminBundle\Filter\DateFilter;
 use Sonata\DoctrineORMAdminBundle\Filter\DateTimeFilter;
 use Sonata\DoctrineORMAdminBundle\Filter\DateTimeRangeFilter;
+use Sonata\DoctrineORMAdminBundle\Filter\CallbackFilter;
+use Sonata\DoctrineORMAdminBundle\Filter\ModelFilter;
+use Sonata\AdminBundle\Filter\Model\FilterData;
+use Sonata\AdminBundle\Form\Type\ModelAutocompleteType;
 use Sonata\Form\Type\DatePickerType;
 use Sonata\Form\Type\DateTimePickerType;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
@@ -117,25 +121,7 @@ final class ServicioAdmin extends AbstractAdmin
                 $query->where($query->getRootAlias() . '.id = -100');
             }
         } elseif($this->isGranted('ROLE_SUPER_ADMIN')){
-            #$filters = $this->getFilterParameters();
-            #if (isset($filters['origen']) && isset($filters['destino'])) {
-            #    $filterParadaO = $filters['origen']['value'];
-            #    $filterParadaD = $filters['destino']['value'];
-
-            #    if ($filterParadaO !== '' && $filterParadaO !== '') {
-            #        $query->join($query->getRootAlias() . '.trayecto', 't')
-            #            ->join('t.trayectoParadas', 'tp_origen', 'WITH', 'tp_origen.parada = :origen ')
-            #            ->join('t.trayectoParadas', 'tp_destino', 'WITH', 'tp_destino.parada = :destino ')
-            #            ->where('tp_origen.nro_orden < tp_destino.nro_orden')
-            #            ->andWhere('tp_origen.tipo_parada_id = 1')
-            #            ->andWhere('tp_destino.tipo_parada_id = 2')
-            #            ->setParameter('origen', $filterParadaO)
-            #            ->setParameter('destino', $filterParadaD);
-            #    }
-            #} else {
-            #    $query->where($query->getRootAlias() . '.id = -100');
-            #}
-
+            ;
         }
         return $query;
     }
@@ -146,6 +132,7 @@ final class ServicioAdmin extends AbstractAdmin
         $collection->add('asientos', 'asientos');
         $collection->add('archivo', 'archivo');
         $collection->add('ocuparAsiento', 'ocuparAsiento');
+        $collection->add('autocomplete_items');
     }
 
     private function getParadasChoices(): array
@@ -171,28 +158,33 @@ final class ServicioAdmin extends AbstractAdmin
             $minAttr = ['min' => $minDate];
         }
         $filter
-            ->add('origen', null, [
+            ->add('origen', CallbackFilter::class, [
+                'required' => true,
+                'callback' => [$this, 'filterby_origen'],
                 'show_filter' => true,
-                'field_type' => EntityType::class,
+                'field_type' => ModelAutocompleteType::class,
                 'field_options' => [
                     'class' => Parada::class,
                     'placeholder' => 'Selecciona origen',
                     'required' => true,
+                    'property' => 'nombre',
+                    'route' => ['name' => 'admin_app_servicio_autocomplete_items', 'parameters' => []],
                 ]
             ])
             // Filtro por destino
-            ->add('destino', null, [
+            ->add('destino', CallbackFilter::class, [
+                'required' => true,
+                'callback' => [$this, 'filterby_destino'],
                 'show_filter' => true,
-                'field_type' => EntityType::class,
+                'field_type' => ModelAutocompleteType::class,
                 'field_options' => [
                     'class' => Parada::class,
                     'placeholder' => 'Selecciona destino',
                     'required' => true,
+                    'property' => 'nombre',
+                    'route' => ['name' => 'admin_app_servicio_autocomplete_items', 'parameters' => []],
                 ]
             ])
-            #->add('trayecto.trayectoParadas.parada', null, ['label' => 'Origen'])
-            #->add('trayectoD.trayectoParadas.parada', null, ['label' => 'Origen'])
-            #->add('nombre')
             ->add('partida', DateFilter::class, [
                 'show_filter' => true,
                 'field_type' => DateType::class,
@@ -215,6 +207,22 @@ final class ServicioAdmin extends AbstractAdmin
             #->add('llegada')
             #->add('estado')
         ;
+    }
+
+    public function filterby_origen(ProxyQueryInterface $query, string $alias, string $field, FilterData $data) {
+        if (!$data->hasValue()) {
+            return false;
+        }
+        // $query is setup in configureQuery
+        return true;
+    }
+
+    public function filterby_destino(ProxyQueryInterface $query, string $alias, string $field, FilterData $data) {
+        if (!$data->hasValue()) {
+            return false;
+        }
+        // $query is setup in configureQuery
+        return true;
     }
 
     public function toString(object $object): string
