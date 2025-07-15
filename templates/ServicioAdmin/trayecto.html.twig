@@ -1,11 +1,6 @@
 {% extends '@SonataAdmin/CRUD/base_list_field.html.twig' %}
 
 {% block field %}
-    <style type="text/css">
-        .sonata-toggle-filter.sonata-ba-action {
-            display: none !important;
-        }
-    </style>
     {% set origen = app.request.query.all.filter.origen.value %}
     {% set destino = app.request.query.all.filter.destino.value %}
     {% set fecha_salida = object.partida|date_modify(object.origenDestinoTrayectoDias(origen)) %}

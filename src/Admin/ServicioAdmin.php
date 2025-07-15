@@ -121,7 +121,22 @@ final class ServicioAdmin extends AbstractAdmin
                 $query->where($query->getRootAlias() . '.id = -100');
             }
         } elseif($this->isGranted('ROLE_SUPER_ADMIN')){
-            ;
+            $filters = $this->getFilterParameters();
+            if (isset($filters['origen']) && isset($filters['destino'])) {
+                $filterParadaO = $filters['origen']['value'];
+                $filterParadaD = $filters['destino']['value'];
+
+                if ($filterParadaO !== '' && $filterParadaO !== '') {
+                    $query->join($query->getRootAlias() . '.trayecto', 't')
+                        ->join('t.trayectoParadas', 'tp_origen', 'WITH', 'tp_origen.parada = :origen ')
+                        ->join('t.trayectoParadas', 'tp_destino', 'WITH', 'tp_destino.parada = :destino ')
+                        ->where('tp_origen.nro_orden < tp_destino.nro_orden')
+                        ->andWhere('tp_origen.tipo_parada_id = 1')
+                        ->andWhere('tp_destino.tipo_parada_id = 2')
+                        ->setParameter('origen', $filterParadaO)
+                        ->setParameter('destino', $filterParadaD);
+                }
+            }    
         }
         return $query;
     }
