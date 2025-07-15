@@ -2,10 +2,60 @@
 
 {% block body_center %}
 <form action="{{ path('login') }}" method="POST" class="pure-form pure-form-aligned">
+    <div class="align-content-center">
     <fieldset>
-    <legend>Ingresar con enlace por correo</legend>
+        <legend>Ingresar con enlace por correo</legend>
         <input type="email" name="email" value="{{ email }}" placeholder="Tu correo electrónico aquí.">
         <button type="submit" class="pure-button pure-button-primary">Enviar Enlace</button>
+        <div class="spinner-overlay" style="display: none;">
+            <div class="spinner-container">
+                <div class="spinner"></div>
+                <p>Enviando Email, por favor espere...</p>
+            </div>
+        </div>
     </fieldset>
+
+    </div>
 </form>
+
+<style>
+    .spinner-overlay {
+        position: fixed; /* ocupa toda la pantalla */
+        top: 0; left: 0; right: 0; bottom: 0;
+        display: flex; /* usar Flexbox */
+        align-items: center; /* centrar verticalmente */
+        justify-content: center; /* centrar horizontalmente */
+        background: rgba(0, 0, 0, 0.3); /* fondo semi-transparente */
+        z-index: 9999; /* por encima de todo */
+    }
+
+    .spinner-container {
+        text-align: center;
+        background: #fff; /* opcional, fondo blanco para spinner */
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0 0 15px rgba(0,0,0,0.2);
+    }
+
+    /* Estilo del spinner */
+    .spinner {
+        border: 8px solid #f3f3f3;
+        border-top: 8px solid #3498db;
+        border-radius: 50%;
+        width: 60px;
+        height: 60px;
+        animation: spin 2s linear infinite;
+        margin: 0 auto 10px;
+    }
+    @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+    }
+</style>
+
+    <script>
+        document.querySelector('form').addEventListener('submit', function() {
+            document.querySelector('.spinner-overlay').style.display = 'flex';
+        });
+    </script>
 {% endblock %}

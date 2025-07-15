@@ -136,7 +136,7 @@ final class ServicioAdmin extends AbstractAdmin
                         ->setParameter('origen', $filterParadaO)
                         ->setParameter('destino', $filterParadaD);
                 }
-            }    
+            }
         }
         return $query;
     }
@@ -272,6 +272,7 @@ final class ServicioAdmin extends AbstractAdmin
                 ->add('trayecto.destino')
                 ->add('partida')
                 ->add('llegada')
+                ->add('asientosLibres', null, ['lable'=>'Libres'])
                 ->add('estado', 'choice',[
                     'choices' => Servicio::$estado_nombre_choices,
                 ])
