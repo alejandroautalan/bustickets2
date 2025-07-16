@@ -28,6 +28,12 @@ App\Entity\Trayecto:
             service: app.inlinevalidator.trayecto
             method: validate
 
+App\Entity\Parada:
+    constraints:
+        - Sonata\Form\Validator\Constraints\InlineConstraint:
+            service: app.inlinevalidator.parada
+            method: validate
+
 App\Entity\ConfigPrecio:
     constraints:
         - Sonata\Form\Validator\Constraints\InlineConstraint:
