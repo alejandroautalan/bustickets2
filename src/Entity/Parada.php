@@ -34,6 +34,11 @@ class Parada
         return $this->id;
     }
 
+    public function getNombrecompleto(): ?string
+    {
+        return $this->provincia.' - '.$this->nombre.' ('.$this->ciudad.')';
+    }
+
     public function getNombre(): ?string
     {
         return $this->nombre;

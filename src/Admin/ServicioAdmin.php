@@ -7,6 +7,7 @@ namespace App\Admin;
 use App\Entity\Pago;
 use App\Entity\Parada;
 use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\Mapping\Entity;
 use Sonata\AdminBundle\Datagrid\ProxyQueryInterface;
 use Sonata\DoctrineORMAdminBundle\Filter\ChoiceFilter;
 use Sonata\DoctrineORMAdminBundle\Filter\DateFilter;
@@ -183,6 +184,9 @@ final class ServicioAdmin extends AbstractAdmin
                     'placeholder' => 'Selecciona origen',
                     'required' => true,
                     'property' => 'nombre',
+                    'to_string_callback' => function ($entity,$property) {
+                        return $entity->getNombrecompleto();
+                    },
                     'route' => ['name' => 'admin_app_servicio_autocomplete_items', 'parameters' => []],
                 ]
             ])
@@ -197,6 +201,9 @@ final class ServicioAdmin extends AbstractAdmin
                     'placeholder' => 'Selecciona destino',
                     'required' => true,
                     'property' => 'nombre',
+                    'to_string_callback' => function ($entity,$property) {
+                        return $entity->getNombrecompleto();
+                    },
                     'route' => ['name' => 'admin_app_servicio_autocomplete_items', 'parameters' => []],
                 ]
             ])
