@@ -267,12 +267,12 @@ final class ServicioAdmin extends AbstractAdmin
 
         if(!$this->isFinalUser()):
             $list
-                ->add('id')
+                #->add('id')
                 ->add('trayecto.origen')
                 ->add('trayecto.destino')
                 ->add('partida')
                 ->add('llegada')
-                ->add('asientosLibres', null, ['lable'=>'Libres'])
+                ->add('asientosLibres')
                 ->add('estado', 'choice',[
                     'choices' => Servicio::$estado_nombre_choices,
                 ])
