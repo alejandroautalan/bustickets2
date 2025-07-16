@@ -53,8 +53,12 @@ final class ServicioAdminController extends CRUDController
 
         if ('filter' === $context) {
             $query = $this->admin->getModelManager()->createQuery(Parada::class, 'p');
-            $query->andWhere('p.nombre LIKE :search_txt')
+            $query->select('p.id as id, prov.nombre as provnombre, p.nombre as pnombre, c.nombre as cnombre')
+                ->join('p.provincia','prov')
+                ->join('p.ciudad','c')
+                ->andWhere('p.nombre LIKE :search_txt or prov.nombre LIKE :search_txt or c.nombre LIKE :search_txt')
                 ->setParameter('search_txt', sprintf('%%%s%%', $searchText))
+                ->getDQL()
                 ;
 
             $pager = new SimplePager($itemsPerPage);
@@ -63,8 +67,8 @@ final class ServicioAdminController extends CRUDController
             $results = $pager->getCurrentPageResults();
             foreach($results as $model) {
                 $item = [
-                    'id' => $model->getId(),
-                    'label' => $model->getNombre(),
+                    'id' => $model['id'],
+                    'label' => $model['provnombre'].' - '.$model['pnombre'].' ('.$model['cnombre'].')',
                 ];
                 $items[] = $item;
             }

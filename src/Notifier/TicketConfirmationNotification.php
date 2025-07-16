@@ -42,7 +42,7 @@ class TicketConfirmationNotification extends Notification implements EmailNotifi
     public function asEmailMessage(EmailRecipientInterface $recipient, ?string $transport = null): ?EmailMessage
     {
         // Puedes definir el remitente de forma más robusta, ej. desde parameters.yaml
-        $senderEmail = 'no-reply@xn--elsantiagueo-khb.com.ar';
+        $senderEmail = $_ENV['MAILER_SENDER'];
         $senderName = 'El SantiagueñoBus';
 
         // El destinatario se obtiene del Recipient que se pasa al NotifierInterface::send()
