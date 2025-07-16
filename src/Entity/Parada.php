@@ -41,7 +41,7 @@ class Parada
 
     public function setNombre(string $nombre): static
     {
-        $this->nombre = $nombre;
+        $this->nombre = trim($nombre);
 
         return $this;
     }

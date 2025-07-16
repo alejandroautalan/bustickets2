@@ -48,6 +48,10 @@ services:
         class: App\Validator\TrayectoInlineValidator
         public: true
 
+    app.inlinevalidator.parada:
+        class: App\Validator\ParadaInlineValidator
+        public: true
+
     app.inlinevalidator.config_precio:
         class: App\Validator\ConfigPrecioInlineValidator
         public: true
